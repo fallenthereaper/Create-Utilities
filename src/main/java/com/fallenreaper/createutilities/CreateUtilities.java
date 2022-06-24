@@ -1,8 +1,15 @@
 package com.fallenreaper.createutilities;
 
+import com.fallenreaper.createutilities.index.CUBlockEntities;
+import com.fallenreaper.createutilities.index.CUBlockPartials;
+import com.fallenreaper.createutilities.index.CUBlocks;
+import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.NonNullLazy;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
@@ -23,11 +30,17 @@ public class CreateUtilities {
 
 
     // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ID = "createutilities";
 
+    private static final NonNullSupplier<CreateRegistrate> registrate = CreateRegistrate.lazy(ID);
+
     public CreateUtilities() {
+
+        CUBlocks.register();
+        CUBlockEntities.register();
+        CUBlockPartials.clientInit();
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the enqueueIMC method for modloading
@@ -76,5 +89,16 @@ public class CreateUtilities {
             // register a new block here
             LOGGER.info("HELLO from Register Block");
         }
+    }
+
+    public static ResourceLocation defaultResourceLocation(String path) {
+        return new ResourceLocation(ID, path);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static CreateRegistrate registrate() {
+
+        LOGGER.info("Registrate created");
+        return registrate.get();
     }
 }

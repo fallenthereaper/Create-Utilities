@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "createaeronautics:block/sprinkler/block"
+
+    },
+    "facing=south": {
+      "model": "createaeronautics:block/sprinkler/block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "createaeronautics:block/sprinkler/block",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "createaeronautics:block/sprinkler/block",
+      "y": 90
+    }
+  }
+}

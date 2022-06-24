@@ -4,157 +4,36 @@ buildscript {
         maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://maven.parchmentmc.org' }
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        //maven { url = 'http://maven.tterrag.com/' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "${forgegradle_version}", changing: true
         classpath 'org.parchmentmc:librarian:1.+'
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
 
     }
 }
+plugins {
+    id 'com.github.johnrengelman.shadow' version "${shadow_version}"
+    id 'com.matthewprenger.cursegradle' version "${cursegradle_version}"
+}
+
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
+version = "${mc_version}-${mod_version}"
+group = 'com.fallenreaper.createutilities'
 
-group = 'fallenreaper'
-version = '1.0-SNAPSHOT'
 
 java {
     archivesBaseName = 'createutilities'
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
-
-
-minecraft {
-    // The mappings can be changed at any time and must be in the following format.
-    // Channel:   Version:
-    // snapshot   YYYYMMDD   Snapshot are built nightly.
-    // stable     #          Stables are built at the discretion of the MCP team.
-    // official   MCVersion  Official field/method names from Mojang mapping files
-    //
-    // You must be aware of the Mojang license when using the 'official' mappings.
-    // See more information here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
-    //
-    // Use non-default mappings at your own risk. They may not always work.
-    // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'parchment', version: '1.18.1-2022.03.06-1.18.2'
-
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/removed as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'createutilities'
-
-            mods {
-                createutilities {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/removed as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'createutilities'
-
-            mods {
-                createutilities {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        gameTestServer {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', 'createutilities'
-
-            mods {
-                createutilities {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/removed as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'createutilities', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                createutilities {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
-}
-
-mixin {
-    add sourceSets.main, "createutilities.refmap.json"
-
-    config "createutilities.mixins.json"
-}
-
-// Include resources generated by data generators.
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
 repositories {
     // Put repositories for dependencies here
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
@@ -173,26 +52,165 @@ repositories {
         // }
     }
 
+    println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+    minecraft {
+        // The mappings can be changed at any time and must be in the following format.
+        // Channel:   Version:
+        // snapshot   YYYYMMDD   Snapshot are built nightly.
+        // stable     #          Stables are built at the discretion of the MCP team.
+        // official   MCVersion  Official field/method names from Mojang mapping files
+        //
+        // You must be aware of the Mojang license when using the 'official' mappings.
+        // See more information here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
+        //
+        // Use non-default mappings at your own risk. They may not always work.
+        // Simply re-run your setup task after changing the mappings to update your workspace.
+        mappings channel: 'parchment', version: '1.18.1-2022.03.06-1.18.2'
+
+        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+        // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+        // Default run configurations.
+        // These can be tweaked, removed, or duplicated as needed.
+        runs {
+            client {
+                workingDirectory project.file('run')
+                arg "-mixin.config=createutilities.mixins.json"
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+                // Recommended logging data for a userdev environment
+                // The markers can be added/removed as needed separated by commas.
+                // "SCAN": For mods scan.
+                // "REGISTRIES": For firing of registry events.
+                // "REGISTRYDUMP": For getting the contents of all registries.
+                property 'forge.logging.markers', 'REGISTRIES'
+
+                // Recommended logging level for the console
+                // You can set various levels here.
+                // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+                property 'forge.logging.console.level', 'debug'
+
+                property 'forge.enabledGameTestNamespaces', 'createutilities'
+
+                mods {
+                    createutilities {
+                        source sourceSets.main
+                    }
+                }
+            }
+
+            server {
+                workingDirectory project.file('run')
+                arg "-mixin.config=createutilities.mixins.json"
+                // Recommended logging data for a userdev environment
+                // The markers can be added/removed as needed separated by commas.
+                // "SCAN": For mods scan.
+                // "REGISTRIES": For firing of registry events.
+                // "REGISTRYDUMP": For getting the contents of all registries.
+                property 'forge.logging.markers', 'REGISTRIES'
+
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+                // Recommended logging level for the console
+                // You can set various levels here.
+                // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+                property 'forge.logging.console.level', 'debug'
+
+                property 'forge.enabledGameTestNamespaces', 'createutilities'
+
+                mods {
+                    createutilities {
+                        source sourceSets.main
+                    }
+                }
+            }
+
+            gameTestServer {
+                workingDirectory project.file('run')
+
+                // Recommended logging data for a userdev environment
+                // The markers can be added/remove as needed separated by commas.
+                // "SCAN": For mods scan.
+                // "REGISTRIES": For firing of registry events.
+                // "REGISTRYDUMP": For getting the contents of all registries.
+                property 'forge.logging.markers', 'REGISTRIES'
+
+                // Recommended logging level for the console
+                // You can set various levels here.
+                // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+                property 'forge.logging.console.level', 'debug'
+
+                // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+                property 'forge.enabledGameTestNamespaces', 'createutilities'
+
+                mods {
+                    createutilities {
+                        source sourceSets.main
+                    }
+                }
+            }
+
+            data {
+                workingDirectory project.file('run')
+
+                // Recommended logging data for a userdev environment
+                // The markers can be added/removed as needed separated by commas.
+                // "SCAN": For mods scan.
+                // "REGISTRIES": For firing of registry events.
+                // "REGISTRYDUMP": For getting the contents of all registries.
+                property 'forge.logging.markers', 'REGISTRIES'
+
+                // Recommended logging level for the console
+                // You can set various levels here.
+                // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+                property 'forge.logging.console.level', 'debug'
+
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+                // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+                args '--mod', 'createutilities', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+                mods {
+                    createutilities {
+                        source sourceSets.main
+                    }
+                }
+            }
+        }
+    }
+
+
+// Include resources generated by data generators.
+    sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+
     configurations {
         shade
     }
 
     dependencies {
+        implementation 'org.jetbrains:annotations:22.0.0'
         // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft' it is assumed
         // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
         // The userdev artifact is a special name and will get all sorts of transformations applied to it.
         minecraft 'net.minecraftforge:forge:1.18.2-40.1.52'
-        implementation fg.deobf("com.simibubi.create:Create:mc1.18.2_v0.4.1+125")
-        implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:1.18-0.6.3.81")
+
+        //   compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
+
+        //  runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+
+        implementation fg.deobf("com.simibubi.create:Create:mc1.18.2_v${create_version}")
+        implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:1.18-${flywheel_version}")
 
         // Real mod deobf dependency examples - these get remapped to your current mappings
-//    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
-        // runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
+
         // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
 
         // Examples using mod jars from ./libs
         // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-        def registrate = "com.tterrag.registrate:Registrate:MC1.18.2-1.1.2"
+        def registrate = "com.tterrag.registrate:Registrate:MC${registrate_version}"
         implementation fg.deobf(registrate)
         shade registrate
         // For more info...
@@ -201,6 +219,12 @@ repositories {
 
         annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     }
+    mixin {
+        add sourceSets.main, "createutilities.refmap.json"
+
+        config "createutilities.mixins.json"
+    }
+
 
 // Example for how to get properties into the manifest for reading at runtime.
     jar {
@@ -210,12 +234,40 @@ repositories {
                     "Specification-Vendor"    : "FallenReaper",
                     "Specification-Version"   : "1", // We are version 1 of ourselves
                     "Implementation-Title"    : project.name,
-                    "Implementation-Version"  : project.jar.archiveVersion,
+                    "Implementation-Version"  : "${version}",
                     "Implementation-Vendor"   : "FallenReaper",
-                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    "MixinConfigs": "createutilities.mixins.json"
             ])
         }
     }
+    shadowJar {
+        classifier = ''
+        configurations = [project.configurations.shade]
+        relocate 'com.tterrag.registrate', 'com.fallenreaper.createutilities.repack.registrate'
+    }
 
+    reobf {
+        shadowJar {}
+    }
+
+    artifacts {
+        archives jar, shadowJar
+    }
+
+    publishing {
+        tasks.publish.dependsOn 'build'
+        publications {
+            mavenJava(MavenPublication) {
+                artifact shadowJar
+            }
+        }
+
+        repositories {
+            maven {
+                url "file:///${project.projectDir}/mcmodsrepo"
+            }
+        }
+    }
     jar.finalizedBy('reobfJar')
 }
