@@ -19,6 +19,7 @@ public class CUBlocks {
             .properties(BlockBehaviour.Properties::noOcclusion)
             .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag) //Dono what this tag means (contraption safe?).
+            .lang("sprinkler")
             .item().transform(customItemModel())
             .register();
     public static void register() {

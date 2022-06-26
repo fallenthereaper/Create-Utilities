@@ -12,7 +12,6 @@ public class CUBlockEntities {
             .instance(() -> SprinklerInstance::new, false)
             .validBlocks(CUBlocks.SPRINKLER)
             .renderer(() -> SprinklerRenderer::new)
-
             .register();
     public static void register() {}
 }

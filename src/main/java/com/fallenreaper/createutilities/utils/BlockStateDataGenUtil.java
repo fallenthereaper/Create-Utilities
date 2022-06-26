@@ -34,19 +34,6 @@ public class BlockStateDataGenUtil {
                     .getExistingFile(prov.modLoc("block/" + ctx.getName() + "/block" + (blockState.getValue(AbstractFurnaceBlock.LIT) ? "_lit" : ""))));
         }
 
-        public static <T extends Block> void torsionSpringBlockstate(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider prov,
-                                                                     Function<BlockState, ModelFile> modelFunc, boolean uvLock) {
-            prov.getVariantBuilder(ctx.getEntry())
-                    .forAllStatesExcept(state -> {
-                        Direction.Axis axis = state.getValue(BlockStateProperties.AXIS);
-                        return ConfiguredModel.builder()
-                                .modelFile(modelFunc.apply(state))
-                                .uvLock(uvLock)
-                                .rotationX(axis == Direction.Axis.Y ? 90 : 0)
-                                .rotationY(axis == Direction.Axis.X ? 90 : 0)
-                                .build();
-                    }, BlockStateProperties.WATERLOGGED);
-        }
 
         public static <T extends Block> void facingBlockstate(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider prov,String modelPath) {
             prov.directionalBlock(ctx.getEntry(),
