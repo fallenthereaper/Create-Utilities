@@ -30,6 +30,9 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
         if (!(te instanceof SprinklerBlockEntity))
             return;
 
+        if (Backend.canUseInstancing(te.getLevel()))
+            return;
+
         float time = AnimationTickHolder.getRenderTime(te.getLevel());
         float speed = te.getSpeed();
         if (speed > 0)
@@ -44,14 +47,13 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
         Direction direction = Direction.UP;
         VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
         int lightInFront = LevelRenderer.getLightColor(te.getLevel(), te.getBlockPos().relative(direction));
-        if (!Backend.isOn()) {
 
             SuperByteBuffer model =
                     CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
             KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, vb, light);
 
             kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
-        }
+
 
 
     }

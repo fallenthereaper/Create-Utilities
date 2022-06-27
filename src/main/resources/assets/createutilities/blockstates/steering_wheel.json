@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "createutilities:block/steering_wheel/steering_wheel",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "createutilities:block/steering_wheel/steering_wheel",
+      "x": -90
+    },
+    "facing=north": {
+      "model": "createutilities:block/steering_wheel/steering_wheel"
+    },
+    "facing=south": {
+      "model": "createutilities:block/steering_wheel/steering_wheel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "createutilities:block/steering_wheel/steering_wheel",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "createutilities:block/steering_wheel/steering_wheel",
+      "y": 90
+    }
+  }
+}

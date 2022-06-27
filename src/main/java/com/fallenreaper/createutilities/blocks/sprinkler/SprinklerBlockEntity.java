@@ -362,7 +362,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         // MutableBoundingBox boundingBox = new MutableBoundingBox(worldPosition.offset(-getRadius(), -1, -getRadius()), worldPosition.offset(getRadius(), -1, getRadius()));
         // Farmland hydration & plants growth logic
-        for (BlockPos blockPositions : BlockPos.randomBetweenClosed(new Random(), 10, globalBlockPos.getX() - getRadius(), globalBlockPos.getY() - 1, globalBlockPos.getZ() - getRadius(), globalBlockPos.getX() + getRadius(), globalBlockPos.getY() + 1, globalBlockPos.getZ() + getRadius())) {
+        for (BlockPos blockPositions : BlockPos.randomBetweenClosed(new Random(), 10, globalBlockPos.getX() - getRadius(), (int) (globalBlockPos.getY() - aabb().getYsize()), globalBlockPos.getZ() - getRadius(), globalBlockPos.getX() + getRadius(), globalBlockPos.getY() + 1, globalBlockPos.getZ() + getRadius())) {
             BlockState blockState = getLevel().getBlockState(blockPositions);
 
             //ignore air

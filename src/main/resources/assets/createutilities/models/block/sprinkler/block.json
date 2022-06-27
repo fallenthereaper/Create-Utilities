@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [128, 128],
 	"textures": {
-		"1": "createaeronautics:block/sprinkler/sprinkler",
-		"particle": "createaeronautics:block/sprinkler/sprinkler"
+		"1": "createutilities:block/sprinkler/sprinkler",
+		"particle": "createutilities:block/sprinkler/sprinkler"
 	},
 	"elements": [
 		{
