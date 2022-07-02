@@ -1,0 +1,121 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"1": "createutilities:block/typewriter/punchcard",
+		"particle": "createutilities:block/typewriter/punchcard"
+	},
+	"elements": [
+		{
+			"from": [5, 6, 11],
+			"to": [11, 12, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0.5, -7.5]},
+			"faces": {
+				"north": {"uv": [12, 3.25, 13.5, 4.75], "texture": "#1"},
+				"east": {"uv": [15.5, 9.5, 15.75, 11], "texture": "#1"},
+				"south": {"uv": [14, 6, 15.5, 7.5], "texture": "#1"},
+				"west": {"uv": [14.25, 2.5, 14.5, 4], "texture": "#1"},
+				"up": {"uv": [13.75, 5.25, 15.25, 5.5], "texture": "#1"}
+			}
+		}
+	],
+	"groups": [
+		0,
+		{
+			"name": "reader",
+			"origin": [-6, 10, 6.5],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone2",
+			"origin": [-6, 3, -4],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone3",
+			"origin": [-3, 3, -4],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone4",
+			"origin": [0, 3, -4],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone5",
+			"origin": [3, 3, -4],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone6",
+			"origin": [6, 2, -4],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "pointer",
+			"origin": [0, 4.25, -1.2],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone7",
+			"origin": [1.5, 3, -2],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone8",
+			"origin": [-1.5, 3, -2],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "blueprint",
+			"origin": [0, 9, 5.5],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone10",
+			"origin": [4.5, 3, -2],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone11",
+			"origin": [-4.5, 3, -2],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "tape",
+			"origin": [-2, 5, 2],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone13",
+			"origin": [0, 2, -6.1],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "transmitter",
+			"origin": [-15, -1.5, -6.5],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "bone12",
+			"origin": [0, 8, 0.5],
+			"color": 0,
+			"children": []
+		}
+	]
+}
