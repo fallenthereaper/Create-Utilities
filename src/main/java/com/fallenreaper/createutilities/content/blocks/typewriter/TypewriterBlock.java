@@ -8,8 +8,8 @@ import com.simibubi.create.foundation.block.ITE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -44,21 +44,36 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
 
 
         ItemStack stack = player.getItemInHand(handIn);
-
+        if (!worldIn.isClientSide && worldIn.getBlockEntity(pos) instanceof final TypewriterBlockEntity be && !stack.is(AllItems.CRAFTING_BLUEPRINT.get())) {
+            withTileEntityDo(worldIn, pos,
+                    typewriter -> NetworkHooks.openGui((ServerPlayer) player, typewriter, typewriter::sendToContainer));
+        }
         TypewriterBlockEntity te = (TypewriterBlockEntity) worldIn.getBlockEntity(pos);
+        /*
         if(!te.hasBlueprintIn()) {
             if(stack.getItem() == AllItems.CRAFTING_BLUEPRINT.get()) {
                 if(te.getLevel().isClientSide)
                     return InteractionResult.SUCCESS;
+                player.playSound(SoundEvents.COMPOSTER_FILL, 1f, 1f);
                 te.inventory.insertItem(0, stack.split(1), false);
             }
         } else {
-            if(stack.isEmpty() || stack.is(Items.AIR)) {
+            if(stack.isEmpty()) {
                 ItemStack stack1 = te.inventory.extractItem(0, 1, false);
+                System.out.println(stack1.getItem());
                 player.setItemInHand(handIn, stack1);
                 return InteractionResult.CONSUME;
             }
-        }
+
+
+
+            }
+
+         */
+
+
+
+
       /*  if(stack.getItem() == AllItems.CRAFTING_BLUEPRINT.get() && worldIn.isClientSide()) {
            /* withTileEntityDo(worldIn, pos,
                     typewriter -> NetworkHooks.openGui((ServerPlayer) player, typewriter, typewriter::sendToContainer));
@@ -85,12 +100,15 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
     }
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.TYPEWRITER.get(Direction.NORTH);
+        return CUBlockShapes.TYPEWRITER.get(pState.getValue(HORIZONTAL_FACING));
     }
 
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moving) {
+        TypewriterBlockEntity te = (TypewriterBlockEntity) world.getBlockEntity(pos);
+
+
         if (state.hasBlockEntity() && (!newState.hasBlockEntity() || !(newState.getBlock() instanceof TypewriterBlock)))
             world.removeBlockEntity(pos);
     }

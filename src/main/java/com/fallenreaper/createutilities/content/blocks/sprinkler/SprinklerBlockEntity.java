@@ -39,7 +39,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -56,30 +55,8 @@ import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlo
 
 public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGoggleInformation, RadiusProvider<Integer>, IContainerHelper<FluidStack> {
 
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return super.serializeNBT();
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-    }
-
-    @NotNull
-    @Override
-    public IModelData getModelData() {
-        return super.getModelData();
-    }
-
     public enum State {
-        HYDRATING, AWAITING, LOADED
+        HYDRATING, NONE, LOADED
     }
 
     public FluidStack defaultWaterStack = new FluidStack(Fluids.WATER, getFluidAmount());
@@ -90,7 +67,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     private static final int maxTankCapacity = 1500;
     SmartFluidTankBehaviour fluidTankBehaviour;
     public State currentState;
-    float waterUsageThisTick;
+    float fluidUsagePerTick;
     boolean isReadyToHydrate;
     float generatedSpeed;
     public int radius;
@@ -99,7 +76,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     public SprinklerBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
 
-        this.currentState = State.AWAITING;
+        this.currentState = State.NONE;
         setLazyTickRate(10);
     }
 
@@ -132,27 +109,27 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     @Override
     public boolean isWater() {
         FluidStack fluidStack = new FluidStack(Fluids.WATER, getFluidAmount());
-        if (getCointainedFluid().isEmpty())
+        if (getContainedFluid().isEmpty())
             return false;
 
-        return getCointainedFluid().isFluidEqual(fluidStack) && !getCointainedFluid().isEmpty();
+        return getContainedFluid().isFluidEqual(fluidStack) && !getContainedFluid().isEmpty();
     }
     @Override
     public boolean isLava() {
         FluidStack fluidStack = new FluidStack(Fluids.LAVA, getFluidAmount());
-        if (getCointainedFluid().isEmpty())
+        if (getContainedFluid().isEmpty())
             return false;
 
-        return getCointainedFluid().isFluidEqual(fluidStack) && !getCointainedFluid().isEmpty();
+        return getContainedFluid().isFluidEqual(fluidStack) && !getContainedFluid().isEmpty();
     }
 
 
     protected boolean emptyContainer() {
-        return this.currentState != State.LOADED && getCointainedFluid().isEmpty();
+        return this.currentState != State.LOADED && getContainedFluid().isEmpty();
     }
 
     protected boolean checkFluidIn() {
-        return !getCointainedFluid().isEmpty();
+        return !getContainedFluid().isEmpty();
 
     }
 
@@ -184,13 +161,13 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                 this.currentState = State.HYDRATING;
             }
         } else if (!isHydrating() && !isLoaded()) {
-            this.currentState = State.AWAITING;
+            this.currentState = State.NONE;
             reset();
-        } else if (getCointainedFluid().isEmpty()) {
-            this.currentState = State.AWAITING;
+        } else if (getContainedFluid().isEmpty()) {
+            this.currentState = State.NONE;
         }
         if (!isServer) {
-            if (isHydrating() && !getCointainedFluid().isEmpty()) {
+            if (isHydrating() && !getContainedFluid().isEmpty()) {
                 initiateParticles();
             }
         } else if (isServer) {
@@ -213,8 +190,8 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                 return;
             for (LivingEntity entity : entitiesWithinAABB) {
 
-                if (!getCointainedFluid().isEmpty()) {
-                    List<MobEffectInstance> list = PotionUtils.getPotion(getCointainedFluid().getOrCreateTag()).getEffects();
+                if (!getContainedFluid().isEmpty()) {
+                    List<MobEffectInstance> list = PotionUtils.getPotion(getContainedFluid().getOrCreateTag()).getEffects();
                     if (Math.sqrt(entity.distanceToSqr(new Vec3(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()))) < getRadius()) {
                         if (lava)
                             entity.hurt(DamageSource.ON_FIRE, 2.0f);
@@ -266,7 +243,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         compound.putString("State", stateString);
         NBTHelper.writeEnum(compound, "StateIn", currentState);
         //  compound.putString("State", compound.getInt("StateInteger") == 1 ? "Awaiting" : compound.getInt("StateInteger") == 0 ? "Hydrating" : "Loaded");
-        if (isHydrating() && !getCointainedFluid().isEmpty() && clientPacket) {
+        if (isHydrating() && !getContainedFluid().isEmpty() && clientPacket) {
             compound.putBoolean("Particle", true);
             shouldSpawnParticles = false;
         }
@@ -336,12 +313,12 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     protected void fluidConsumptionHandler() {
         if (isHydrating()) {
             if (ticks == 0) {
-                waterUsageThisTick += 0.25F;
+                fluidUsagePerTick += 0.25F;
                 // ticks -= 72000*10;
             }
         }
 
-        fluidTankBehaviour.getPrimaryHandler().drain((Math.abs(Math.round(waterUsageThisTick * Math.abs((getSpeed() / 256)) * 2))), IFluidHandler.FluidAction.EXECUTE);
+        fluidTankBehaviour.getPrimaryHandler().drain((Math.abs(Math.round(fluidUsagePerTick * Math.abs((getSpeed() / 256)) * 2))), IFluidHandler.FluidAction.EXECUTE);
 
 
     }
@@ -456,7 +433,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                 .append("Sprinkler Info:"));
 
         TranslatableComponent mb = Lang.translate("generic.unit.millibuckets");
-        FluidStack fluidStackIn = getCointainedFluid();
+        FluidStack fluidStackIn = getContainedFluid();
         Component fluidName = new TranslatableComponent(fluidStackIn.getTranslationKey()).withStyle(ChatFormatting.GRAY);
         Component indent = new TextComponent(spacing + " ");
         Component contained = new TextComponent(String.valueOf(fluidStackIn.getAmount())).append(mb).withStyle(ChatFormatting.GOLD);
@@ -464,7 +441,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         Component capacity = new TextComponent(String.valueOf(getTankMaxCapacity())).append(mb).withStyle(ChatFormatting.DARK_GRAY);
         Component percentage = new TextComponent((getFillState() + "%")).withStyle(ChatFormatting.DARK_GRAY);
         Component percentage100 = new TextComponent(100 + "%").withStyle(ChatFormatting.DARK_GREEN);
-        if (hasFluidIn && !getCointainedFluid().isEmpty()) {
+        if (hasFluidIn && !getContainedFluid().isEmpty()) {
             tooltip.add(indent.plainCopy()
                     .append(fluidName));
             tooltip.add(indent.plainCopy()
@@ -540,7 +517,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
 
     @Override
-    public FluidStack getCointainedFluid() {
+    public FluidStack getContainedFluid() {
         return  fluidTankBehaviour.getPrimaryHandler().getFluid();
     }
 
@@ -566,7 +543,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
             double zOffset = sinA / 2;
 
             float acceleration = Math.min(Math.abs(getSpeed()) / 128f, 0.5f);
-            ParticleOptions particle = FluidFX.getFluidParticle(getCointainedFluid());
+            ParticleOptions particle = FluidFX.getFluidParticle(getContainedFluid());
 
             for (int k = 0; k <= 4; k++) {
                 float beta = k * ((float) Math.PI) / (45.0F);
@@ -595,11 +572,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         return super.getCapability(cap, side);
     }
 
-    @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        return super.getCapability(cap);
-    }
 
     @Override
     protected boolean isFluidHandlerCap(Capability<?> cap) {

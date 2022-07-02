@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class BlockStateDataGenUtil {
     public class BlockStateUtils {
-
+//* from create alloyed
         public static <T extends DirectionalAxisKineticBlock> void directionalPoweredAxisBlockstate(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider prov) {
             BlockStateGen.directionalAxisBlock(ctx, prov, (blockState, vertical) -> prov.models()
                     .getExistingFile(prov.modLoc("block/" + ctx.getName() + "/" + (vertical ? "vertical" : "horizontal") + (blockState.getValue(BlockStateProperties.POWERED) ? "_powered" : ""))));

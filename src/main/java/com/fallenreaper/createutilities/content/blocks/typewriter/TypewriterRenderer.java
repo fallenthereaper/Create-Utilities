@@ -4,6 +4,7 @@ import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.AllBlockPartials;
+import com.simibubi.create.AllItems;
 import com.simibubi.create.content.curiosities.toolbox.ToolboxBlock;
 import com.simibubi.create.content.curiosities.toolbox.ToolboxTileEntity;
 import com.simibubi.create.foundation.render.CachedBufferer;

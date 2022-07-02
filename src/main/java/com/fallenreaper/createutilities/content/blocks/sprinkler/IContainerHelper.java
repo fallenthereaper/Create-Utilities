@@ -9,7 +9,7 @@ public interface IContainerHelper<T extends FluidStack> {
 
     boolean isLoaded();
 
-    T getCointainedFluid();
+    T getContainedFluid();
 
 
 

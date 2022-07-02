@@ -47,8 +47,8 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
             return ItemStack.EMPTY;
         ItemStack stack = clickedSlot.getItem();
 
-        if (pIndex < 5) {
-            moveItemStackTo(stack, 5, slots.size(), false);
+        if (pIndex < 3) {
+            moveItemStackTo(stack, 2, slots.size(), false);
         } else {
             if (moveItemStackTo(stack, 0, 1, false) || moveItemStackTo(stack, 2, 3, false)
                     || moveItemStackTo(stack, 4, 5, false))
@@ -61,6 +61,7 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
     @Override
     protected void initAndReadInventory(TypewriterBlockEntity contentHolder) {
 
+
     }
     @Override
     public boolean canDragTo(Slot slot) {
@@ -71,18 +72,19 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
         return new TypewriterContainer(CUContainerTypes.TYPEWRITER_MENUTYPE.get(), id, inv, te);
     }
 
+
+
     @Override
     protected void addSlots() {
         int x = 0;
         int y = 0;
 
-        addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 15, y + 65));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 1, x + 171, y + 65));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 2, x + 134, y + 19));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 3, x + 174, y + 19));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 4, x + 15, y + 19));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 173, y + 26));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 1, x + 173, y + 75));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 2, x + 46, y + 22));
 
-        addPlayerSlots(37, 161);
+
+        addPlayerSlots(8, 148);
     }
 
     @Override

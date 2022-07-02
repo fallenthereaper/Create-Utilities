@@ -76,7 +76,7 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
                     if (!player.isCreative())
                         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET, 1));
 
-                    te.getCointainedFluid().shrink(Math.min(te.getCointainedFluid().getAmount(), 1000));
+                    te.getContainedFluid().shrink(Math.min(te.getContainedFluid().getAmount(), 1000));
                     if (te.isLava()) {
                         player.playSound(SoundEvents.BUCKET_EMPTY_LAVA, 1f, 1f);
 

@@ -38,6 +38,7 @@ public class CreateUtilities {
     public CreateUtilities() {
 
         CUBlocks.register();
+        CUItems.register();
         CUBlockEntities.register();
         CUBlockPartials.clientInit();
         CUContainerTypes.register();
