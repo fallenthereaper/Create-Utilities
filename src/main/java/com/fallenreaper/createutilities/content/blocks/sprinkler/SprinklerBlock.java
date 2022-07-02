@@ -1,11 +1,9 @@
-package com.fallenreaper.createutilities.blocks.sprinkler;
+package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
+import com.fallenreaper.createutilities.content.blocks.steering_wheel.IRayTraceProvider;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
-import com.simibubi.create.AllTileEntities;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
-import com.simibubi.create.content.contraptions.base.IRotate;
-import com.simibubi.create.content.contraptions.fluids.actors.SpoutTileEntity;
 import com.simibubi.create.content.contraptions.processing.EmptyingByBasin;
 import com.simibubi.create.content.contraptions.wrench.WrenchItem;
 import com.simibubi.create.foundation.block.ITE;
@@ -21,6 +19,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -58,6 +57,8 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         BlockEntity tileentity = worldIn.getBlockEntity(pos);
+        IRayTraceProvider r = (s, w, f, g) -> System.out.checkError();
+
         SprinklerBlockEntity te = (SprinklerBlockEntity) tileentity;
         ItemStack heldItem = player.getMainHandItem();
         if (heldItem.getItem() instanceof BlockItem
@@ -75,7 +76,7 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
                     if (!player.isCreative())
                         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET, 1));
 
-                    te.getCurrentFluidInTank().shrink(Math.min(te.getCurrentFluidInTank().getAmount(), 1000));
+                    te.getCointainedFluid().shrink(Math.min(te.getCointainedFluid().getAmount(), 1000));
                     if (te.isLava()) {
                         player.playSound(SoundEvents.BUCKET_EMPTY_LAVA, 1f, 1f);
 
@@ -129,7 +130,6 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
     }
 
 
-
     @Override
     public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
         if (pState.getValue(BlockStateProperties.WATERLOGGED)) {
@@ -162,8 +162,9 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
     public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
+
     protected InteractionResult tryExchange(Level worldIn, Player player, InteractionHand handIn, ItemStack heldItem,
-                                           SprinklerBlockEntity te) {
+                                            SprinklerBlockEntity te) {
         if (FluidHelper.tryEmptyItemIntoTE(worldIn, player, handIn, heldItem, te))
             return InteractionResult.SUCCESS;
         if (EmptyingByBasin.canItemBeEmptied(worldIn, heldItem))
@@ -176,11 +177,12 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
         builder.add(BlockStateProperties.WATERLOGGED);
         super.createBlockStateDefinition(builder);
     }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         FluidState fluidstate = context.getLevel()
                 .getFluidState(context.getClickedPos());
-        if(context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER) {
+        if (context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER) {
             return super.getStateForPlacement(context).setValue(BlockStateProperties.WATERLOGGED,
                     fluidstate.getType() == Fluids.WATER);
         }
@@ -190,7 +192,6 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
             return defaultBlockState().setValue(HORIZONTAL_FACING, prefferedSide);
         return super.getStateForPlacement(context);
     }
-
 
 
     @Override
@@ -206,7 +207,6 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
     }
 
 
-
     @Override
     public boolean showCapacityWithAnnotation() {
         return true;
@@ -214,8 +214,8 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
 
 
     @Override
-    public SpeedLevel getMinimumRequiredSpeedLevel() {
-        return SpeedLevel.of(16);
+    public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
+        return super.onSneakWrenched(state, context);
     }
 
     @Override
@@ -227,10 +227,12 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
     public Class<SprinklerBlockEntity> getTileEntityClass() {
         return SprinklerBlockEntity.class;
     }
+
     @Override
     public BlockEntityType<? extends SprinklerBlockEntity> getTileEntityType() {
         return CUBlockEntities.SPRINKLER.get();
     }
+
     @Override
     public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
         return ITE.super.newBlockEntity(p_153215_, p_153216_);

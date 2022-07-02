@@ -1,21 +1,4 @@
-package com.fallenreaper.createutilities.blocks.steering_wheel;
-
-import com.fallenreaper.createutilities.index.CUBlocks;
-import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.content.contraptions.base.GeneratingKineticTileEntity;
-
-import com.simibubi.create.content.contraptions.base.KineticTileEntity;
-import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
-import com.simibubi.create.foundation.tileEntity.TileEntityBehaviour;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+package com.fallenreaper.createutilities.content.blocks.steering_wheel;
 
 /*
 public class SteeringWheelBlockEntity extends GeneratingKineticTileEntity {

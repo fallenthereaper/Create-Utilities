@@ -1,9 +1,11 @@
 package com.fallenreaper.createutilities.index;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.blocks.sprinkler.SprinklerInstance;
-import com.fallenreaper.createutilities.blocks.sprinkler.SprinklerRenderer;
-import com.fallenreaper.createutilities.blocks.sprinkler.SprinklerBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInstance;
+import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerRenderer;
+import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterRenderer;
 import com.simibubi.create.repack.registrate.util.entry.BlockEntityEntry;
 
 public class CUBlockEntities {
@@ -13,5 +15,13 @@ public class CUBlockEntities {
             .validBlocks(CUBlocks.SPRINKLER)
             .renderer(() -> SprinklerRenderer::new)
             .register();
-    public static void register() {}
+
+    public static final BlockEntityEntry<TypewriterBlockEntity> TYPEWRITER = CreateUtilities.registrate()
+            .tileEntity("typewriter", TypewriterBlockEntity::new)
+            .validBlocks(CUBlocks.TYPEWRITER)
+            .renderer(() -> TypewriterRenderer::new)
+            .register();
+
+    public static void register() {
+    }
 }

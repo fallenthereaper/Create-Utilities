@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.blocks.sprinkler;
+package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 
 import com.fallenreaper.createutilities.index.CUBlockPartials;
@@ -10,6 +10,7 @@ import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.base.flwdata.RotatingData;
 import com.simibubi.create.content.contraptions.relays.encased.ShaftInstance;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class SprinklerInstance extends ShaftInstance implements DynamicInstance {
     protected final SprinklerBlockEntity tile;
@@ -29,10 +30,16 @@ public class SprinklerInstance extends ShaftInstance implements DynamicInstance 
     }
 
     @Override
+    protected BlockState getRenderedBlockState() {
+        return super.getRenderedBlockState();
+    }
+
+    @Override
     public void updateLight() {
         super.updateLight();
         relight(pos, propagatorModelData);
     }
+
     @Override
     public void remove() {
         super.remove();

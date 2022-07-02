@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "createutilities.refmap.json",
   "mixins": [
+    "FarmlandSurviveMixin"
   ],
   "client": [
   ],

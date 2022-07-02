@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.blocks.sprinkler;
+package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.jozufozu.flywheel.backend.Backend;
@@ -26,7 +26,7 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
 
 
     @Override
-     protected void renderSafe(KineticTileEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
+    protected void renderSafe(KineticTileEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         if (!(te instanceof SprinklerBlockEntity))
             return;
 
@@ -48,12 +48,11 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
         VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
         int lightInFront = LevelRenderer.getLightColor(te.getLevel(), te.getBlockPos().relative(direction));
 
-            SuperByteBuffer model =
-                    CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
-            KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, vb, light);
+        SuperByteBuffer model =
+                CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
+        KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, vb, light);
 
-            kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
-
+        kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
 
 
     }

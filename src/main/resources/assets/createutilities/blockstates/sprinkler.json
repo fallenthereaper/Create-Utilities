@@ -2,7 +2,6 @@
   "variants": {
     "facing=north": {
       "model": "createutilities:block/sprinkler/block"
-
     },
     "facing=south": {
       "model": "createutilities:block/sprinkler/block",

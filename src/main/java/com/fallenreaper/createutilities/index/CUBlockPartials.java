@@ -7,13 +7,15 @@ import net.minecraft.resources.ResourceLocation;
 public class CUBlockPartials {
 
     public static final PartialModel
-          //  STEERING_WHEEL= getPartialModel("steering_wheel/steering_wheel"),
-            SPRINKLER_PROPAGATOR= getPartialModel("sprinkler/leaker");
+            //  STEERING_WHEEL= getPartialModel("steering_wheel/steering_wheel"),
+            SPRINKLER_PROPAGATOR = getPartialModel("sprinkler/leaker"),
+            SCHEMATIC_MODEL = getPartialModel("typewriter/schematic");
 
     public static PartialModel getPartialModel(String path) {
-        ResourceLocation L = new ResourceLocation(CreateUtilities.ID, "block/" + path);
-        return new PartialModel(L);
+        ResourceLocation resourceLocation = new ResourceLocation(CreateUtilities.ID, "block/" + path);
+        return new PartialModel(resourceLocation);
     }
+
     public static void clientInit() {
         // init static fields
     }

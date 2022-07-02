@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.blocks.sprinkler;
+package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 import com.jozufozu.flywheel.repack.joml.Vector3d;
 import net.minecraft.core.BlockPos;
@@ -7,12 +7,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.FarmlandWaterManager;
-import net.minecraftforge.common.ForgeHooks;
-
-import java.util.Random;
 
 
 public class SprinklerGrowHelper {
@@ -32,8 +28,8 @@ public class SprinklerGrowHelper {
 
         if (getMoistureLevel < 7) {
 
-                    worldIn.setBlock(blockPos, state.setValue(FarmBlock.MOISTURE, 7), 2);
-                    FarmlandWaterManager.addAABBTicket(worldIn, aabb);
+            worldIn.setBlock(blockPos, state.setValue(FarmBlock.MOISTURE, 7), 2);
+            FarmlandWaterManager.addAABBTicket(worldIn, aabb);
 
         }
 
@@ -42,10 +38,10 @@ public class SprinklerGrowHelper {
 
     public static boolean isInsideCircle(double radius, BlockPos blockPos, BlockPos target) {
         Vector3d centerPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        Vector3d targetPos = new Vector3d(target.getX(),target.getY(), target.getZ());
+        Vector3d targetPos = new Vector3d(target.getX(), target.getY(), target.getZ());
         double distance = (int) centerPos.distance(targetPos);
 
-       return distance <= radius;
+        return distance <= radius;
 
     }
    /* public static void createBoundingBox(float radius, BlockPos startPos, int height, World worldIn, SprinklerTileEntity te) {
@@ -108,23 +104,23 @@ public class SprinklerGrowHelper {
             }
         }*/
 
-       /* if (!world.isClientSide()) {
-            if (Math.random() <= this.chance) {
-                blocks = BlockPos.betweenClosedStream(pos.offset(-range, -range, -range), pos.offset(range, range, range));
-                blocks.forEach(aoePos -> {
-                    BlockState state = world.getBlockState(aoePos);
-                    Block plantBlock = state.getBlock();
-                    if (plantBlock instanceof IGrowable || plantBlock instanceof IPlantable || plantBlock == Blocks.MYCELIUM || plantBlock == Blocks.CHORUS_FLOWER) {
-                        state.randomTick((ServerWorld) world, aoePos, random);
-                    }
-                });
+    /* if (!world.isClientSide()) {
+         if (Math.random() <= this.chance) {
+             blocks = BlockPos.betweenClosedStream(pos.offset(-range, -range, -range), pos.offset(range, range, range));
+             blocks.forEach(aoePos -> {
+                 BlockState state = world.getBlockState(aoePos);
+                 Block plantBlock = state.getBlock();
+                 if (plantBlock instanceof IGrowable || plantBlock instanceof IPlantable || plantBlock == Blocks.MYCELIUM || plantBlock == Blocks.CHORUS_FLOWER) {
+                     state.randomTick((ServerWorld) world, aoePos, random);
+                 }
+             });
 
-                return ActionResultType.PASS;
-            }
-        }
+             return ActionResultType.PASS;
+         }
+     }
 
-        return ActionResultType.PASS;
-    }*/
+     return ActionResultType.PASS;
+ }*/
  /*   public boolean isMaxAge(BlockState pState) {
 
         return pState.getValue(getAgeProperty(pState)) >= this.getMaxAgeIn(pState);
@@ -133,10 +129,10 @@ public class SprinklerGrowHelper {
     public static boolean checkForPlants(BlockState blockState) {
         Block foundBlock = blockState.getBlock();
 
-       return foundBlock instanceof BonemealableBlock;
+        return foundBlock instanceof BonemealableBlock;
     }
 
-    public static double randomWithRange(double min, double max){
+    public static double randomWithRange(double min, double max) {
 
         double range = (max - min) + 1;
         return (Math.random() * range) + min;
