@@ -35,6 +35,7 @@ public class TypewriterRenderer extends SmartTileEntityRenderer<TypewriterBlockE
        blueprint.renderInto(ms, buffer.getBuffer(RenderType.solid()));
    }
 
+
         VertexConsumer builder = buffer.getBuffer(RenderType.cutoutMipped());
 
 

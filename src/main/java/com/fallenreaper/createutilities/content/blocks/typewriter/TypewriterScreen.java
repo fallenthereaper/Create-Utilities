@@ -3,7 +3,6 @@ package com.fallenreaper.createutilities.content.blocks.typewriter;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.GuiTextures;
-import com.fallenreaper.createutilities.utils.ModIcons;
 import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
@@ -45,25 +44,25 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         int y = topPos;
         TypewriterBlockEntity te = menu.contentHolder;
         BG.render(pPoseStack, x, y, this);
-        font.draw(pPoseStack, title, x + 15, y + 4, 0x442000);
+        font.draw(pPoseStack, title, x + 15, y + 3, 0x442000);
 
         int invX = leftPos;
         int invY = 150 - 15;
         clickIndicator.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         renderPlayerInventory(pPoseStack, invX, invY);
-        renderFuelBar(pPoseStack, x, y, te.fuelLevel + pPartialTick);
+        renderFuelBar(pPoseStack, x, y, te.fuelLevel);
         renderModel(pPoseStack, x + BG.width + 50, y + BG.height + 10, pPartialTick);
-
 
     }
 
     protected void renderFuelBar(PoseStack matrixStack, int x, int y, float amount) {
         GuiTextures sprite = GuiTextures.ARROW_INDICATOR;
+
         sprite.bind();
-        blit(matrixStack, x + 147, y + 3, sprite.startX, sprite.startY, sprite.width, (int) (sprite.height * amount));
+        blit(matrixStack, x + 147, y + 8, sprite.startX, sprite.startY, sprite.width, (int) (sprite.height * amount));
     }
 
-    private void renderModel(PoseStack ms, int x, int y, float partialTicks) {
+    protected void renderModel(PoseStack ms, int x, int y, float partialTicks) {
         TransformStack.cast(ms)
                 .pushPose()
                 .translate(x, y, 100)
@@ -99,21 +98,36 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         setWindowSize(30 + BG.width, BG.height + PLAYER.height - 10);
         setWindowOffset(-11, 0);
         super.init();
-        confirmButton = new IconButton(leftPos + 118 + BG.width - 121, topPos + BG.height - 65, AllIcons.I_ADD);
-        clickIndicator = new Indicator(x + 111, y + 79, TextComponent.EMPTY);
-        clickIndicator.state = Indicator.State.RED;
-        confirmButton.setIcon(ModIcons.I_CONFIRM);
-        confirmButton.withCallback(() -> {
-            shouldConsume = true;
-        });
+        confirmButton = new IconButton(leftPos + 118 + BG.width - 154, topPos + BG.height - 91+4, AllIcons.I_PLAY);
+        clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 98+4, new TextComponent("Off"));
+        clickIndicator.state = Indicator.State.OFF;
+     confirmButton.active = false;
+
+   if(menu.contentHolder.hasBlueprintIn()) {
+
+       confirmButton.active = true;
+       menu.contentHolder.notifyUpdate();
+
+   }
+     callBacks();
+
+
         closeButton = new IconButton(leftPos + 30 + BG.width - 33, topPos + BG.height - (42 - 17), AllIcons.I_CONFIRM);
         closeButton.withCallback(() -> {
+            minecraft.player.closeContainer();
+        }); closeButton.withCallback(() -> {
             minecraft.player.closeContainer();
         });
         addRenderableWidget(closeButton);
         addRenderableWidget(confirmButton);
         addRenderableWidget(clickIndicator);
 
+    }
+    public void callBacks() {
+        confirmButton.withCallback(() -> {
+
+        });
 
     }
+
 }

@@ -9,7 +9,8 @@ public class CUBlockPartials {
     public static final PartialModel
             //  STEERING_WHEEL= getPartialModel("steering_wheel/steering_wheel"),
             SPRINKLER_PROPAGATOR = getPartialModel("sprinkler/leaker"),
-            SCHEMATIC_MODEL = getPartialModel("typewriter/schematic");
+            SCHEMATIC_MODEL = getPartialModel("typewriter/schematic"),
+         PUNCHCARD = getPartialModel("typewriter/punchcard");
 
     public static PartialModel getPartialModel(String path) {
         ResourceLocation resourceLocation = new ResourceLocation(CreateUtilities.ID, "block/" + path);

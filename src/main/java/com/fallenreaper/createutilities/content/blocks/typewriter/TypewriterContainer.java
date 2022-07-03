@@ -1,12 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.typewriter;
 
 import com.fallenreaper.createutilities.index.CUContainerTypes;
-import com.simibubi.create.AllContainerTypes;
-import com.simibubi.create.content.curiosities.toolbox.ToolboxTileEntity;
-import com.simibubi.create.content.schematics.block.SchematicannonContainer;
-import com.simibubi.create.content.schematics.block.SchematicannonTileEntity;
 import com.simibubi.create.foundation.gui.container.ContainerBase;
-import com.simibubi.create.repack.registrate.util.entry.MenuEntry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
@@ -78,11 +73,16 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
     protected void addSlots() {
         int x = 0;
         int y = 0;
+        int[] yOffsets = { y+20, y+ 49, y + 78};
 
-        addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 173, y + 26));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 1, x + 173, y + 75));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 2, x + 46, y + 22));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 4, x + 173, y + 30));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 5, x + 173, y + 79));
 
+            for (int i = 0; i < yOffsets.length; ++i) {
+
+                addSlot(new SlotItemHandler(contentHolder.inventory, i, x + 45, yOffsets[i]));
+
+        }
 
         addPlayerSlots(8, 148);
     }

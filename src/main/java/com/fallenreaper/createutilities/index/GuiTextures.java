@@ -24,7 +24,7 @@ public enum GuiTextures {
     public int width, height;
     public int startX, startY;
 
-    private GuiTextures(String location, int width, int height) {
+    GuiTextures(String location, int width, int height) {
         this(location, 0, 0, width, height);
     }
 

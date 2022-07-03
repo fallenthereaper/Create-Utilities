@@ -141,7 +141,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         this.hasFluidIn = true;
         this.currentState = State.LOADED;
-        ;
         // sendData();
     }
 
