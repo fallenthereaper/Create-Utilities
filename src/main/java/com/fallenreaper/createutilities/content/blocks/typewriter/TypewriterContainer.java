@@ -42,8 +42,8 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
             return ItemStack.EMPTY;
         ItemStack stack = clickedSlot.getItem();
 
-        if (pIndex < 3) {
-            moveItemStackTo(stack, 2, slots.size(), false);
+        if (pIndex < slots.size()) {
+            moveItemStackTo(stack, 0, slots.size(), false);
         } else {
             if (moveItemStackTo(stack, 0, 1, false) || moveItemStackTo(stack, 2, 3, false)
                     || moveItemStackTo(stack, 4, 5, false))
@@ -73,16 +73,16 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
     protected void addSlots() {
         int x = 0;
         int y = 0;
-        int[] yOffsets = { y+20, y+ 49, y + 78};
+        int[] yOffsets = { y+20, //y+ 49, y + 78
+                //
+                };
 
         addSlot(new SlotItemHandler(contentHolder.inventory, 4, x + 173, y + 30));
         addSlot(new SlotItemHandler(contentHolder.inventory, 5, x + 173, y + 79));
 
-            for (int i = 0; i < yOffsets.length; ++i) {
+                addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 45, yOffsets[0]));
 
-                addSlot(new SlotItemHandler(contentHolder.inventory, i, x + 45, yOffsets[i]));
 
-        }
 
         addPlayerSlots(8, 148);
     }

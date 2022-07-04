@@ -25,6 +25,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     private IconButton closeButton;
     private IconButton confirmButton;
     protected Indicator clickIndicator;
+
     public boolean shouldConsume;
 
 
@@ -57,7 +58,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
 
     protected void renderFuelBar(PoseStack matrixStack, int x, int y, float amount) {
         GuiTextures sprite = GuiTextures.ARROW_INDICATOR;
-
+       sprite.startY = 0;
         sprite.bind();
         blit(matrixStack, x + 147, y + 8, sprite.startX, sprite.startY, sprite.width, (int) (sprite.height * amount));
     }
@@ -74,9 +75,9 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         GuiGameElement.of(CUBlocks.TYPEWRITER.getDefaultState())
                 .render(ms);
 
-        Slot slot = menu.slots.get(0);
+        Slot slot = menu.slots.get(4);
         ItemStack itemstack = slot.getItem();
-        if (!itemstack.isEmpty()) {
+        if (menu.contentHolder.hasBlueprintIn()) {
             GuiGameElement.of(CUBlockPartials.SCHEMATIC_MODEL)
                     .render(ms);
         }
@@ -101,10 +102,9 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         confirmButton = new IconButton(leftPos + 118 + BG.width - 154, topPos + BG.height - 91+4, AllIcons.I_PLAY);
         clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 98+4, new TextComponent("Off"));
         clickIndicator.state = Indicator.State.OFF;
-     confirmButton.active = false;
+        confirmButton.active = false;
 
    if(menu.contentHolder.hasBlueprintIn()) {
-
        confirmButton.active = true;
        menu.contentHolder.notifyUpdate();
 

@@ -8,7 +8,7 @@ import net.minecraft.world.phys.BlockHitResult;
 @FunctionalInterface
 public interface IRayTraceProvider {
 
-    boolean getRayTrace(BlockHitResult blockRayTraceResult, BlockPos pos, Level levelIn, BlockState state);
+    boolean  getRayTrace(BlockHitResult blockRayTraceResult, BlockPos pos, Level levelIn, BlockState state);
 
 }
 

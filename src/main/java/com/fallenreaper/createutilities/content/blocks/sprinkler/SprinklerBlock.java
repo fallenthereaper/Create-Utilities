@@ -57,7 +57,7 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         BlockEntity tileentity = worldIn.getBlockEntity(pos);
-        IRayTraceProvider r = (s, w, f, g) -> System.out.checkError();
+        IRayTraceProvider r = (s, w, f, g) -> true;
 
         SprinklerBlockEntity te = (SprinklerBlockEntity) tileentity;
         ItemStack heldItem = player.getMainHandItem();

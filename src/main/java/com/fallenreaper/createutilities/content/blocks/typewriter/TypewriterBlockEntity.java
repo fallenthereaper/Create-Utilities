@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, MenuProvider {
-    public float fuelLevel = 10/4;
+    public float fuelLevel;
     LazyOptional<IItemHandler> inventoryProvider;
     TypewriterItemHandler inventory;
 
@@ -37,14 +37,13 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
 
     }
     protected void refillFuelIfPossible() {
+      if(1-fuelLevel/128 < 1)
+          return;
 
-        if (1 - fuelLevel + 1 / 128f < getFuelAddedByGunPowder())
-            return;
-        if (inventory.getStackInSlot(2)
+        if (inventory.getStackInSlot(0)
                 .isEmpty())
             return;
-
-        inventory.getStackInSlot(2)
+        inventory.getStackInSlot(0)
                 .shrink(1);
         fuelLevel += getFuelAddedByGunPowder();
         sendData();
@@ -57,6 +56,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
         if (fuelLevel <= 0 ) {
             fuelLevel = 0;
         }
+       // fuelLevel -= getFuelUsageRate();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
         super.write(compound, clientPacket);
     }
     public double getFuelUsageRate() {
-        return  20 / 100f;
+        return  90 / 100f;
     }
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
@@ -112,7 +112,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
         super.onLoad();
     }
     public double getFuelAddedByGunPowder() {
-        return 20 / 100f;
+        return 90/100;
     }
 
 

@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.index;
 
 import com.fallenreaper.createutilities.CreateUtilities;
+import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlock;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlock;
 import com.fallenreaper.createutilities.grouptabs.CUItemTab;
@@ -34,6 +35,15 @@ public class CUBlocks {
             .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
             .tag(AllTags.AllBlockTags.WRENCH_PICKUP.tag)
             .lang("typewriter")
+            .item().transform(customItemModel())
+            .addLayer(() -> RenderType::cutoutMipped)
+            .defaultLoot()
+            .register();
+    public static final BlockEntry<BellowBlock> BELLOWS = REGISTRATE.block("bellow", BellowBlock::new)
+            .initialProperties(DefaultProperties::brassMetal)
+            .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
+            .tag(AllTags.AllBlockTags.WRENCH_PICKUP.tag)
+            .lang("bellow")
             .item().transform(customItemModel())
             .addLayer(() -> RenderType::cutoutMipped)
             .defaultLoot()

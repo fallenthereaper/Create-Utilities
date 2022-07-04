@@ -18,6 +18,9 @@ public class CUBlockShapes {
             .forDirectional(Direction.NORTH),
             TYPEWRITER = shape(0, 0, 0, 16, 3, 16)
                     .add(0, 3 , 7, 16 ,9, 16)
+            .forDirectional(Direction.NORTH),
+    BELLOW = shape(0, 0, 0, 16, 2, 16)
+                    .add(0, 2 , 2, 16 ,13, 14)
             .forDirectional(Direction.NORTH);
 
 

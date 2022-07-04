@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.typewriter;
 
+import com.fallenreaper.createutilities.content.items.BaseItem;
 import com.fallenreaper.createutilities.index.CUItems;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
@@ -12,18 +13,7 @@ public class TypewriterItemHandler extends ItemStackHandler {
     public  TypewriterItemHandler(TypewriterBlockEntity te) {
         super(10);
         this.te = te;
-
     }
-
-    @Override
-    public int getSlotLimit(int slot) {
-        if(slot == 2) {
-            return super.getSlotLimit(slot);
-        }
-        return 1;
-
-    }
-
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {

@@ -8,11 +8,9 @@ import com.simibubi.create.foundation.block.ITE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -48,7 +46,7 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
             withTileEntityDo(worldIn, pos,
                     typewriter -> NetworkHooks.openGui((ServerPlayer) player, typewriter, typewriter::sendToContainer));
         }
-        TypewriterBlockEntity te = (TypewriterBlockEntity) worldIn.getBlockEntity(pos);
+
         /*
         if(!te.hasBlueprintIn()) {
             if(stack.getItem() == AllItems.CRAFTING_BLUEPRINT.get()) {

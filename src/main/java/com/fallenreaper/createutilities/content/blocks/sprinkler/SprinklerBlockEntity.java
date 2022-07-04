@@ -91,7 +91,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         super.initialize();
     }
 
-
     @Override
     public Integer getRadius() {
         this.radius = (int) Math.min(Math.abs((getSpeed() / 64) * 8), 8);
@@ -114,6 +113,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         return getContainedFluid().isFluidEqual(fluidStack) && !getContainedFluid().isEmpty();
     }
+
     @Override
     public boolean isLava() {
         FluidStack fluidStack = new FluidStack(Fluids.LAVA, getFluidAmount());
@@ -122,7 +122,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         return getContainedFluid().isFluidEqual(fluidStack) && !getContainedFluid().isEmpty();
     }
-
 
     protected boolean emptyContainer() {
         return this.currentState != State.LOADED && getContainedFluid().isEmpty();
@@ -517,7 +516,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
     @Override
     public FluidStack getContainedFluid() {
-        return  fluidTankBehaviour.getPrimaryHandler().getFluid();
+        return this.fluidTankBehaviour.getPrimaryHandler().getFluid();
     }
 
     void initiateParticles() {
