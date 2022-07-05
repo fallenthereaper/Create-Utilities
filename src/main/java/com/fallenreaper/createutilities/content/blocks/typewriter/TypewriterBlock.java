@@ -7,6 +7,7 @@ import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.ITE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
@@ -14,10 +15,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
@@ -101,15 +104,21 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
         return CUBlockShapes.TYPEWRITER.get(pState.getValue(HORIZONTAL_FACING));
     }
 
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        if (!pState.is(pNewState.getBlock())) {
+            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+            if (blockentity instanceof TypewriterBlockEntity te) {
+                if (pLevel instanceof ServerLevel) {
 
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moving) {
-        TypewriterBlockEntity te = (TypewriterBlockEntity) world.getBlockEntity(pos);
+                    TypewriterRemoval.dropContents(pLevel, pPos, te);
+                    pLevel.removeBlockEntity(pPos);
+                }
+            }
 
-
-        if (state.hasBlockEntity() && (!newState.hasBlockEntity() || !(newState.getBlock() instanceof TypewriterBlock)))
-            world.removeBlockEntity(pos);
+            super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+        }
     }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return CUBlockShapes.TYPEWRITER.get(state.getValue(HORIZONTAL_FACING));

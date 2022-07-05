@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.mixins;
 
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
-import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerGrowHelper;
+import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.LevelReader;
@@ -46,7 +46,7 @@ public class FarmlandSurviveMixin {
                 BlockEntity tee = pLevel.getBlockEntity(blockpos1);
                 if (tee instanceof SprinklerBlockEntity ref) {
                     if (ref.currentState == SprinklerBlockEntity.State.HYDRATING && ref.isWater()) {
-                        if (SprinklerGrowHelper.isInsideCircle(radius, ref.getBlockPos(), blockpos1))
+                        if (SprinklerInteractionHandler.isInsideCircle(radius, ref.getBlockPos(), blockpos1))
                             return true;
                     }
                 }

@@ -79,8 +79,7 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
 
         addSlot(new SlotItemHandler(contentHolder.inventory, 4, x + 173, y + 30));
         addSlot(new SlotItemHandler(contentHolder.inventory, 5, x + 173, y + 79));
-
-                addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 45, yOffsets[0]));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 45, yOffsets[0]));
 
 
 

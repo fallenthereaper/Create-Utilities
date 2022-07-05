@@ -30,7 +30,7 @@ public class CommonEvents {
             return;
         if (blockItem.getBlock() != CUBlocks.BELLOWS.get())
             return;
-        if (event.getFace().equals(Direction.UP))
+        if (!event.getFace().equals(Direction.UP))
             return;
 
         BlockState state = event.getWorld().getBlockState(event.getPos());

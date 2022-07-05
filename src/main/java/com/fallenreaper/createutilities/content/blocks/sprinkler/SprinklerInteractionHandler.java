@@ -11,7 +11,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.FarmlandWaterManager;
 
 
-public class SprinklerGrowHelper {
+public class SprinklerInteractionHandler {
 
 
     public static boolean hasFarmlandBlock(BlockPos pos, Level level) {

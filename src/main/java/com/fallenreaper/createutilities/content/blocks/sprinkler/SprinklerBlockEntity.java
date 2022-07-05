@@ -44,7 +44,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -349,10 +348,10 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
             //System.out.println(blockState.getBlock() + " " + " At" + " " + blockPositions);
             worldPosAsVec.add(new Vector3d(blockPositions.getX(), blockPositions.getY(), blockPositions.getZ()));
             //check if the detected block is a instance of farmland
-            if (SprinklerGrowHelper.hasFarmlandBlock(blockPositions, getLevel())) {
+            if (SprinklerInteractionHandler.hasFarmlandBlock(blockPositions, getLevel())) {
                 //check if it's inside a circle radius
-                if (SprinklerGrowHelper.isInsideCircle(getRadius(), globalBlockPos, blockPositions)) {
-                    SprinklerGrowHelper.hydrateFarmland(blockPositions, getLevel(), blockState, axisAlignedBB);
+                if (SprinklerInteractionHandler.isInsideCircle(getRadius(), globalBlockPos, blockPositions)) {
+                    SprinklerInteractionHandler.hydrateFarmland(blockPositions, getLevel(), blockState, axisAlignedBB);
                 }
             }
             //WIP, obviously this doesn't get called so just a placeholder for now
@@ -365,8 +364,8 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                 }
             }
             //Crops grow logic
-            if (SprinklerGrowHelper.checkForPlants(blockState)) {
-                if (SprinklerGrowHelper.isInsideCircle(getRadius(), globalBlockPos, blockPositions)) {
+            if (SprinklerInteractionHandler.checkForPlants(blockState)) {
+                if (SprinklerInteractionHandler.isInsideCircle(getRadius(), globalBlockPos, blockPositions)) {
                     if (getRandom().nextInt(100) < chance) {
                         blockState.getBlock().randomTick(blockState, (ServerLevel) this.getLevel(), blockPositions, getRandom());
                     }

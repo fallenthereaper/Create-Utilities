@@ -3,19 +3,15 @@ package com.fallenreaper.createutilities.content.blocks.bellow;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
-import com.fallenreaper.createutilities.index.CUBlocks;
 import com.jozufozu.flywheel.core.PartialModel;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
-import com.simibubi.create.content.contraptions.components.flywheel.engine.EngineBlock;
-import com.simibubi.create.content.contraptions.components.flywheel.engine.FurnaceEngineInteractions;
+import com.simibubi.create.content.contraptions.base.IRotate;
 import com.simibubi.create.content.contraptions.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ITE;
 import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
@@ -26,13 +22,18 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlockEntity>, IWrenchable {
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+
     public BellowBlock(Properties properties) {
         super(properties);
     }
+
 
     @Override
     public Direction.Axis getRotationAxis(BlockState state) {
@@ -43,6 +44,7 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
     public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
         return isValidPosition( worldIn, pos);
     }
+
     @Override
     public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
                                 boolean isMoving) {
@@ -54,8 +56,16 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
         }
     }
 
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction prefferedSide = getPreferredHorizontalFacing(context);
+        if (prefferedSide != null)
+            return defaultBlockState().setValue(HORIZONTAL_FACING, prefferedSide);
 
-    protected boolean isValidPosition( BlockGetter world, BlockPos pos) {
+        return super.getStateForPlacement(context);
+    }
+
+    protected boolean isValidPosition(BlockGetter world, BlockPos pos) {
         BlockPos baseBlockPos = getBaseBlockPos(pos);
         BlockState getState = world.getBlockState(baseBlockPos);
       if(!(getState.getBlock() instanceof AbstractFurnaceBlock)) {
