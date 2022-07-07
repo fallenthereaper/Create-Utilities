@@ -1,9 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.typewriter;
 
-public class TypewriterInteractionHandler {
+import com.fallenreaper.createutilities.utils.InteractionHandler;
 
-    public enum State {
-        RUNNING,
-        OFF
-    }
+public class TypewriterInteractionHandler extends InteractionHandler {
+
 }

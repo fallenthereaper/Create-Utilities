@@ -10,11 +10,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public enum GuiTextures {
 
-
     TYPEWRITER("typewriter_screen", 184, 144),
     ARROW_INDICATOR("typewriter_screen",216, 0, 8, 24),
     PROGRESS_BAR("typewriter_screen",47, 0, 46, ARROW_INDICATOR.height/2);
-
 
     public final ResourceLocation location;
     public int width, height;

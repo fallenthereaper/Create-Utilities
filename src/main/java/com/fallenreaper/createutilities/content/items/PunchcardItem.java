@@ -4,6 +4,8 @@ public class PunchcardItem extends BaseItem   {
     public PunchcardItem(Properties pProperties) {
         super(pProperties);
     }
-
-
+    @Override
+    public int getMaxClicks() {
+        return 16;
+    }
 }

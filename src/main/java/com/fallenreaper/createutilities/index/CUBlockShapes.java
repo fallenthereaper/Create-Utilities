@@ -17,11 +17,11 @@ public class CUBlockShapes {
             .add(4, 13, 4, 12, 15, 12)
             .forDirectional(Direction.NORTH),
             TYPEWRITER = shape(0, 0, 0, 16, 3, 16)
-                    .add(0, 3 , 7, 16 ,9, 16)
-            .forDirectional(Direction.NORTH),
-    BELLOW = shape(0, 0, 0, 16, 2, 16)
-                    .add(0, 2 , 2, 16 ,13, 14)
-            .forDirectional(Direction.NORTH);
+                    .add(0, 3, 7, 16, 9, 16)
+                    .forDirectional(Direction.NORTH),
+            BELLOW = shape(0, 0, 0, 16, 2, 16)
+                    .add(0, 2, 2, 16, 13, 14)
+                    .forDirectional(Direction.NORTH);
 
 
     private static CUBlockShapes.Builder shape(VoxelShape shape) {
@@ -90,6 +90,5 @@ public class CUBlockShapes {
         public VoxelShaper forDirectional() {
             return forDirectional(Direction.UP);
         }
-
     }
 }

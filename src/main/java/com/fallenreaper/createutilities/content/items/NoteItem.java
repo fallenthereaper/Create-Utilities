@@ -6,4 +6,9 @@ public class NoteItem extends BaseItem {
     public NoteItem(Properties pProperties) {
         super(pProperties);
     }
+
+    @Override
+    public int getMaxClicks() {
+        return 32;
+    }
 }

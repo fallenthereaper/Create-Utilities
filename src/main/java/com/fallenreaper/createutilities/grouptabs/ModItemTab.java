@@ -1,13 +1,9 @@
 package com.fallenreaper.createutilities.grouptabs;
 
-import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 
 public abstract class ModItemTab extends CreativeModeTab {
@@ -25,9 +21,8 @@ public abstract class ModItemTab extends CreativeModeTab {
         super(label);
         this.icon = sup;
         this.text = text;
-
-
     }
+
 
     @Override
     public int getSlotColor() {
@@ -39,8 +34,4 @@ public abstract class ModItemTab extends CreativeModeTab {
         return super.showTitle();
     }
 
-    @Override
-    public int getSearchbarWidth()  {
-        return super.getSearchbarWidth();
-    }
 }

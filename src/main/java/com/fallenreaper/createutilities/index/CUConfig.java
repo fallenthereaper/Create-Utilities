@@ -9,7 +9,6 @@ public class CUConfig {
     public static final String MAIN = "General";
     public static final ForgeConfigSpec.IntValue FARMLAND_HYDRATE_CHANCE;
 
-
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -17,7 +16,7 @@ public class CUConfig {
 
         FARMLAND_HYDRATE_CHANCE = builder
                 .comment("Chance of occurring a random tick inside the radius")
-                .defineInRange("hydrationChance", 5, 0, 15);
+                .defineInRange("hydrationChance", 5, 0, 25);
 
         builder.pop();
 

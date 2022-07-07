@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
 public class CUItemTab {
-   public static TextComponent text = new TextComponent("Create Utilities");
+   public static TextComponent text = new TextComponent("baseTab");
    // public static Supplier<ItemStack> provider = () -> CUBlocks.SPRINKLER.asStack();
 
     public static ModItemTab MAIN_GROUP = new ModItemTab(text.getText()) {

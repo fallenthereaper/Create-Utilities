@@ -19,7 +19,7 @@ public class TypewriterItemHandler extends ItemStackHandler {
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         return switch (slot) {
             case 4 -> CUItems.NOTE_ITEM.isIn(stack);
-            case 5 -> false;
+            case 5 -> CUItems.PUNCHCARD.isIn(stack);
             case 0 -> CUItems.WAX.isIn(stack);
             default -> super.isItemValid(slot, stack);
         };

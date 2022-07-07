@@ -17,14 +17,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @Mod.EventBusSubscriber
 public class CommonEvents {
-    @SubscribeEvent
-    public static void clientSetup(FMLClientSetupEvent event) {
 
-        MenuScreens.register(CUContainerTypes.TYPEWRITER_MENUTYPE.get(), TypewriterScreen::new);
-
-    }
     @SubscribeEvent
-    public static void stopPlacement(PlayerInteractEvent.RightClickBlock event) {
+    public static void blockInteraction(PlayerInteractEvent.RightClickBlock event) {
         ItemStack item = event.getItemStack();
         if (!(item.getItem() instanceof BlockItem blockItem))
             return;

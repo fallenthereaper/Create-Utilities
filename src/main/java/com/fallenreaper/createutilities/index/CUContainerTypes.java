@@ -14,7 +14,7 @@ import org.checkerframework.checker.units.qual.C;
 
 public class CUContainerTypes {
     public static final MenuEntry<TypewriterContainer> TYPEWRITER_MENUTYPE =
-            register("typewriter_menutype", TypewriterContainer::new, () -> TypewriterScreen::new);
+            register("typewriter", TypewriterContainer::new, () -> TypewriterScreen::new);
 
 
     private static <C extends AbstractContainerMenu, S extends Screen & MenuAccess<C>> MenuEntry<C> register(String name, MenuBuilder.ForgeMenuFactory<C> factory, NonNullSupplier<MenuBuilder.ScreenFactory<C, S>> screenFactory) {

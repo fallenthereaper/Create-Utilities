@@ -1,14 +1,12 @@
 package com.fallenreaper.createutilities.content.blocks.bellow;
 
 
+import com.fallenreaper.createutilities.utils.IFurnaceBurnTimeAccessor;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -18,44 +16,51 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.ForgeHooks;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-
 
 public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleInformation {
 
     public BellowBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
+        setLazyTickRate(20);
     }
 
     @Override
     public void tick() {
         super.tick();
-        setFuel(()-> {
-            if(getBlockEntity(getFurnacePos(getBlockPos())) instanceof AbstractFurnaceBlockEntity furnace) {
-                if(!getFuelItemStack(furnace).isEmpty()) {
-                    System.out.println(getFuelItemStack(furnace).getItem());
-                    int diff = Math.abs(getFurnaceBurnTime(getFuelItemStack(furnace)) - furnace.serializeNBT().getInt("BurnTime"));
-                    //furnace.serializeNBT().remove("BurnTime");
+        initialize((be)-> {
 
 
+                    System.out.println(getFuelItemStack(be).getItem().getDescriptionId());
+                    be.serializeNBT().getInt("BurnTime");
+                    IFurnaceBurnTimeAccessor accessor = (IFurnaceBurnTimeAccessor) be;
+         //   SprinklerBlock a = new SprinklerBlock(BlockBehaviour.Properties.copy(getBlockState().getBlock()));
 
-                    // System.out.println(getFuelBurntime(furnace));
+                    accessor.setBurnTime((int) (getFurnaceBurnTime(getFuelItemStack(be))+getSpeed()/256));
+
                 }
-            }
-        });
+        );
+    }
+
+    @Override
+    public void lazyTick() {
+
+
+
     }
 
     protected int getFuelBurntime(AbstractFurnaceBlockEntity be){
         return be.serializeNBT().getInt("BurnTime");
     }
 
-
     //for testing purposes
+  protected void initialize(Consumer<AbstractFurnaceBlockEntity> consumer){
 
-    void setFuel(Runnable run){
-run.run();
-
+        if(getBlockEntity(getFurnacePos(getBlockPos())) instanceof AbstractFurnaceBlockEntity furnace) {
+        if(!getFuelItemStack(furnace).isEmpty() && BellowInteractionHandler.getState(getFurnaceBlockstate(getFurnacePos(getBlockPos()))).isRunning()){
+              consumer.accept(furnace);
+            }
+        }
     }
 
     private ItemStack getFuelItemStack(AbstractFurnaceBlockEntity be) {
@@ -82,7 +87,6 @@ run.run();
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         BlockPos pos = getBlockPos().below();
         BlockEntity be = this.level.getBlockEntity(pos);
-
 
         Component indent = new TextComponent(spacing + " ");
         tooltip.add(indent.plainCopy()

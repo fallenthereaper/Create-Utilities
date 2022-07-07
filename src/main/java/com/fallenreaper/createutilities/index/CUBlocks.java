@@ -7,6 +7,8 @@ import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBloc
 import com.fallenreaper.createutilities.grouptabs.CUItemTab;
 import com.fallenreaper.createutilities.utils.DefaultProperties;
 import com.simibubi.create.AllTags;
+import com.simibubi.create.Create;
+import com.simibubi.create.content.AllSections;
 import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.data.SharedProperties;
@@ -23,9 +25,9 @@ public class CUBlocks {
             .initialProperties(SharedProperties::copperMetal)
             .transform(pickaxeOnly())
             .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
-            .tag(AllTags.AllBlockTags.WRENCH_PICKUP.tag)
-            .lang("sprinkler")
-            .item().transform(customItemModel())
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .item()
+            .transform(customItemModel())
             .addLayer(() -> RenderType::cutoutMipped)
             .defaultLoot()
             .register();
@@ -33,24 +35,24 @@ public class CUBlocks {
     public static final BlockEntry<TypewriterBlock> TYPEWRITER = REGISTRATE.block("typewriter", TypewriterBlock::new)
             .initialProperties(DefaultProperties::brassMetal)
             .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
-            .tag(AllTags.AllBlockTags.WRENCH_PICKUP.tag)
-            .lang("typewriter")
-            .item().transform(customItemModel())
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .item()
+            .transform(customItemModel())
             .addLayer(() -> RenderType::cutoutMipped)
             .defaultLoot()
             .register();
     public static final BlockEntry<BellowBlock> BELLOWS = REGISTRATE.block("bellow", BellowBlock::new)
             .initialProperties(DefaultProperties::brassMetal)
             .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
-            .tag(AllTags.AllBlockTags.WRENCH_PICKUP.tag)
-            .lang("bellow")
-            .item().transform(customItemModel())
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .item()
+            .transform(customItemModel())
             .addLayer(() -> RenderType::cutoutMipped)
             .defaultLoot()
             .register();
 
-
-
     public static void register() {
+        Create.registrate().addToSection(BELLOWS, AllSections.KINETICS);
+        Create.registrate().addToSection(SPRINKLER, AllSections.KINETICS);
     }
 }

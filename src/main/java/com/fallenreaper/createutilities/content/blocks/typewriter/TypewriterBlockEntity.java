@@ -37,7 +37,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
 
     }
     protected void refillFuelIfPossible() {
-      if(1-fuelLevel/128 < 1)
+      if(1-fuelLevel/128 < getFuelUsageRate())
           return;
 
         if (inventory.getStackInSlot(0)
@@ -99,20 +99,11 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return super.serializeNBT();
-    }
-    @Override
     public void onLoad() {
         super.onLoad();
     }
     public double getFuelAddedByGunPowder() {
-        return 90/100;
+        return 32/64;
     }
 
 

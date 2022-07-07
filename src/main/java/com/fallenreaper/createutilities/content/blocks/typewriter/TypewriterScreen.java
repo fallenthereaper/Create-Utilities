@@ -1,7 +1,9 @@
 package com.fallenreaper.createutilities.content.blocks.typewriter;
 
+import com.fallenreaper.createutilities.content.items.BaseItem;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
+import com.fallenreaper.createutilities.index.CUItems;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -15,7 +17,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.ItemStackHandler;
 
 
 public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterContainer> {
@@ -43,7 +47,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     protected void renderBg(PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
         int x = leftPos + imageWidth - BG.width;
         int y = topPos;
-        TypewriterBlockEntity te = menu.contentHolder;
+
         BG.render(pPoseStack, x, y, this);
         font.draw(pPoseStack, title, x + 15, y + 3, 0x442000);
 
@@ -51,7 +55,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         int invY = 150 - 15;
         clickIndicator.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         renderPlayerInventory(pPoseStack, invX, invY);
-        renderFuelBar(pPoseStack, x, y, te.fuelLevel);
+        renderFuelBar(pPoseStack, x, y, getMainBlockEntity().fuelLevel);
         renderModel(pPoseStack, x + BG.width + 50, y + BG.height + 10, pPartialTick);
 
     }
@@ -77,7 +81,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
 
         Slot slot = menu.slots.get(4);
         ItemStack itemstack = slot.getItem();
-        if (menu.contentHolder.hasBlueprintIn()) {
+        if (getMainBlockEntity().hasBlueprintIn()) {
             GuiGameElement.of(CUBlockPartials.SCHEMATIC_MODEL)
                     .render(ms);
         }
@@ -100,32 +104,50 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         setWindowOffset(-11, 0);
         super.init();
         confirmButton = new IconButton(leftPos + 118 + BG.width - 154, topPos + BG.height - 91+4, AllIcons.I_PLAY);
+        closeButton = new IconButton(leftPos + 30 + BG.width - 33, topPos + BG.height - (42 - 17), AllIcons.I_CONFIRM);
+
         clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 98+4, new TextComponent("Off"));
         clickIndicator.state = Indicator.State.OFF;
         confirmButton.active = false;
 
-   if(menu.contentHolder.hasBlueprintIn()) {
-       confirmButton.active = true;
-       menu.contentHolder.notifyUpdate();
-
-   }
-     callBacks();
-
-
-        closeButton = new IconButton(leftPos + 30 + BG.width - 33, topPos + BG.height - (42 - 17), AllIcons.I_CONFIRM);
-        closeButton.withCallback(() -> {
-            minecraft.player.closeContainer();
-        }); closeButton.withCallback(() -> {
-            minecraft.player.closeContainer();
-        });
         addRenderableWidget(closeButton);
         addRenderableWidget(confirmButton);
         addRenderableWidget(clickIndicator);
 
-    }
-    public void callBacks() {
-        confirmButton.withCallback(() -> {
+   if(getMainBlockEntity().hasBlueprintIn()) {
+       getMainBlockEntity().notifyUpdate();
+       confirmButton.active = true;
+   }
 
+        callBacks();
+    }
+    protected ItemStackHandler getInventory() {
+        return getMainBlockEntity().inventory;
+    }
+    protected TypewriterBlockEntity getMainBlockEntity() {
+        return menu.contentHolder;
+    }
+
+    protected void loadData() {
+
+
+        Item item = getInventory().getStackInSlot(4).getItem();
+        if (item instanceof BaseItem baseItem) {
+            if (baseItem.getFromTag("clicks") < baseItem.getMaxClicks()/4.0f) {
+                getInventory().extractItem(4, 100, false);
+
+            } else {
+                getInventory().extractItem(4, 100, false);
+                getInventory().insertItem(5, new ItemStack(CUItems.PUNCHCARD.get()), false);
+                getMainBlockEntity().notifyUpdate();
+            }
+        }
+    }
+
+    public void callBacks() {
+        confirmButton.withCallback(this::loadData);
+        closeButton.withCallback(() -> {
+            minecraft.player.closeContainer();
         });
 
     }

@@ -1,7 +1,6 @@
 package com.fallenreaper.createutilities.index;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlock;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowRenderer;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
@@ -18,7 +17,6 @@ public class CUBlockEntities {
             .validBlocks(CUBlocks.SPRINKLER)
             .renderer(() -> SprinklerRenderer::new)
             .register();
-
     public static final BlockEntityEntry<TypewriterBlockEntity> TYPEWRITER = CreateUtilities.registrate()
             .tileEntity("typewriter", TypewriterBlockEntity::new)
             .validBlocks(CUBlocks.TYPEWRITER)

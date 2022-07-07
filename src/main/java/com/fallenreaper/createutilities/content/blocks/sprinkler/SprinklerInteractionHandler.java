@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
+import com.fallenreaper.createutilities.utils.InteractionHandler;
 import com.jozufozu.flywheel.repack.joml.Vector3d;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -11,7 +12,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.FarmlandWaterManager;
 
 
-public class SprinklerInteractionHandler {
+public class SprinklerInteractionHandler extends InteractionHandler {
 
 
     public static boolean hasFarmlandBlock(BlockPos pos, Level level) {
