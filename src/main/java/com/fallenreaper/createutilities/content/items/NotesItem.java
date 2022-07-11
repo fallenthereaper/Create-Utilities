@@ -1,14 +1,14 @@
 package com.fallenreaper.createutilities.content.items;
 
-import net.minecraft.world.item.Item;
 
-public class NoteItem extends BaseItem {
-    public NoteItem(Properties pProperties) {
+
+public class NotesItem extends BaseItem {
+    public NotesItem(Properties pProperties) {
         super(pProperties);
     }
 
     @Override
     public int getMaxClicks() {
-        return 32;
+        return super.getMaxClicks()/2;
     }
 }

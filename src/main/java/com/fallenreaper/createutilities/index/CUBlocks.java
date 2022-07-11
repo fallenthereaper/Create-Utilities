@@ -4,7 +4,6 @@ import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlock;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlock;
-import com.fallenreaper.createutilities.grouptabs.CUItemTab;
 import com.fallenreaper.createutilities.utils.DefaultProperties;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.Create;
@@ -19,7 +18,7 @@ import static com.simibubi.create.AllTags.pickaxeOnly;
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
 
 public class CUBlocks {
-    private static final CreateRegistrate REGISTRATE = CreateUtilities.registrate().creativeModeTab(() -> CUItemTab.MAIN_GROUP);
+    private static final CreateRegistrate REGISTRATE = CreateUtilities.registrate().creativeModeTab(() -> CreateUtilities.TAB);
 
     public static final BlockEntry<SprinklerBlock> SPRINKLER = REGISTRATE.block("sprinkler", SprinklerBlock::new)
             .initialProperties(SharedProperties::copperMetal)

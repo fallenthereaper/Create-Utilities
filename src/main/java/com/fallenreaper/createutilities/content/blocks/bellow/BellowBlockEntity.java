@@ -30,7 +30,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         super.tick();
         initialize((be)-> {
 
-
+         //TODO, finish this
                     System.out.println(getFuelItemStack(be).getItem().getDescriptionId());
                     be.serializeNBT().getInt("BurnTime");
                     IFurnaceBurnTimeAccessor accessor = (IFurnaceBurnTimeAccessor) be;
@@ -64,6 +64,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
     }
 
     private ItemStack getFuelItemStack(AbstractFurnaceBlockEntity be) {
+
         return be.getItem(1);
     }
     @Override

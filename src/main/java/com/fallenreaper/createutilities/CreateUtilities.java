@@ -1,16 +1,12 @@
 package com.fallenreaper.createutilities;
 
+import com.fallenreaper.createutilities.events.ClientEvents;
 import com.fallenreaper.createutilities.index.*;
-import com.simibubi.create.CreateClient;
-import com.simibubi.create.content.curiosities.weapons.BuiltinPotatoProjectileTypes;
-import com.simibubi.create.content.schematics.SchematicProcessor;
-import com.simibubi.create.content.schematics.filtering.SchematicInstances;
-import com.simibubi.create.foundation.advancement.AllTriggers;
 import com.simibubi.create.foundation.data.CreateRegistrate;
-import com.simibubi.create.foundation.networking.AllPackets;
-import com.simibubi.create.foundation.worldgen.AllWorldFeatures;
 import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
@@ -31,6 +27,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
 
@@ -42,6 +39,13 @@ public class CreateUtilities {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ID = "createutilities";
+
+    public static final CreativeModeTab TAB = new CreativeModeTab(ID) {
+        @Override
+        public @NotNull ItemStack makeIcon() {
+            return CUBlocks.TYPEWRITER.asStack().copy();
+        }
+    };
 
     private static final NonNullSupplier<CreateRegistrate> registrate = CreateRegistrate.lazy(ID);
 
@@ -68,17 +72,18 @@ public class CreateUtilities {
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                 () -> () -> CreateUtilitiesClient.onClientStartUp(modEventBus, forgeEventBus));
+
         registerModContents();
 
     }
     public static void registerModContents() {
         CUBlocks.register();
         CUItems.register();
-        CUBlockPartials.init();
+        CUBlockPartials.register();
         CUBlockEntities.register();
         CUContainerTypes.register();
-    }
-    public static void init(final FMLCommonSetupEvent event) {
+        ClientEvents.addToBlockList(()-> Blocks.FURNACE);
+
     }
 
     private static void doClientStuff(final FMLClientSetupEvent event) {

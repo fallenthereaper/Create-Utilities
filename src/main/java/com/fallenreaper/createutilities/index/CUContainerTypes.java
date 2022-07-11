@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.checkerframework.checker.units.qual.C;
 
 public class CUContainerTypes {
-    public static final MenuEntry<TypewriterContainer> TYPEWRITER_MENUTYPE =
+    public static final MenuEntry<TypewriterContainer> TYPEWRITER =
             register("typewriter", TypewriterContainer::new, () -> TypewriterScreen::new);
 
 

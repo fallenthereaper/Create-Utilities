@@ -69,7 +69,7 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
         if (heldItem.getItem() instanceof WrenchItem) {
             return InteractionResult.PASS;
         }
-//TODO, CHECK FOR POTIONS
+               //TODO, CHECK FOR POTIONS
         if (heldItem.getItem() == Items.BUCKET) {
             if (te.isLava() || te.isWater()) {
                 if (!te.fluidTankBehaviour.getPrimaryHandler().isEmpty()) {

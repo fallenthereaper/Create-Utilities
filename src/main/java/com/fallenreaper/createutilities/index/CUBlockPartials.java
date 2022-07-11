@@ -18,5 +18,5 @@ public class CUBlockPartials {
         return new PartialModel(resourceLocation);
     }
 
-    public static void init() {}
+    public static void register() {}
 }

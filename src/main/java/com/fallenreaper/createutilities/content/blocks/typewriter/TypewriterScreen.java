@@ -131,7 +131,8 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     protected void loadData() {
 
 
-        Item item = getInventory().getStackInSlot(4).getItem();
+        Item item = menu.slots.get(4).getItem().getItem();
+                //getInventory().getStackInSlot(4).getItem();
         if (item instanceof BaseItem baseItem) {
             if (baseItem.getFromTag("clicks") < baseItem.getMaxClicks()/4.0f) {
                 getInventory().extractItem(4, 100, false);
@@ -146,9 +147,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
 
     public void callBacks() {
         confirmButton.withCallback(this::loadData);
-        closeButton.withCallback(() -> {
-            minecraft.player.closeContainer();
-        });
+        closeButton.withCallback(() -> minecraft.player.closeContainer());
 
     }
 

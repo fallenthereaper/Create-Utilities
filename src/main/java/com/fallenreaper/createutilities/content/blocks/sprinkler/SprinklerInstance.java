@@ -9,7 +9,6 @@ import com.jozufozu.flywheel.core.materials.model.ModelData;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.base.flwdata.RotatingData;
 import com.simibubi.create.content.contraptions.relays.encased.ShaftInstance;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class SprinklerInstance extends ShaftInstance implements DynamicInstance {
@@ -20,7 +19,7 @@ public class SprinklerInstance extends ShaftInstance implements DynamicInstance 
     public SprinklerInstance(MaterialManager dispatcher, KineticTileEntity tile) {
         super(dispatcher, tile);
         this.tile = (SprinklerBlockEntity) tile;
-        propagatorModelData = getTransformMaterial().getModel(CUBlockPartials.SPRINKLER_PROPAGATOR, Direction.EAST).createInstance();
+        propagatorModelData = getTransformMaterial().getModel(CUBlockPartials.SPRINKLER_PROPAGATOR, blockState).createInstance();
     }
 
 

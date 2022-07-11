@@ -14,17 +14,17 @@ public class CUBlockEntities {
     public static final BlockEntityEntry<SprinklerBlockEntity> SPRINKLER = CreateUtilities.registrate()
             .tileEntity("sprinkler", SprinklerBlockEntity::new)
             .instance(() -> SprinklerInstance::new, false)
-            .validBlocks(CUBlocks.SPRINKLER)
+            .validBlock(CUBlocks.SPRINKLER)
             .renderer(() -> SprinklerRenderer::new)
             .register();
     public static final BlockEntityEntry<TypewriterBlockEntity> TYPEWRITER = CreateUtilities.registrate()
             .tileEntity("typewriter", TypewriterBlockEntity::new)
-            .validBlocks(CUBlocks.TYPEWRITER)
+            .validBlock(CUBlocks.TYPEWRITER)
             .renderer(() -> TypewriterRenderer::new)
             .register();
     public static final BlockEntityEntry<BellowBlockEntity> BELLOW = CreateUtilities.registrate()
             .tileEntity("bellow", BellowBlockEntity::new)
-            .validBlocks(CUBlocks.BELLOWS)
+            .validBlock(CUBlocks.BELLOWS)
             .renderer(() -> BellowRenderer::new)
             .register();
 

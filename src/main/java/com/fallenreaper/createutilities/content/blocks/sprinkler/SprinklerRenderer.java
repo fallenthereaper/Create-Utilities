@@ -1,11 +1,8 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
-import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlock;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.jozufozu.flywheel.backend.Backend;
 import com.jozufozu.flywheel.repack.joml.Math;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -16,14 +13,11 @@ import com.simibubi.create.foundation.render.SuperByteBuffer;
 import com.simibubi.create.foundation.utility.AnimationTickHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -43,17 +37,18 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
 
         BlockState blockState = te.getBlockState();
         Block block = blockState.getBlock();
+        float time = AnimationTickHolder.getRenderTime(te.getLevel());
+        float speed = te.getSpeed();
+        if (speed > 0)
+            speed = Math.clamp(speed, 64, 64 * 8);
+        if (speed < 0)
+            speed = Math.clamp(speed, -64 * 8, -64);
 
-            float time = AnimationTickHolder.getRenderTime(te.getLevel());
-            float speed = te.getSpeed();
-            if (speed > 0)
-                speed = Math.clamp(speed, 64, 64 * 8);
-            if (speed < 0)
-                speed = Math.clamp(speed, -64 * 8, -64);
+        float angle = (time * speed * 2 / 10f) % 360;
 
-            float angle = (time * speed * 2 / 10f) % 360;
+        angle = angle / 180F * (float) Math.PI;
+        if (!Backend.canUseInstancing(te.getLevel())) {
 
-            angle = angle / 180F * (float) Math.PI;
 
             Direction direction = Direction.UP;
             VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
@@ -62,8 +57,15 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
                     CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
             KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, vb, light);
             Font f = Minecraft.getInstance().font;
-renderText(f,292, 234, String.valueOf(angle));
+            renderText(f,292, 234, String.valueOf(angle));
+            VertexConsumer vertexBuilder = buffer.getBuffer(RenderType.cutoutMipped());
             kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
+            model.light(light)
+                    .renderInto(ms,vertexBuilder );
+        }
+
+
+
 
 
     }

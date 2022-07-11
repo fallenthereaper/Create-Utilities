@@ -4,7 +4,7 @@
   "block.createutilities.bellow": "Bellows Block",
   "block.createutilities.typewriter": "Typewriter",
   //Creative tabs
-  "itemGroup.createutilities.baseTab": "Create Utilities",
+  "itemGroup.createutilities.createutilities": "Create Utilities",
   "item.createutilities.red_wax": "Wax",
   "item.createutilities.punchcard": "Punchcard",
   "item.createutilities.note_item": "Notes"

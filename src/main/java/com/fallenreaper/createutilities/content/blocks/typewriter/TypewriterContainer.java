@@ -64,7 +64,7 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
     }
 
     public static TypewriterContainer create(int id, Inventory inv, TypewriterBlockEntity te) {
-        return new TypewriterContainer(CUContainerTypes.TYPEWRITER_MENUTYPE.get(), id, inv, te);
+        return new TypewriterContainer(CUContainerTypes.TYPEWRITER.get(), id, inv, te);
     }
 
 

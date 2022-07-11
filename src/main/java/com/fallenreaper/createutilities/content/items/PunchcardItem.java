@@ -6,6 +6,6 @@ public class PunchcardItem extends BaseItem   {
     }
     @Override
     public int getMaxClicks() {
-        return 16;
+        return super.getMaxClicks()/4;
     }
 }
