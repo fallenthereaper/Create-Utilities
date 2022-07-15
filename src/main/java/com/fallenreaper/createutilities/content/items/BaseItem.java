@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.content.items;
 
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
+import com.simibubi.create.content.logistics.trains.management.schedule.Schedule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -59,11 +60,19 @@ public class BaseItem extends Item implements TypewriterProvider {
 
         return super.useOn(pContext);
     }
-
+    public static Schedule getInstruction(ItemStack pStack) {
+        if (!pStack.hasTag())
+            return null;
+        if (!pStack.getTag()
+                .contains("Instruction"))
+            return null;
+        return Schedule.fromTag(pStack.getTagElement("Schedule"));
+    }
 
     public void addToTag(String key, int tag) {
         compoundTag.putInt(key, Math.min(tag, getMaxClicks()));
     }
+
     public int getFromTag(String key) {
         if(!compoundTag.contains(key))
             return 0;

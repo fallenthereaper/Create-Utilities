@@ -134,14 +134,13 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         Item item = menu.slots.get(4).getItem().getItem();
                 //getInventory().getStackInSlot(4).getItem();
         if (item instanceof BaseItem baseItem) {
-            if (baseItem.getFromTag("clicks") < baseItem.getMaxClicks()/4.0f) {
-                getInventory().extractItem(4, 100, false);
+
+                getInventory().setStackInSlot(4, ItemStack.EMPTY);
 
             } else {
-                getInventory().extractItem(4, 100, false);
-                getInventory().insertItem(5, new ItemStack(CUItems.PUNCHCARD.get()), false);
+                getInventory().setStackInSlot(4, ItemStack.EMPTY);
+                getInventory().setStackInSlot(5,new ItemStack(CUItems.PUNCHCARD.get()));
                 getMainBlockEntity().notifyUpdate();
-            }
         }
     }
 

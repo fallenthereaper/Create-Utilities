@@ -11,14 +11,15 @@ import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.tileEntity.ComparatorUtil;
 import com.simibubi.create.foundation.tileEntity.TileEntityBehaviour;
 import com.simibubi.create.foundation.tileEntity.behaviour.fluid.SmartFluidTankBehaviour;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import com.simibubi.create.foundation.utility.Color;
-import com.simibubi.create.foundation.utility.NBTHelper;
+import com.simibubi.create.foundation.utility.*;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -395,7 +396,34 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
 
-        /*
+
+/*
+        if (Mth.equal(stressBase, 0))
+            return added;
+
+        Lang.translate("gui.goggles.generator_stats")
+                .forGoggles(tooltip);
+        Lang.translate("tooltip.capacityProvided")
+                .style(ChatFormatting.GRAY)
+                .forGoggles(tooltip);
+
+        float speed = getTheoreticalSpeed();
+        if (speed != getGeneratedSpeed() && speed != 0)
+            stressBase *= getGeneratedSpeed() / speed;
+        speed = java.lang.Math.abs(speed);
+
+        float stressTotal = stressBase * speed;
+
+        Lang.number(stressTotal)
+                .translate("generic.unit.stress")
+                .style(ChatFormatting.AQUA)
+                .space()
+                .add(Lang.translate("gui.goggles.at_current_speed")
+                        .style(ChatFormatting.DARK_GRAY))
+                .forGoggles(tooltip, 1);
+        */
+
+
         AABB axisAlignedBB2 = new AABB(getBlockPos()).inflate(getRadius(), 0, getRadius());
         Vec3 globPosition = new Vec3(0, getBlockPos().getY(), 0);
 
@@ -407,11 +435,10 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         FluidStack fluidStackIn = getContainedFluid();
         Component fluidName = new TranslatableComponent(fluidStackIn.getTranslationKey()).withStyle(ChatFormatting.GRAY);
         Component indent = new TextComponent(spacing + " ");
-        Component contained = new TextComponent(String.valueOf(fluidStackIn.getAmount())).append(mb).withStyle(ChatFormatting.GOLD);
+        Component contained = new TextComponent(String.valueOf(fluidStackIn.getAmount())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
         Component slash = new TextComponent(" / ").withStyle(ChatFormatting.GRAY);
-        Component capacity = new TextComponent(String.valueOf(getTankMaxCapacity())).append(mb).withStyle(ChatFormatting.DARK_GRAY);
-        Component percentage = new TextComponent((getFillState() + "%")).withStyle(ChatFormatting.DARK_GRAY);
-        Component percentage100 = new TextComponent(100 + "%").withStyle(ChatFormatting.DARK_GREEN);
+        Component capacity = new TextComponent(String.valueOf(getTankMaxCapacity())).plainCopy().append(mb.string()).withStyle(ChatFormatting.DARK_GRAY);
+
         if (hasFluidIn && !getContainedFluid().isEmpty()) {
             tooltip.add(indent.plainCopy()
                     .append(fluidName));
@@ -419,20 +446,22 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                     .append(contained)
                     .append(slash)
                     .append(capacity));
-     /*Percentage tooltip
+   /*
+     Percentage tooltip
+
         tooltip.add(indent.plainCopy()
                 .append(percentage)
                 .append(slash)
                 .append(percentage100));
-        /*
 
+*/
         } else {
-            Component maxCapacity = Lang.translate("gui.goggles.fluid_container.capacity").withStyle(ChatFormatting.GRAY);
-            Component amount = new TextComponent(IHaveGoggleInformation.format(fluidTankBehaviour.getPrimaryHandler().getTankCapacity(0))).append(mb).withStyle(ChatFormatting.GOLD);
+            LangBuilder maxCapacity = Lang.translate("gui.goggles.fluid_container.capacity").style(ChatFormatting.GRAY);
+            LangBuilder amount = Lang.builder(String.valueOf((fluidTankBehaviour.getPrimaryHandler().getTankCapacity(0)))).add(mb).style(ChatFormatting.GOLD);
 
             tooltip.add(indent.plainCopy()
-                    .append(maxCapacity)
-                    .append(amount));
+                    .append( maxCapacity.string())
+                    .append(amount.string()));
         }
 
         if (isPlayerSneaking) {
@@ -457,14 +486,12 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
                 int dist = (int) Math.abs(Math.sqrt(globPosition.distanceToSqr(detectedblockPos)));
 
-                ClientPlayerEntity clientPlayerEntity = Minecraft.getInstance().player;
-                clientPlayerEntity.sendMessage(slasha, clientPlayerEntity.getUUID());
 
                 AABB axisAlignedBB = axisAlignedBB2.expandTowards(0, -dist + 1, 0);
                 renderDebugOutline(axisAlignedBB);
             }
         }
-        */
+
         return true;
     }
 

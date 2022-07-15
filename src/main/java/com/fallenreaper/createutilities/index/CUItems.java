@@ -13,15 +13,18 @@ public class CUItems {
 
     public static final ItemEntry<PunchcardItem> PUNCHCARD =
             REGISTRATE.item("punchcard", PunchcardItem::new)
-                    .properties(p -> p.stacksTo(1).durability(64).setNoRepair())
+                    .properties(p -> p.stacksTo(1))
                     .register();
     public static final ItemEntry<Item> WAX =
             REGISTRATE.item("red_wax", Item::new)
+                    .lang("Wax")
                     .register();
     public static final ItemEntry<NotesItem> NOTE_ITEM =
             REGISTRATE.item("note_item", NotesItem::new)
                     .properties(p -> p.stacksTo(1))
+                    .lang("Notes")
                     .register();
+
     public static void register() {
     }
 }

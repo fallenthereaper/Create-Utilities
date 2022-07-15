@@ -23,7 +23,7 @@ public class CUBlocks {
     public static final BlockEntry<SprinklerBlock> SPRINKLER = REGISTRATE.block("sprinkler", SprinklerBlock::new)
             .initialProperties(SharedProperties::copperMetal)
             .transform(pickaxeOnly())
-            .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .item()
             .transform(customItemModel())
@@ -33,7 +33,7 @@ public class CUBlocks {
 
     public static final BlockEntry<TypewriterBlock> TYPEWRITER = REGISTRATE.block("typewriter", TypewriterBlock::new)
             .initialProperties(DefaultProperties::brassMetal)
-            .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .item()
             .transform(customItemModel())
@@ -42,7 +42,7 @@ public class CUBlocks {
             .register();
     public static final BlockEntry<BellowBlock> BELLOWS = REGISTRATE.block("bellow", BellowBlock::new)
             .initialProperties(DefaultProperties::brassMetal)
-            .blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .item()
             .transform(customItemModel())

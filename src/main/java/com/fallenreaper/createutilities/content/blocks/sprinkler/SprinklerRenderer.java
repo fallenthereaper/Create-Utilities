@@ -81,7 +81,7 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
     }
     public void renderText(Font pFr, int pXPosition, int pYPosition, @Nullable String pText) {
         PoseStack posestack = new PoseStack();
-posestack.scale(1.0f, 3.0f, 10);
+        posestack.scale(1.0f, 3.0f, 10);
         MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         pFr.drawInBatch(pText,(float) pXPosition, (float) pYPosition, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
         multibuffersource$buffersource.endBatch();
@@ -91,4 +91,3 @@ posestack.scale(1.0f, 3.0f, 10);
 
 
 }
-

@@ -24,6 +24,7 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
 
 
 
+
     @Override
     protected TypewriterBlockEntity createOnClient(FriendlyByteBuf extraData) {
         ClientLevel world = Minecraft.getInstance().level;

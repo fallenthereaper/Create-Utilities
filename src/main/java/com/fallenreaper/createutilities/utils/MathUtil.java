@@ -1,11 +1,14 @@
 package com.fallenreaper.createutilities.utils;
 
+import com.simibubi.create.foundation.utility.Couple;
 import net.minecraft.world.phys.Vec3;
 
 public class MathUtil {
    /**
     * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
     */
+   Couple<Vec3> starts;
+   Couple<Vec3> ends;
    public static Vec3 quadraticBezierCurve(Vec3 p0, Vec3 p1, Vec3 p2, float t){
       Vec3 lerpValue1 = lerpVector(p0, p1, t);
       Vec3 lerpValue2 = lerpVector(p1, p2, t);
@@ -34,5 +37,9 @@ public class MathUtil {
       Vec3 lerpValue5 = lerpVector(lerpValue2, lerpValue3, t);
       Vec3 cubicLerp = lerpVector(lerpValue4, lerpValue5, t);
       return cubicLerp;
+   }
+   public Vec3 getPositions(double t) {
+
+      return lerpVector(starts.getFirst(), starts.getSecond(),  (float) t);
    }
 }

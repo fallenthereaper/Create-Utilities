@@ -22,11 +22,11 @@ public class TypewriterRenderer extends SmartTileEntityRenderer<TypewriterBlockE
     protected void renderSafe(TypewriterBlockEntity tileEntityIn, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         BlockState blockState = tileEntityIn.getBlockState();
         Direction facing = blockState.getValue(TypewriterBlock.HORIZONTAL_FACING);
-   if(tileEntityIn.hasBlueprintIn()) {
-       SuperByteBuffer blueprint = CachedBufferer.partial(CUBlockPartials.SCHEMATIC_MODEL, blockState);
-       rotateCenteredInDirection(blueprint, Direction.UP, facing);
-       blueprint.renderInto(ms, buffer.getBuffer(RenderType.solid()));
-   }
+        if(tileEntityIn.hasBlueprintIn()) {
+            SuperByteBuffer blueprint = CachedBufferer.partial(CUBlockPartials.SCHEMATIC_MODEL, blockState);
+            rotateCenteredInDirection(blueprint, Direction.UP, facing);
+            blueprint.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        }
         VertexConsumer builder = buffer.getBuffer(RenderType.cutoutMipped());
     }
     protected double getAngleForFacing(Direction facing) {

@@ -5,10 +5,8 @@ import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
 import com.jozufozu.flywheel.core.PartialModel;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
-import com.simibubi.create.content.contraptions.base.IRotate;
 import com.simibubi.create.content.contraptions.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ITE;
-import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -51,8 +49,8 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
         if (worldIn.isClientSide)
             return;
 
-            if (!canSurvive(state, worldIn, pos)) {
-                worldIn.destroyBlock(pos, true);
+        if (!canSurvive(state, worldIn, pos)) {
+            worldIn.destroyBlock(pos, true);
         }
     }
 
@@ -68,9 +66,9 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
     protected boolean isValidPosition(BlockGetter world, BlockPos pos) {
         BlockPos baseBlockPos = getBaseBlockPos(pos);
         BlockState getState = world.getBlockState(baseBlockPos);
-      if(!(getState.getBlock() instanceof AbstractFurnaceBlock)) {
-          return false;
-      }
+        if(!(getState.getBlock() instanceof AbstractFurnaceBlock)) {
+            return false;
+        }
         return true;
     }
 
@@ -81,6 +79,7 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
         return face.getAxis() == state.getValue(HORIZONTAL_FACING)
                 .getAxis();
+
     }
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {

@@ -211,10 +211,6 @@ repositories {
         // The userdev artifact is a special name and will get all sorts of transformations applied to it.
         minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-        //   compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
-
-        //  runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
-
         implementation fg.deobf("com.simibubi.create:Create:mc${mc_version}_v${create_version}")
         implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:1.18-${flywheel_version}")
         compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}:api")

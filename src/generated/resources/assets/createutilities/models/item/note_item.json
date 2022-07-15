@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "createutilities:item/note_item/note_item"
+    "layer0": "createutilities:item/note_item"
   }
 }
