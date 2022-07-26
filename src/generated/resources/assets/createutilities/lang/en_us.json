@@ -1,10 +1,10 @@
 {
   "block.createutilities.bellow": "Bellow",
+  "block.createutilities.brass_door": "Brass Door",
   "block.createutilities.sprinkler": "Sprinkler",
   "block.createutilities.typewriter": "Typewriter",
   "item.createutilities.note_item": "Notes",
   "item.createutilities.punchcard": "Punchcard",
   "item.createutilities.red_wax": "Wax",
-  "itemGroup.createutilities": "Create Utilities",
-  "itemGroup.createutilities.createutilities": "Create Utilities"
+  "createutilities.display_source.time_duration": "Time Duration"
 }

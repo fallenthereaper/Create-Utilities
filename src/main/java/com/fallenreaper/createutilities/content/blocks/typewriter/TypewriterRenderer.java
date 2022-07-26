@@ -13,7 +13,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 
 
+
 public class TypewriterRenderer extends SmartTileEntityRenderer<TypewriterBlockEntity>{
+
+
+
     public TypewriterRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
     }

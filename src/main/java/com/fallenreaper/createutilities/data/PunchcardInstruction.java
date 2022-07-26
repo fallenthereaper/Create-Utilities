@@ -1,11 +1,12 @@
-package com.fallenreaper.createutilities.content.management;
+package com.fallenreaper.createutilities.data;
 
 import net.minecraft.nbt.CompoundTag;
 
 public class PunchcardInstruction extends PunchcardInfo{
 
-    public PunchcardInstruction() {
-        super();
+
+    public PunchcardInstruction(String description) {
+        super(description);
     }
 
     @Override

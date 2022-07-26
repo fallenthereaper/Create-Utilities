@@ -2,14 +2,18 @@ package com.fallenreaper.createutilities.content.items;
 
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.simibubi.create.content.logistics.trains.management.schedule.Schedule;
+import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +28,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BaseItem extends Item implements TypewriterProvider {
+
+public class BaseItem extends Item {
     int clicks;
   protected CompoundTag compoundTag  = new CompoundTag();
     private static final int BAR_COLOR = Mth.color(0.4F, 0.4F, 1.0F);
@@ -36,6 +41,28 @@ public class BaseItem extends Item implements TypewriterProvider {
     public boolean isBarVisible(ItemStack pStack) {
         return getFromTag("clicks")  > 0;
     }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+        Minecraft mc = Minecraft.getInstance();
+        if(mc.player != null) {
+      if(pLevel.isClientSide()) {
+
+
+            if (InstructionManager.INSTRUCTIONS.size() != 0) {
+
+                List<LangBuilder> info = InstructionManager.INSTRUCTIONS_LOCATIONS;
+
+                pPlayer.displayClientMessage(new TextComponent("Data Gathered:" + " " + info.get(2).string()).withStyle(ChatFormatting.GOLD), false);
+
+                //mc.player.chat("Data Gathered:"  + " " + info.getLabeledText());
+                return InteractionResultHolder.success(pPlayer.getItemInHand(pUsedHand));
+            }
+            }
+        }
+        return super.use(pLevel, pPlayer, pUsedHand);
+    }
+
     @Override
     public InteractionResult useOn(UseOnContext pContext) {
         BlockPos pos = pContext.getClickedPos();
@@ -101,7 +128,23 @@ public class BaseItem extends Item implements TypewriterProvider {
 
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+
+
+
+        MutableComponent caret = new TextComponent("> ").withStyle(ChatFormatting.GRAY);
+        MutableComponent arrow = new TextComponent("-> ").withStyle(ChatFormatting.GOLD);
+
+
+
+
+            ChatFormatting format =  ChatFormatting.YELLOW;
+
+            tooltip.add(arrow.copy()
+                    .append(new TextComponent(InstructionManager.INSTRUCTIONS_LOCATIONS.get(1).string()).withStyle(format)));
+
+
+  /*
         String spacing = "    ";
 
         Component indent = new TextComponent(spacing + " ");
@@ -109,6 +152,18 @@ public class BaseItem extends Item implements TypewriterProvider {
         Component percentage = new TextComponent((String.valueOf(getFromTag("clicks")))).withStyle(ChatFormatting.GREEN);
         pTooltipComponents.add(indent.plainCopy()
                 .append(description.getKey()+ " " + "Info:").append(percentage));
+*/
 
     }
+    public static CompoundTag getSavedData(ItemStack pStack) {
+        if (!pStack.hasTag())
+            return null;
+      if (!pStack.getTag()
+                .contains("SavedData"))
+            return null;
+
+        return pStack.getTag().getCompound("SavedData");
+    }
+
+
 }

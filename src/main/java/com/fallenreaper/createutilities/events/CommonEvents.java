@@ -22,7 +22,7 @@ public class CommonEvents {
 
 
         Player player = mc.player;
-        event.getLeft().add(fps);
+       // event.getLeft().add(fps);
     }
 }
 

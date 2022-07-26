@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.typewriter;
 
 import com.fallenreaper.createutilities.content.items.BaseItem;
+import com.fallenreaper.createutilities.content.items.InstructionManager;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.CUItems;
@@ -23,6 +24,8 @@ import net.minecraftforge.items.ItemStackHandler;
 
 
 public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterContainer> {
+
+    protected InstructionManager instructionManager;
     protected static final GuiTextures BG = GuiTextures.TYPEWRITER;
     protected static final AllGuiTextures PLAYER = AllGuiTextures.PLAYER_INVENTORY;
 
@@ -55,7 +58,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         int invY = 150 - 15;
         clickIndicator.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         renderPlayerInventory(pPoseStack, invX, invY);
-        renderFuelBar(pPoseStack, x, y, getMainBlockEntity().fuelLevel);
+        renderFuelBar(pPoseStack, x, y, -1);
         renderModel(pPoseStack, x + BG.width + 50, y + BG.height + 10, pPartialTick);
 
     }
@@ -81,7 +84,10 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
 
         Slot slot = menu.slots.get(4);
         ItemStack itemstack = slot.getItem();
+        GuiGameElement.of(CUItems.PUNCHCARD.get())
+                .render(ms);
         if (getMainBlockEntity().hasBlueprintIn()) {
+
             GuiGameElement.of(CUBlockPartials.SCHEMATIC_MODEL)
                     .render(ms);
         }
@@ -129,9 +135,9 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     }
 
     protected void loadData() {
-
-
+        //TODO, figure out why tf is it not deleting itemstack from the slot
         Item item = menu.slots.get(4).getItem().getItem();
+
                 //getInventory().getStackInSlot(4).getItem();
         if (item instanceof BaseItem baseItem) {
 
@@ -140,6 +146,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
             } else {
                 getInventory().setStackInSlot(4, ItemStack.EMPTY);
                 getInventory().setStackInSlot(5,new ItemStack(CUItems.PUNCHCARD.get()));
+
                 getMainBlockEntity().notifyUpdate();
         }
     }

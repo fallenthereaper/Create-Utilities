@@ -32,11 +32,11 @@ public class FarmlandBlockMixin {
             BlockEntity detectedBlock = pLevel.getBlockEntity(blockpos);
 
             if (detectedBlock instanceof SprinklerBlockEntity be) {
-                int radius = be.getRadius();
-
-                    for (BlockPos pos : BlockPos.betweenClosed(blockpos.offset(-radius, -1, -radius), blockpos.offset(radius, -1, radius))) {
-                        if (be.isHydrating() && be.isWater()) {
-                        if (SprinklerInteractionHandler.isInsideCircle(radius, blockpos, pos)) {
+                BlockPos posBe = be.getBlockPos();
+                if(be.isHydrating() && be.isWater()) {
+                    System.out.println("Radius:" + be.getRadius());
+                    for (BlockPos pos : BlockPos.betweenClosed(posBe.offset(-be.getRadius(), 1, -be.getRadius()), posBe.offset(be.getRadius(), 1, be.getRadius()))) {
+                        if(SprinklerInteractionHandler.isInsideCircle(be.getRadius(), posBe, pPos)) {
                             return true;
                         }
                     }

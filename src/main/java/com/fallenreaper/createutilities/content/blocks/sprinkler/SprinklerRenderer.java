@@ -57,11 +57,10 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
                     CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
             KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, vb, light);
             Font f = Minecraft.getInstance().font;
-            renderText(f,292, 234, String.valueOf(angle));
+          //  renderText(f,292, 234, String.valueOf(angle));
             VertexConsumer vertexBuilder = buffer.getBuffer(RenderType.cutoutMipped());
             kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
-            model.light(light)
-                    .renderInto(ms,vertexBuilder );
+
         }
 
 

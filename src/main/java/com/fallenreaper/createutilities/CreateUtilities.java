@@ -1,6 +1,5 @@
 package com.fallenreaper.createutilities;
 
-import com.fallenreaper.createutilities.events.ClientEvents;
 import com.fallenreaper.createutilities.index.*;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
@@ -27,8 +26,11 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Supplier;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Mod("createutilities")
@@ -39,7 +41,8 @@ public class CreateUtilities {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ID = "createutilities";
-
+    public static final String MOD_VERSION = "1.0";
+    public static List<Block> blockList = new ArrayList<>();
     public static final CreativeModeTab TAB = new CreativeModeTab(ID) {
         @Override
         public @NotNull ItemStack makeIcon() {
@@ -82,10 +85,14 @@ public class CreateUtilities {
         CUBlockPartials.register();
         CUBlockEntities.register();
         CUContainerTypes.register();
-        ClientEvents.addToBlockList(()-> Blocks.FURNACE);
-
+        addToBlockList(()-> Blocks.FURNACE);
+        addToBlockList(()-> Blocks.CRAFTING_TABLE);
     }
 
+    public static void addToBlockList(Supplier<Block> sup) {
+        if(!(sup.get() == null))
+            blockList.add(sup.get());
+    }
     private static void doClientStuff(final FMLClientSetupEvent event) {
        event.enqueueWork(CUPonder::register);
     }

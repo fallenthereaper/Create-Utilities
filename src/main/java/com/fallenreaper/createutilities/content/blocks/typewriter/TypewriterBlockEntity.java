@@ -25,6 +25,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     public float fuelLevel;
     LazyOptional<IItemHandler> inventoryProvider;
     TypewriterItemHandler inventory;
+    int ticks;
 
     public TypewriterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -52,10 +53,18 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     @Override
     public void tick() {
         super.tick();
+        ticks+=1;
+
+        if(ticks % 20 == 0) {
+          fuelLevel += 1;
+
+        }
+        /*
         refillFuelIfPossible();
         if (fuelLevel <= 0 ) {
             fuelLevel = 0;
         }
+        */
        // fuelLevel -= getFuelUsageRate();
     }
 

@@ -5,7 +5,7 @@ license="MIT"
 
 [[mods]]
 modId="createutilities"
-version="0.1"
+version="1.0"
 displayName="Create Utilities"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/create-utilities"
 logoFile="logo.png"
