@@ -93,6 +93,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     }
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
+
         inventory.deserializeNBT(compound.getCompound("inventory"));
     }
     @Override
@@ -115,6 +116,10 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
         return 32/64;
     }
 
+    @Override
+    public void writeSafe(CompoundTag tag, boolean clientPacket) {
+        super.writeSafe(tag, clientPacket);
+    }
 
 
     @NotNull

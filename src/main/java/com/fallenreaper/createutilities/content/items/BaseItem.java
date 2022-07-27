@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -26,7 +27,10 @@ import net.minecraft.world.level.block.GrassBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 
 public class BaseItem extends Item {
@@ -53,7 +57,7 @@ public class BaseItem extends Item {
 
                 List<LangBuilder> info = InstructionManager.INSTRUCTIONS_LOCATIONS;
 
-                pPlayer.displayClientMessage(new TextComponent("Data Gathered:" + " " + info.get(2).string()).withStyle(ChatFormatting.GOLD), false);
+            //    pPlayer.displayClientMessage(new TextComponent("Data Gathered:" + " " + info.get(2).string()).withStyle(ChatFormatting.GOLD), false);
 
                 //mc.player.chat("Data Gathered:"  + " " + info.getLabeledText());
                 return InteractionResultHolder.success(pPlayer.getItemInHand(pUsedHand));
@@ -130,19 +134,24 @@ public class BaseItem extends Item {
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
 
-
-
         MutableComponent caret = new TextComponent("> ").withStyle(ChatFormatting.GRAY);
         MutableComponent arrow = new TextComponent("-> ").withStyle(ChatFormatting.GOLD);
+       String abc = "abcdefghijklmnpqrstuvxyz";
+         Map<BlockPos, String> map;
+         UUID uuid;
+            if(pStack.hasTag() && pStack.getTag().contains("DoorPosition")) {
+                CompoundTag tag = pStack.getTag();
+
+                 BlockPos pos = NbtUtils.readBlockPos(tag.getCompound("DoorPosition"));
+                ChatFormatting format = ChatFormatting.YELLOW;
+                map = new HashMap<>();
+                uuid = new UUID(pos.getX() + pos.getY() + pos.getZ(), 1);
+                map.put(pos, String.valueOf(uuid.getMostSignificantBits()) + uuid.variant());
 
 
-
-
-            ChatFormatting format =  ChatFormatting.YELLOW;
-
-            tooltip.add(arrow.copy()
-                    .append(new TextComponent(InstructionManager.INSTRUCTIONS_LOCATIONS.get(1).string()).withStyle(format)));
-
+                tooltip.add(arrow.copy()
+                        .append(new TextComponent("Id" +  map.get(pos) + abc.charAt(pos.getX() % abc.length())).withStyle(format)));
+            }
 
   /*
         String spacing = "    ";

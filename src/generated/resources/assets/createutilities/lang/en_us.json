@@ -6,5 +6,11 @@
   "item.createutilities.note_item": "Notes",
   "item.createutilities.punchcard": "Punchcard",
   "item.createutilities.red_wax": "Wax",
-  "createutilities.display_source.time_duration": "Time Duration"
+  "createutilities.display_source.time_duration": "Time Duration",
+  "createutilities.door_bind.set": "Door Bound Set",
+  "createutilities.door_bind.fail": "Door Bound Failed",
+  "createutilities.door_bind.clear": "Door Bound Cleared",
+  "createutilities.door_bind.set_already": "Door Bound Is Already Set",
+  "createutilities.door_bind.invalid": "Invalid Position"
+
 }

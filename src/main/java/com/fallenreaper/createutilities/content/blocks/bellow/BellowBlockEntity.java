@@ -149,8 +149,9 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         Component indent1 = new TextComponent(spacing + " ");
         Component arrow = new TextComponent("->").withStyle(ChatFormatting.DARK_GRAY);
         Component time = new TextComponent(getTotalTime(getMaxBurnTime(itemIn))).withStyle(ChatFormatting.GOLD);
-        String item = itemIn.getItem().getName(itemIn).getString();
-        Component in = new TextComponent(item + " " + "x"+itemIn.getCount()).withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.UNDERLINE);
+        String item = itemIn.isEmpty() ? "None" : itemIn.getItem().getName(itemIn).getString() ;
+        Component in = new TextComponent(item + " " + (itemIn.isEmpty() ? "" : "x")+(itemIn.getCount() <= 0 ? "" : itemIn.getCount())).withStyle(itemIn.isEmpty() ? ChatFormatting.RED : ChatFormatting.GREEN).withStyle(ChatFormatting.UNDERLINE);
+        Component status = new TextComponent("RUNNING").withStyle(ChatFormatting.AQUA);
         tooltip.add(indent1.plainCopy()
                 .append("Bellow Info:"));
                        tooltip.add(arrow.plainCopy()
@@ -158,6 +159,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
                                .append("Time Elapsed:").withStyle(ChatFormatting.GRAY).append(indent).append(time));
 
                 tooltip.add(arrow.plainCopy().append(indent).append("Fuel:").withStyle(ChatFormatting.GRAY).append(indent).append(in));
+                tooltip.add(arrow.plainCopy().append(indent).append("Status:").withStyle(ChatFormatting.GRAY).append(indent).append(status));
 
 
 
