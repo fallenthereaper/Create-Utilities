@@ -7,7 +7,7 @@ import com.fallenreaper.createutilities.content.items.InstructionEntry;
 import com.fallenreaper.createutilities.content.items.InstructionManager;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import com.fallenreaper.createutilities.data.PunchcardDoorInfo;
-import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.data.doorlock.DoorLockManagerStored;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.CUContainerTypes;
 import com.simibubi.create.AllSoundEvents;
@@ -124,7 +124,7 @@ public class CommonEvents {
         InstructionManager manager;
         if(!itemStack.hasTag()) {
             if(player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor) {
-                for (BlockPos positerator : CreateUtilities.DOORLOCK_MANAGER.currentPositions)
+                for (BlockPos positerator : CreateUtilities.DOORLOCK_MANAGER.dataList)
                     if (!positerator.equals(clickedPos.below(1)) || positerator.equals(clickedPos.above(1)) || positerator.equals(clickedPos)) {
                         LangBuilder lang = Lang.builder(CreateUtilities.ID);
                         player.displayClientMessage(lang.translate("door_bind.set_already").component().withStyle(ChatFormatting.YELLOW), true);
@@ -132,7 +132,7 @@ public class CommonEvents {
 
 
                 list = new ArrayList<>();
-                DoorLockManager doorManager = CreateUtilities.DOORLOCK_MANAGER;
+                DoorLockManagerStored doorManager = CreateUtilities.DOORLOCK_MANAGER;
                 InstructionEntry doorInstruction = new InstructionEntry();
                 doorInstruction.instruction = new PunchcardDoorInfo();
 
@@ -154,9 +154,9 @@ public class CommonEvents {
 
                 tag.putUUID("Key", id);
 
-                doorManager.addBlockPos(NbtUtils.readBlockPos(blockTag), tag.getUUID("Key"));
+                doorManager.add(NbtUtils.readBlockPos(blockTag), tag.getUUID("Key"));
 
-                tag.put("DoorPosition", NbtUtils.writeBlockPos(doorManager.doorLocksNetwork.get(id)));
+                tag.put("DoorPosition", NbtUtils.writeBlockPos(doorManager.dataStored.get(id)));
               ;
                 list = NBTHelper.readCompoundList(tag.getList("EntryValues", Tag.TAG_COMPOUND), InstructionEntry::fromTag);
 
@@ -192,7 +192,7 @@ public class CommonEvents {
             }
             LangBuilder lang = Lang.builder(CreateUtilities.ID);
             player.displayClientMessage(lang.translate("door_bind.clear").component().withStyle(ChatFormatting.YELLOW), true);
-            CreateUtilities.DOORLOCK_MANAGER.removeBlockPos(itemStack.getTag().getUUID("Key"));
+            CreateUtilities.DOORLOCK_MANAGER.remove(itemStack.getTag().getUUID("Key"));
             itemStack.setTag(null);
         }
     }

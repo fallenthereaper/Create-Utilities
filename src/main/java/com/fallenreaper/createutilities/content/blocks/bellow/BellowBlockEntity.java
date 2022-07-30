@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleInformation {
    public int clock;
    public int timer;
-  public   boolean isValid;
+    public boolean isValid;
    public int remainingTime;
    public ItemStack itemIn;
    public int maxTime;
@@ -35,8 +35,6 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
     @Override
     public void tick() {
         super.tick();
-
-
 
         if(timer <= 0)
             timer = 0;
@@ -113,6 +111,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
 
     @Override
     public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        tooltip.add(new TextComponent("test").withStyle(ChatFormatting.GREEN));
         return true;
     }
 
@@ -160,14 +159,6 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
 
                 tooltip.add(arrow.plainCopy().append(indent).append("Fuel:").withStyle(ChatFormatting.GRAY).append(indent).append(in));
                 tooltip.add(arrow.plainCopy().append(indent).append("Status:").withStyle(ChatFormatting.GRAY).append(indent).append(status));
-
-
-
-
-
-
-
-
 
 
         return true;

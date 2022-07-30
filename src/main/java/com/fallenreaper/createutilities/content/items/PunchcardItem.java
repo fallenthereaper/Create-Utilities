@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.content.items;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
-import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.data.doorlock.DoorLockManagerStored;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.goggles.GogglesItem;
 import com.simibubi.create.foundation.utility.Color;
@@ -48,7 +48,7 @@ public class PunchcardItem extends BaseItem {
         Player player = pContext.getPlayer();
         Level worldIn = pContext.getLevel();
         BlockPos pos = pContext.getClickedPos();
-        DoorLockManager manager = CreateUtilities.DOORLOCK_MANAGER;
+        DoorLockManagerStored manager = CreateUtilities.DOORLOCK_MANAGER;
         ItemStack itemStack = player.getItemInHand(player.getUsedItemHand());
         Block block = worldIn.getBlockState(pos).getBlock();
 

@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities;
 
-import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.data.doorlock.DoorLockManagerStored;
 import com.fallenreaper.createutilities.events.CommonEvents;
 import com.fallenreaper.createutilities.index.*;
 import com.fallenreaper.createutilities.networking.ModPackets;
@@ -49,7 +49,7 @@ public class CreateUtilities {
     public static final String MOD_VERSION = "1.0";
     public static List<Block> blockList = new ArrayList<>();
     public static final LangBuilder ModLangBuilder = Lang.builder(ID);
-    public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
+    public static DoorLockManagerStored DOORLOCK_MANAGER = new DoorLockManagerStored();
     public static final CreativeModeTab TAB = new CreativeModeTab(ID) {
         @Override
         public @NotNull ItemStack makeIcon() {
