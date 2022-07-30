@@ -5,7 +5,7 @@ import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowDisplaySource;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowInstance;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowRenderer;
-import com.fallenreaper.createutilities.content.blocks.sliding_door.ModifiedSlidingDoorBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoorBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInstance;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerRenderer;
@@ -35,8 +35,8 @@ public class CUBlockEntities {
             .renderer(() -> BellowRenderer::new)
             .onRegister(assignDataBehaviourTE(new BellowDisplaySource()))
             .register();
-    public static final BlockEntityEntry<ModifiedSlidingDoorBlockEntity> SLIDING_DOOR = CreateUtilities.registrate()
-            .tileEntity("brass_sliding_door", ModifiedSlidingDoorBlockEntity::new)
+    public static final BlockEntityEntry<LockSlidingDoorBlockEntity> SLIDING_DOOR = CreateUtilities.registrate()
+            .tileEntity("brass_sliding_door", LockSlidingDoorBlockEntity::new)
             .renderer(() -> SlidingDoorRenderer::new)
             .validBlocks(CUBlocks.BRASS_DOOR)
             .register();

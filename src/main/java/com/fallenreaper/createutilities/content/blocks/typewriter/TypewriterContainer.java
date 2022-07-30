@@ -21,10 +21,7 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
     public TypewriterContainer(MenuType<?> type, int id, Inventory inv, FriendlyByteBuf extraData) {
         super(type, id, inv, extraData);
     }
-
-
-
-
+    
     @Override
     protected TypewriterBlockEntity createOnClient(FriendlyByteBuf extraData) {
         ClientLevel world = Minecraft.getInstance().level;
@@ -74,14 +71,14 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
     protected void addSlots() {
         int x = 0;
         int y = 0;
-        int[] yOffsets = { y+20, y+30, y+79 //y+ 49, y + 78
+        int[] yOffsets = { y+20, y+30, y+79, y+61 //y+ 49, y + 78
                 //
                 };
 
         addSlot(new SlotItemHandler(contentHolder.inventory, 4, x + 173, yOffsets[1]));
         addSlot(new SlotItemHandler(contentHolder.inventory, 5, x + 173, yOffsets[2]));
         addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 45, yOffsets[0]));
-
+        addSlot(new SlotItemHandler(contentHolder.inventory, 1, x + 45, yOffsets[3]));
 
 
         addPlayerSlots(8, 148);

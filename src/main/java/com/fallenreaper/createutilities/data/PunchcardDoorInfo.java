@@ -2,15 +2,16 @@ package com.fallenreaper.createutilities.data;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 
-public class PunchcardTrainTicket extends PunchcardInfo{
+public class PunchcardDoorInfo extends PunchcardInfo{
 
 
-    public PunchcardTrainTicket() {
+    public PunchcardDoorInfo() {
         super();
+
     }
 
     @Override
     public String getId() {
-        return CreateUtilities.defaultResourceLocation("train_ticket").getPath();
+        return CreateUtilities.defaultResourceLocation("door_info").getPath();
     }
 }

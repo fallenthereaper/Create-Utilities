@@ -1,17 +1,25 @@
 package com.fallenreaper.createutilities.data;
 
+import com.fallenreaper.createutilities.CreateUtilities;
+import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
-public class PunchcardInfo implements ISavedInfo {
+public abstract class PunchcardInfo implements ISavedInfo {
 
-    protected CompoundTag data;
+    public CompoundTag data;
     protected String description;
 
-    public PunchcardInfo(String description) {
+
+    public PunchcardInfo() {
         data = new CompoundTag();
-        this.description = description;
-       data.putString("text", description);
+        LangBuilder lang = Lang.builder(CreateUtilities.ID);
+        Component txt = new TextComponent(lang.translate( "instruction." + getId()).string());
+
+        data.putString("text", txt.getString());
+
     }
 
     public CompoundTag getDataInfo() {
@@ -23,37 +31,46 @@ public class PunchcardInfo implements ISavedInfo {
         if(!data.contains(key))
             return " ";
 
-        return data.getString(key);
+        return data.getString("text");
     }
+    public CompoundTag getTagInfo() {
+        //info for this class and all other PunchcardInfos
+        CompoundTag tag = new CompoundTag();
+        tag.putString("Id", getLabeledText());
+        tag.put("Data", this.data.copy());
+
+        LangBuilder lang = Lang.builder(CreateUtilities.ID);
+        Component txt = new TextComponent(lang.translate( "instruction." + getId()).string());
+
+
+        tag.getCompound("Data").putString("text", txt.getString());
+
+
+
+        return tag;
+    }
+
 
     @Override
     public String getLabeledText() {
         return getTextData("text");
     }
 
-    public CompoundTag write() {
-        CompoundTag tag = new CompoundTag();
-        return tag;
-    }
+    @Override
+    public void setLabeledText(String txt) {
 
-    public static PunchcardInfo fromTag(CompoundTag tag) {
-
-        return null;
     }
 
     @Override
-    public void setLabeledText(String text) {
-       this.description = text;
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return null;
+    public String getId() {
+        return CreateUtilities.defaultResourceLocation("info").getPath();
     }
 
     @Override
     public CompoundTag getData() {
-        return null;
+        return data;
     }
+
+
 
 }

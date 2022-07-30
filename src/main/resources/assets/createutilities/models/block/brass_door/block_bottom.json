@@ -3,7 +3,8 @@
 	"parent": "block/block",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "createutilities:block/brass_door/brass_door_bottom"
+		"0": "createutilities:block/brass_door/brass_door_bottom",
+		"particle": "createutilities:block/brass_door/brass_door_bottom"
 	},
 	"elements": [
 		{

@@ -24,8 +24,12 @@ import java.util.List;
 public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, MenuProvider {
     public float fuelLevel;
     LazyOptional<IItemHandler> inventoryProvider;
-    TypewriterItemHandler inventory;
+    public TypewriterItemHandler inventory;
+    public boolean hasBluePrint;
+    public boolean hasFuel;
     int ticks;
+    float dataGatheringProgress;
+    boolean shouldSendData;
 
     public TypewriterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -37,35 +41,45 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     public void addBehaviours(List<TileEntityBehaviour> behaviours) {
 
     }
-    protected void refillFuelIfPossible() {
-      if(1-fuelLevel/128 < getFuelUsageRate())
-          return;
+    protected void tryRefill() {
 
-        if (inventory.getStackInSlot(0)
-                .isEmpty())
+
+        if (inventory.getStackInSlot(0).isEmpty())
             return;
+        if (1 - fuelLevel + 1 / 128f < getFuelAddedByEach())
+        return;
+
         inventory.getStackInSlot(0)
                 .shrink(1);
-        fuelLevel += getFuelAddedByGunPowder();
+
+        fuelLevel += getFuelAddedByEach();
+
         sendData();
     }
 
     @Override
     public void tick() {
         super.tick();
-        ticks+=1;
-
-        if(ticks % 20 == 0) {
-          fuelLevel += 1;
-
-        }
-        /*
-        refillFuelIfPossible();
-        if (fuelLevel <= 0 ) {
+        if(fuelLevel <= 0) {
             fuelLevel = 0;
         }
-        */
-       // fuelLevel -= getFuelUsageRate();
+
+                if(shouldSendData)
+                dataGatheringProgress += 0.005f;
+
+
+        if(dataGatheringProgress >= 1) {
+            dataGatheringProgress = 0;
+        }
+
+        tryRefill();
+    }
+    public void changeFuelLevel() {
+
+        fuelLevel -= getFuelUsageRate();
+    }
+    public void shouldSend (){
+        shouldSendData = true;
     }
 
     @Override
@@ -74,7 +88,9 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     }
 
     public boolean hasBlueprintIn(){
-        return !this.inventory.getStackInSlot(4).isEmpty();
+        if (inventory == null)
+            return false;
+        return hasBluePrint;
     }
 
 
@@ -85,15 +101,22 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     @Override
     public void write(CompoundTag compound, boolean clientPacket) {
         compound.put("inventory", inventory.serializeNBT());
-
+        compound.putFloat("FuelLevel", fuelLevel);
+        compound.putFloat("DataProgress", dataGatheringProgress);
+         compound.putBoolean("HasBlueprint", !this.inventory.getStackInSlot(4).isEmpty());
+        compound.putBoolean("HasFuel", !(fuelLevel <= 0));
         super.write(compound, clientPacket);
     }
     public double getFuelUsageRate() {
-        return  90 / 100f;
+        return 1F/10F;
     }
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
 
+            hasBluePrint = compound.getBoolean("HasBlueprint");
+            fuelLevel = compound.getFloat("FuelLevel");
+        hasFuel = compound.getBoolean("HasFuel");
+        dataGatheringProgress = compound.getFloat("DataProgress");
         inventory.deserializeNBT(compound.getCompound("inventory"));
     }
     @Override
@@ -112,8 +135,8 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     public void onLoad() {
         super.onLoad();
     }
-    public double getFuelAddedByGunPowder() {
-        return 32/64;
+    public double getFuelAddedByEach() {
+        return 0.25f;
     }
 
     @Override

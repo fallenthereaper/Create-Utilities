@@ -1,7 +1,12 @@
 package com.fallenreaper.createutilities;
 
+import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.events.CommonEvents;
 import com.fallenreaper.createutilities.index.*;
+import com.fallenreaper.createutilities.networking.ModPackets;
 import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.LangBuilder;
 import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -43,6 +48,8 @@ public class CreateUtilities {
     public static final String ID = "createutilities";
     public static final String MOD_VERSION = "1.0";
     public static List<Block> blockList = new ArrayList<>();
+    public static final LangBuilder ModLangBuilder = Lang.builder(ID);
+    public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
     public static final CreativeModeTab TAB = new CreativeModeTab(ID) {
         @Override
         public @NotNull ItemStack makeIcon() {
@@ -54,10 +61,12 @@ public class CreateUtilities {
 
     public CreateUtilities() {
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new CommonEvents());
         onStart();
 
     }
     public static void onStart() {
+        ModPackets.registerPackets();
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -66,6 +75,7 @@ public class CreateUtilities {
 
         modLoadingContext.registerConfig(ModConfig.Type.SERVER, CUConfig.SERVER_CONFIG, CUConfig.SERVER_FILENAME);
         // Register the setup method for modloading
+
         modEventBus.addListener(CreateUtilities::setup);
         modEventBus.addListener(CreateUtilities::doClientStuff);
         // Register the enqueueIMC method for modloading

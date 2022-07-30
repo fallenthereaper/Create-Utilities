@@ -4,7 +4,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"3": "createutilities:block/brass_door/brass_door_top",
-		"particle": "create:block/train_trapdoor"
+		"particle": "createutilities:block/brass_door/brass_door_top"
 	},
 	"elements": [
 		{

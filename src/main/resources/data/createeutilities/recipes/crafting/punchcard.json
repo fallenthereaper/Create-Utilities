@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    " C ",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:paper"
+    },
+    "C": {
+      "item": "create:precision_mechanism"
+    }
+  },
+  "result": {
+    "item": "createutilities:punchcard",
+    "count": 1
+  }
+}

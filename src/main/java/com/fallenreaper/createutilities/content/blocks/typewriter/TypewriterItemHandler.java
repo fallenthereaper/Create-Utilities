@@ -9,8 +9,8 @@ import javax.annotation.Nonnull;
 public class TypewriterItemHandler extends ItemStackHandler {
     public TypewriterBlockEntity te;
 
-    public  TypewriterItemHandler(TypewriterBlockEntity te) {
-        super(10);
+    public TypewriterItemHandler(TypewriterBlockEntity te) {
+        super(6);
         this.te = te;
     }
 
@@ -22,9 +22,10 @@ public class TypewriterItemHandler extends ItemStackHandler {
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         return switch (slot) {
-            case 4 -> CUItems.NOTE_ITEM.isIn(stack);
-            case 5 -> CUItems.PUNCHCARD.isIn(stack);
-            case 0 -> CUItems.WAX.isIn(stack);
+            case 4 -> CUItems.NOTE_ITEM.isIn(stack) && !stack.hasTag(); //notes input
+            case 5 -> false; //output
+            case 0 -> CUItems.WAX.isIn(stack); //fuel input
+            case 1 -> CUItems.PUNCHCARD.isIn(stack); // punchcard input
             default -> super.isItemValid(slot, stack);
         };
     }

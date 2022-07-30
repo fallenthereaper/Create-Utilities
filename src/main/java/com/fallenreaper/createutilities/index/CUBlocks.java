@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.index;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlock;
-import com.fallenreaper.createutilities.content.blocks.sliding_door.ModifiedSlidingDoor;
+import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlock;
 import com.fallenreaper.createutilities.utils.DefaultProperties;
@@ -34,7 +34,7 @@ public class CUBlocks {
             .addLayer(() -> RenderType::cutoutMipped)
             .defaultLoot()
             .register();
-   public static final BlockEntry<ModifiedSlidingDoor> BRASS_DOOR = REGISTRATE.block("brass_door", ModifiedSlidingDoor::new)
+   public static final BlockEntry<LockSlidingDoor> BRASS_DOOR = REGISTRATE.block("brass_door", LockSlidingDoor::new)
             .transform(BuilderTransformers.slidingDoor("brass"))
             .properties(p -> p.color(MaterialColor.TERRACOTTA_CYAN)
                     .sound(SoundType.NETHERITE_BLOCK)

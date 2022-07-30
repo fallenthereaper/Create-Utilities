@@ -26,7 +26,7 @@ public class TypewriterRenderer extends SmartTileEntityRenderer<TypewriterBlockE
     protected void renderSafe(TypewriterBlockEntity tileEntityIn, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         BlockState blockState = tileEntityIn.getBlockState();
         Direction facing = blockState.getValue(TypewriterBlock.HORIZONTAL_FACING);
-        if(tileEntityIn.hasBlueprintIn()) {
+        if(tileEntityIn.hasBlueprintIn() || !tileEntityIn.inventory.getStackInSlot(4).isEmpty()) {
             SuperByteBuffer blueprint = CachedBufferer.partial(CUBlockPartials.SCHEMATIC_MODEL, blockState);
             rotateCenteredInDirection(blueprint, Direction.UP, facing);
             blueprint.renderInto(ms, buffer.getBuffer(RenderType.solid()));

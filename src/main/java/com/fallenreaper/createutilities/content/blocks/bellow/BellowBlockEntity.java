@@ -120,7 +120,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
     protected void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
         if(this.itemIn != null) {
-            compound.put("CurrentStack", this.itemIn.serializeNBT());
+            compound.put("ItemIn", this.itemIn.serializeNBT());
             compound.putInt("RemainingTime", this.remainingTime);
             compound.putInt("TotalTime", getMaxBurnTime(itemIn));
         }
@@ -138,7 +138,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
        maxTime = compound.getInt("TotalTime");
        remainingTime = compound.getInt("RemainingTime");
 
-            this.itemIn = ItemStack.of(compound.getCompound("CurrentStack"));
+            this.itemIn = ItemStack.of(compound.getCompound("ItemIn"));
 
     }
 
@@ -198,14 +198,15 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         minutes = minutes % 60;
         hours = hours % 60;
 
-
-
         if(weeks > 0)
             base += weeks + "w ";
+
         if(days > 0)
             base += days + "d ";
+
         if(hours > 0)
             base += hours + "h ";
+
         if(minutes > 0)
             base += minutes + "m ";
 

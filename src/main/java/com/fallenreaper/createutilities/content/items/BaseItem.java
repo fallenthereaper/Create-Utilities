@@ -1,8 +1,6 @@
 package com.fallenreaper.createutilities.content.items;
 
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
-import com.simibubi.create.content.logistics.trains.management.schedule.Schedule;
-import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -43,28 +41,15 @@ public class BaseItem extends Item {
     }
     @Override
     public boolean isBarVisible(ItemStack pStack) {
-        return getFromTag("clicks")  > 0;
+        return pStack.hasTag() && pStack.getItem() instanceof NotesItem;
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         Minecraft mc = Minecraft.getInstance();
-        if(mc.player != null) {
-      if(pLevel.isClientSide()) {
 
 
-            if (InstructionManager.INSTRUCTIONS.size() != 0) {
-
-                List<LangBuilder> info = InstructionManager.INSTRUCTIONS_LOCATIONS;
-
-            //    pPlayer.displayClientMessage(new TextComponent("Data Gathered:" + " " + info.get(2).string()).withStyle(ChatFormatting.GOLD), false);
-
-                //mc.player.chat("Data Gathered:"  + " " + info.getLabeledText());
-                return InteractionResultHolder.success(pPlayer.getItemInHand(pUsedHand));
-            }
-            }
-        }
-        return super.use(pLevel, pPlayer, pUsedHand);
+        return InteractionResultHolder.success((pPlayer.getItemInHand(pUsedHand)));
     }
 
     @Override
@@ -91,14 +76,7 @@ public class BaseItem extends Item {
 
         return super.useOn(pContext);
     }
-    public static Schedule getInstruction(ItemStack pStack) {
-        if (!pStack.hasTag())
-            return null;
-        if (!pStack.getTag()
-                .contains("Instruction"))
-            return null;
-        return Schedule.fromTag(pStack.getTagElement("Schedule"));
-    }
+
 
     public void addToTag(String key, int tag) {
         compoundTag.putInt(key, Math.min(tag, getMaxClicks()));
@@ -119,6 +97,7 @@ public class BaseItem extends Item {
 
     @Override
     public int getBarWidth(ItemStack pStack) {
+
         return Math.min( (13 * getFromTag("clicks") / getMaxClicks()), 13);
     }
     @Override
@@ -150,7 +129,7 @@ public class BaseItem extends Item {
 
 
                 tooltip.add(arrow.copy()
-                        .append(new TextComponent("Id" +  map.get(pos) + abc.charAt(pos.getX() % abc.length())).withStyle(format)));
+                        .append(new TextComponent("Id" +  map.get(pos) + (abc.charAt(pos.getX() % abc.length()))).withStyle(format)));
             }
 
   /*
@@ -164,15 +143,7 @@ public class BaseItem extends Item {
 */
 
     }
-    public static CompoundTag getSavedData(ItemStack pStack) {
-        if (!pStack.hasTag())
-            return null;
-      if (!pStack.getTag()
-                .contains("SavedData"))
-            return null;
 
-        return pStack.getTag().getCompound("SavedData");
-    }
 
 
 }
