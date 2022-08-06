@@ -6,7 +6,7 @@ import net.minecraft.network.chat.TextComponent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PunchcardWriter {
+public class PunchcardTextWriter {
 
     protected char emptyBox = '\u2592';
     protected char filledBox = '\u2588';
@@ -67,7 +67,7 @@ public class PunchcardWriter {
      * @param x size
      * @param y size
      */
-    public void writeBox(int x, int y) {
+    public void writeText(int x, int y) {
         //For safety reasons I'm going to add a max cap to them.
         int safeX = Math.min(20, x);
         int safeY = Math.min(20, y);
@@ -99,7 +99,7 @@ public class PunchcardWriter {
     /**
      * Gets the lines between the string for parsing.
      */
-    public TextComponent getLines(PunchcardWriter punchcardWriter, ChatFormatting formatting){
+    public TextComponent getLines(PunchcardTextWriter punchcardWriter, ChatFormatting formatting){
         List<TextComponent> dataList = new ArrayList<>();
 
         for (int i = 1; i < punchcardWriter.getYsize() + 1; i++) {
@@ -114,14 +114,14 @@ public class PunchcardWriter {
         return null;
     }
 
-    public int[] findBoxAt(int x, int y) {
+    public boolean findBoxAt(BoxFrame box) {
         int[] value = new int[2];
         for (int yy = 0; yy < dataMap[0].length; yy++)
             for (int xx = 0; xx < dataMap[1].length; xx++)
-                if(dataMap[x][y] == emptyBox) {
-                    value[0] = x;
-                    value[1] = y;
+                if(dataMap[box.y][box.x] == emptyBox) {
+
+                    return true;
                 }
-        return value;
+        return false;
     }
 }

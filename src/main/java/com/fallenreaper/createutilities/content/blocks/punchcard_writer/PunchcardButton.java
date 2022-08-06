@@ -1,10 +1,10 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
-import com.fallenreaper.createutilities.content.items.data.BoxFrame;
-import com.fallenreaper.createutilities.content.items.data.PunchcardWriter;
+import com.fallenreaper.createutilities.content.items.data.PunchcardTextWriter;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.simibubi.create.foundation.gui.Theme;
 import com.simibubi.create.foundation.gui.widget.AbstractSimiWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -12,17 +12,16 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.BiConsumer;
-
 public class PunchcardButton extends AbstractSimiWidget {
     boolean clicked;
     boolean mode;
     Mode state;
-    PunchcardWriter writer;
+    PunchcardTextWriter writer;
 
-    public PunchcardButton(int x, int y, int w, int h, PunchcardWriter punchcardWriter) {
+    public PunchcardButton(int x, int y, int w, int h, PunchcardTextWriter punchcardWriter) {
         super(x, y, w, h);
         this.writer = punchcardWriter;
+        this.state = Mode.ACTIVATED;
     }
 
 
@@ -32,10 +31,17 @@ public class PunchcardButton extends AbstractSimiWidget {
         if (visible) {
             isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
-            GuiTextures button = clicked || !active || getState() == Mode.DEACTIVATED || getState() != Mode.ACTIVATED  ? GuiTextures.BUTTON_EMPTY
+            GuiTextures button = clicked || !active ||  getState() != Mode.ACTIVATED  ? GuiTextures.BUTTON_EMPTY
                     : isHoveredOrFocused() ? GuiTextures.BUTTON_HOVER : GuiTextures.BUTTON_FILLED;
+           //DEBUG CODE
+            for (int i = 1; i < writer.getYsize() + 1; i++) {
+                int max = i * writer.getXsize();
+                int min = Math.max(max - writer.getXsize(), 0);
+                int y = 40;
+                PoseStack stack = matrixStack;
+                drawString(stack, Minecraft.getInstance().font, writer.drawBox().substring(min, max), 200 / 3, (((int) (((9f) * i)) + y)), Theme.c(Theme.Key.BUTTON_HOVER).scaleAlpha(0.5f).getRGB());
 
-
+            }
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             drawBg(matrixStack, button);
@@ -64,13 +70,13 @@ public class PunchcardButton extends AbstractSimiWidget {
     }
 
     public void setDeactivated() {
-        this.visible = false;
+       this.visible = false;
         this.active = false;
     }
 
     public void setActive() {
         this.active = true;
-        this.visible = true;
+       this.visible = true;
 
     }
 
@@ -93,24 +99,13 @@ public class PunchcardButton extends AbstractSimiWidget {
     }
 
     protected void drawBg(PoseStack matrixStack, GuiTextures button) {
-      //  GuiTextures.BUTTON_FILLED.bind();
+       GuiTextures.BUTTON_FILLED.bind();
         blit(matrixStack, x, y, button.startX, button.startY, button.width, button.height);
     }
 
     @Override
     public void playDownSound(SoundManager pHandler) {
         pHandler.play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 2.0F));
-    }
-
-    @Override
-    public <T extends AbstractSimiWidget> T withCallback(BiConsumer<Integer, Integer> cb) {
-
-        return super.withCallback(cb);
-    }
-
-    @Override
-    public <T extends AbstractSimiWidget> T withCallback(Runnable cb) {
-        return super.withCallback(cb);
     }
 
     @Override
@@ -122,18 +117,13 @@ public class PunchcardButton extends AbstractSimiWidget {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-    writer.setBox(new BoxFrame(0, 2));
- //    this.clicked = true;
+   super.onClick(mouseX, mouseY);
 
-
+       // this.setState(getState() == PunchcardButton.Mode.DEACTIVATED ? Mode.ACTIVATED : Mode.DEACTIVATED);
 
     }
 
 
-    @Override
-    public void render(@NotNull PoseStack ms, int mouseX, int mouseY, float partialTicks) {
-        super.render(ms, mouseX, mouseY, partialTicks);
-    }
     public enum Mode {
         ACTIVATED,
         DEACTIVATED

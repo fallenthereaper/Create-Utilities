@@ -3,7 +3,7 @@ package com.fallenreaper.createutilities.content.items;
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.items.data.BoxFrame;
-import com.fallenreaper.createutilities.content.items.data.PunchcardWriter;
+import com.fallenreaper.createutilities.content.items.data.PunchcardTextWriter;
 import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.CreateClient;
@@ -112,8 +112,8 @@ public class PunchcardItem extends BaseItem {
 
         ChatFormatting format = ChatFormatting.GOLD;
         if (pStack.hasTag() && pStack.getTag().contains("Key")) {
-            PunchcardWriter writer = new PunchcardWriter();
-            writer.writeBox(5 , 7);
+            PunchcardTextWriter writer = new PunchcardTextWriter();
+            writer.writeText(5 , 7);
 
             for(int i = 0; i < 2; i++) {
 
@@ -128,7 +128,7 @@ public class PunchcardItem extends BaseItem {
             for (int i = 1; i < writer.getYsize() + 1; i++) {
                 int max = i * writer.getXsize();
                 int min = Math.max(max - writer.getXsize(), 0);
-                tooltip.add(new TextComponent("     " + writer.drawBox().substring(min, max)).withStyle(ChatFormatting.YELLOW));
+                tooltip.add(new TextComponent("    " + writer.drawBox().substring(min, max)).withStyle(ChatFormatting.YELLOW));
             }
 
 
