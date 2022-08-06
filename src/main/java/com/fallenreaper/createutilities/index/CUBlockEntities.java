@@ -5,6 +5,8 @@ import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowDisplaySource;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowInstance;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowRenderer;
+import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterRenderer;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoorBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInstance;
@@ -39,6 +41,11 @@ public class CUBlockEntities {
             .tileEntity("brass_sliding_door", LockSlidingDoorBlockEntity::new)
             .renderer(() -> SlidingDoorRenderer::new)
             .validBlocks(CUBlocks.BRASS_DOOR)
+            .register();
+    public static final BlockEntityEntry<PunchcardWriterBlockEntity> PUNCHCARD_WRITER = CreateUtilities.registrate()
+            .tileEntity("punchcard_writer", PunchcardWriterBlockEntity::new)
+            .validBlock(CUBlocks.PUNCHCARD_WRITER)
+            .renderer(() -> PunchcardWriterRenderer::new)
             .register();
 
     public static void register() {

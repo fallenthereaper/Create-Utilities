@@ -18,6 +18,7 @@ import com.simibubi.create.foundation.gui.container.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.element.GuiGameElement;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Indicator;
+import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.client.renderer.Rect2i;
@@ -65,18 +66,22 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     @Override
     protected void renderBg(PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
         int x = leftPos + imageWidth - BG.width;
-        int y = topPos;
+        int y = topPos  + 5;
 
         BG.render(pPoseStack, x, y, this);
         font.draw(pPoseStack, title, x + 15, y + 3, 0x442000);
 
         int invX = leftPos;
-        int invY = 150 - 15;
+        int invY = topPos + imageHeight - 3 - PLAYER.height;
         clickIndicator.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
 
-        if(!getMainBlockEntity().inventory.getStackInSlot(1).isEmpty() && getMainBlockEntity().inventory.getStackInSlot(1).hasTag())
-            renderHighlight(pPoseStack, x, y);
-
+        if(!getMainBlockEntity().inventory.getStackInSlot(1).isEmpty() && getMainBlockEntity().inventory.getStackInSlot(1).hasTag()) {
+            for(int b : Iterate.positiveAndNegative) {
+                if( b == 1) {
+                    renderHighlight(pPoseStack, x, y);
+                }
+            }
+}
         renderPlayerInventory(pPoseStack, invX, invY);
         renderProgressBar(pPoseStack, x, y, getMainBlockEntity().dataGatheringProgress);
         renderModel(pPoseStack, x + BG.width + 50, y + BG.height + 10, pPartialTick);
@@ -138,11 +143,11 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         setWindowSize(30 + BG.width, BG.height + PLAYER.height - 10);
         setWindowOffset(-11, 0);
         super.init();
-        confirmButton = new IconButton(leftPos + 118 + BG.width - 154, topPos + BG.height - 91+4, AllIcons.I_PLAY);
-        closeButton = new IconButton(leftPos + 30 + BG.width - 33, topPos + BG.height - (42 - 17), AllIcons.I_CONFIRM);
+        confirmButton = new IconButton(leftPos + 118 + BG.width - 154, topPos + BG.height - 91 + 4 + 5, AllIcons.I_PLAY);
+        closeButton = new IconButton(leftPos + 30 + BG.width - 33, topPos + BG.height - (42 - 17) + 5, AllIcons.I_CONFIRM);
 
-        extraAreas = ImmutableList.of(new Rect2i(x + BG.width, y + BG.height + BG.height - 62, 84, 92));
-        clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 98+4, new TextComponent("Off"));
+     //   extraAreas = ImmutableList.of(new Rect2i(x + BG.width, y + BG.height + BG.height - 62 - 2, 84, 92 - 2));
+        clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 98+4+5, new TextComponent("Off"));
 
 
 
@@ -160,8 +165,11 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
 
         clickIndicator.state = Indicator.State.OFF;
         confirmButton.active = false;
+        if((getMainBlockEntity().dataGatheringProgress >= 0.0F))
+            clickIndicator.state = Indicator.State.OFF;
+        confirmButton.active = false;
 
-        if(getMainBlockEntity().hasBluePrint && getMainBlockEntity().hasFuel && !getMainBlockEntity().inventory.getStackInSlot(1).isEmpty()) {
+        if(getMainBlockEntity().hasBluePrint && getMainBlockEntity().hasFuel && !getMainBlockEntity().inventory.getStackInSlot(1).isEmpty() && getMainBlockEntity().hasFuel && (getMainBlockEntity().dataGatheringProgress <= 1F)) {
             confirmButton.active = true;
             clickIndicator.state = Indicator.State.ON;
         }
@@ -197,20 +205,20 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
 
    }
     protected void loadData() {
-        //TODO, figure out why tf is it not deleting itemstack from the slot
+        //TODO, figure out why tf is it not deleting itemstack from the slot, UPDATE: FIXED 7/29/2022, i neeed to use packets
         Item item = menu.slots.get(4).getItem().getItem();
         ItemStack punchcard = getMainBlockEntity().inventory.getStackInSlot(1);
         List<CompoundTag> list;
-        boolean loaded = false;
+        boolean loaded;
                 //getInventory().getStackInSlot(4).getItem();
 
         if(punchcard.getItem() instanceof PunchcardItem item1 && getMainBlockEntity().hasBlueprintIn()) {
             if(  getMainBlockEntity().hasFuel) {
-            if(punchcard.hasTag() && punchcard.getTag().contains("DoorPosition")) {
+            if(punchcard.hasTag() && punchcard.getTag().contains("Key")) {
 
                 CompoundTag tag = punchcard.getTag();
                 list = new ArrayList<>();
-                BlockPos doorPosition = NbtUtils.readBlockPos(tag.getCompound("DoorPosition"));
+                BlockPos doorPosition = CreateUtilities.DOORLOCK_MANAGER.dataStored.get(tag.getUUID("Key")).blockPos;
                 Block block = getMainBlockEntity().getLevel().getBlockState(doorPosition).getBlock();
                 BlockState blockState = getMainBlockEntity().getLevel().getBlockState(doorPosition);
                 String textInfo = tag.getString("Description");
@@ -222,21 +230,26 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
                 list.add(NbtUtils.writeBlockState(blockState));
                 list.add(tag.getCompound("Description"));
 
-                 noteTag.putString("Description", textInfo);
-                 noteTag.put("DoorPosition", NbtUtils.writeBlockPos(doorPosition));
-                 getMainBlockEntity().changeFuelLevel();
-                 getMainBlockEntity().shouldSend();
+                noteTag.putString("Description", textInfo);
+
+                noteTag.put("DoorPosition", NbtUtils.writeBlockPos(doorPosition));
+
+                getMainBlockEntity().shouldSend();
+                getMainBlockEntity().changeFuelLevel();
 
 
+             //   ModPackets.channel.sendToServer(new TypewriterEditPacket(getInventory(), note, noteTag, true));
+                ModPackets.channel.sendToServer(new TypewriterEditPacket(getInventory(), note, noteTag, true));
 
-                getInventory().setStackInSlot(5, note);
+                if (getMainBlockEntity().dataGatheringProgress >= 0.9F) {
+                    ModPackets.channel.sendToServer(new TypewriterEditPacket(getInventory(), note, noteTag, false));
+                    getMainBlockEntity().inventory.setStackInSlot(4, ItemStack.EMPTY);
 
 
-              getMainBlockEntity().inventory.setStackInSlot(4, ItemStack.EMPTY);
+                    getInventory().setStackInSlot(5, note);
                 getMainBlockEntity().notifyUpdate();
-                ModPackets.channel.sendToServer(new TypewriterEditPacket(getInventory(), note, noteTag));
-                System.out.println(note);
 
+                   }
                }
             }
         }

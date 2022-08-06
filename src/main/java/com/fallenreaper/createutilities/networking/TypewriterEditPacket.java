@@ -16,11 +16,13 @@ public class TypewriterEditPacket extends SimplePacketBase {
     ItemStackHandler inventory;
     ItemStack itemStack;
     CompoundTag tag;
+    boolean should;
 
-    public TypewriterEditPacket(ItemStackHandler inv, ItemStack itemStack, CompoundTag tag) {
+    public TypewriterEditPacket(ItemStackHandler inv, ItemStack itemStack, CompoundTag tag, boolean should) {
         this.itemStack = itemStack;
         this.inventory = inv;
         this.tag = tag;
+        this.should = should;
 
     }
 
@@ -28,6 +30,7 @@ public class TypewriterEditPacket extends SimplePacketBase {
 
       this.itemStack = buffer.readItem();
         this.tag = buffer.readNbt();
+        this.should = buffer.readBoolean();
         readAdditional(buffer);
 
     }
@@ -42,6 +45,7 @@ public class TypewriterEditPacket extends SimplePacketBase {
     public void write(FriendlyByteBuf buffer) {
         buffer.writeItem(itemStack);
         buffer.writeNbt(tag);
+        buffer.writeBoolean(should);
         writeAdditional(buffer);
 
     }
@@ -54,20 +58,22 @@ public class TypewriterEditPacket extends SimplePacketBase {
               return;
           if (!(player.containerMenu instanceof TypewriterContainer container))
               return;
-          System.out.println(itemStack.getItem().getDescriptionId() + 1);
-                      ItemStackHandler itemstackHandler = container.contentHolder.inventory;
-          System.out.println(itemStack.getItem().getDescriptionId() + 2);
-          itemstackHandler.setStackInSlot(4, ItemStack.EMPTY);
-
           TypewriterBlockEntity te = ((TypewriterContainer) player.containerMenu).contentHolder;
+          ItemStackHandler itemstackHandler = container.contentHolder.inventory;
+          System.out.println(itemStack.getItem().getDescriptionId() + 2);
 
-    te.changeFuelLevel();
-    te.shouldSend();
-    te.sendData();
+          te.changeFuelLevel();
+          te.notifyUpdate();
+    if(should) {
+        te.shouldSend();
+    }
 
-                           System.out.println(itemStack.getItem().getDescriptionId() + 3);
-                          itemstackHandler.setStackInSlot(5, itemStack);
-
+         if(te.dataGatheringProgress >= 0.9F) {
+             itemstackHandler.setStackInSlot(4, ItemStack.EMPTY);
+             System.out.println(itemStack.getItem().getDescriptionId() + 3);
+             itemstackHandler.setStackInSlot(5, itemStack);
+             te.notifyUpdate();
+         }
 
       });
         context.get().setPacketHandled(true);

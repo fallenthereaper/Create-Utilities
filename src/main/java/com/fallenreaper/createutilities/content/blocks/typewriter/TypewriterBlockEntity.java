@@ -28,7 +28,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     public boolean hasBluePrint;
     public boolean hasFuel;
     int ticks;
-    float dataGatheringProgress;
+    public float dataGatheringProgress;
     boolean shouldSendData;
 
     public TypewriterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -42,16 +42,14 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
 
     }
     protected void tryRefill() {
-
-
         if (inventory.getStackInSlot(0).isEmpty())
             return;
-        if (1 - fuelLevel + 1 / 128f < getFuelAddedByEach())
+        //TODO, redo this sometime
+        if( 1 - fuelLevel + 1f / 128f < getFuelAddedByEach())
         return;
 
         inventory.getStackInSlot(0)
                 .shrink(1);
-
         fuelLevel += getFuelAddedByEach();
 
         sendData();
@@ -60,25 +58,31 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     @Override
     public void tick() {
         super.tick();
+
+        tryRefill();
+
         if(fuelLevel <= 0) {
             fuelLevel = 0;
         }
 
-                if(shouldSendData)
-                dataGatheringProgress += 0.005f;
+                if(shouldSendData) {
+                    dataGatheringProgress += 0.005F;
+                }
 
+        if(dataGatheringProgress >= 1f) {
+            shouldSendData = false;
 
-        if(dataGatheringProgress >= 1) {
-            dataGatheringProgress = 0;
+            dataGatheringProgress = 0F;
         }
 
-        tryRefill();
+
     }
     public void changeFuelLevel() {
 
         fuelLevel -= getFuelUsageRate();
     }
-    public void shouldSend (){
+
+    public void shouldSend() {
         shouldSendData = true;
     }
 
@@ -93,31 +97,34 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
         return hasBluePrint;
     }
 
-
     @Override
     public Component getDisplayName() {
         return new TextComponent("Typewriter");
     }
     @Override
     public void write(CompoundTag compound, boolean clientPacket) {
-        compound.put("inventory", inventory.serializeNBT());
+        super.write(compound, clientPacket);
+        compound.put("Inventory", inventory.serializeNBT());
+        compound.putBoolean("ShouldStartProgress", shouldSendData);
         compound.putFloat("FuelLevel", fuelLevel);
         compound.putFloat("DataProgress", dataGatheringProgress);
          compound.putBoolean("HasBlueprint", !this.inventory.getStackInSlot(4).isEmpty());
         compound.putBoolean("HasFuel", !(fuelLevel <= 0));
-        super.write(compound, clientPacket);
+
     }
     public double getFuelUsageRate() {
-        return 1F/10F;
+        return 0.25F;
     }
+
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
-
+          super.read(compound, clientPacket);
+            shouldSendData = compound.getBoolean("ShouldStartProgress");
             hasBluePrint = compound.getBoolean("HasBlueprint");
             fuelLevel = compound.getFloat("FuelLevel");
-        hasFuel = compound.getBoolean("HasFuel");
-        dataGatheringProgress = compound.getFloat("DataProgress");
-        inventory.deserializeNBT(compound.getCompound("inventory"));
+            hasFuel = compound.getBoolean("HasFuel");
+            dataGatheringProgress = compound.getFloat("DataProgress");
+            inventory.deserializeNBT(compound.getCompound("Inventory"));
     }
     @Override
     public void setRemoved() {
@@ -135,16 +142,15 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     public void onLoad() {
         super.onLoad();
     }
+
     public double getFuelAddedByEach() {
-        return 0.25f;
+        return 0.25F;
     }
 
     @Override
     public void writeSafe(CompoundTag tag, boolean clientPacket) {
         super.writeSafe(tag, clientPacket);
     }
-
-
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {

@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.sliding_door;
 
+import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.simibubi.create.content.curiosities.deco.SlidingDoorBlock;
@@ -35,8 +36,9 @@ public class LockSlidingDoor extends SlidingDoorBlock {
         ItemStack item = pPlayer.getItemInHand(pHand);
         CompoundTag copy = item.getOrCreateTag();
         CompoundTag tag = new CompoundTag();
-        if(item.getItem() instanceof PunchcardItem && item.hasTag() && item.getTag().contains("DoorPosition")) {
-            BlockPos bos = NbtUtils.readBlockPos(item.getTag().getCompound("DoorPosition"));
+
+        if(item.getItem() instanceof PunchcardItem && item.hasTag() && item.getTag().contains("Key")) {
+            BlockPos bos = CreateUtilities.DOORLOCK_MANAGER.dataStored.get(item.getTag().getUUID("Key")).getBlockPos();
 
           if(bos.equals(pPos.above(1)) || bos.equals(pPos.below(1)) || bos.equals(pPos) ) {
               CompoundTag ta = NbtUtils.writeBlockPos(bos);

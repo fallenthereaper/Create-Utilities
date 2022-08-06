@@ -1,11 +1,11 @@
 package com.fallenreaper.createutilities.events;
 
+import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -57,10 +57,12 @@ public class ClientEvents {
                if(item.hasTag()) {
                    CompoundTag stackTag = item.getTag();
 
-                   BlockPos selectedBlockPos = NbtUtils.readBlockPos(stackTag.getCompound("DoorPosition"));
+                   BlockPos selectedBlockPos = CreateUtilities.DOORLOCK_MANAGER.dataStored.get(stackTag.getUUID("Key")).blockPos;
 
                    if (!(player.level.getBlockState(selectedBlockPos).getBlock() instanceof LockSlidingDoor))
-                       item.setTag(null);
+                       return;
+                    //   item.setTag(null);
+
                }
            }
         PunchcardItem.clientTick();

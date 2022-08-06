@@ -21,6 +21,9 @@ public class CUBlockShapes {
                     .forDirectional(Direction.NORTH),
             BELLOW = shape(0, 0, 0, 16, 2, 16)
                     .add(0, 2, 2, 16, 13, 14)
+                    .forDirectional(Direction.NORTH),
+    PUNCHCARD_WRITER = shape(0, 0, 0, 16, 4, 16)
+                    .add(1, 4, 1, 15, 12, 15)
                     .forDirectional(Direction.NORTH);
 
 

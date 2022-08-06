@@ -1,6 +1,5 @@
 package com.fallenreaper.createutilities.grouptabs;
 
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;

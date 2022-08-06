@@ -13,13 +13,12 @@ public class BellowDataHelper {
 //copied from create i have no idea whats gioing on here
     public static MutableComponent barComponent(int level, int minValue, int maxValue) {
         return TextComponent.EMPTY.copy()
-                .append(bars(Math.max(0, minValue - 1), ChatFormatting.DARK_GREEN))
+                .append(bars(Math.max(0, minValue - 1), ChatFormatting.DARK_AQUA))
                 .append(bars(minValue > 0 ? 1 : 0, ChatFormatting.GREEN))
                 .append(bars(Math.max(0, level - minValue), ChatFormatting.DARK_GREEN))
                 .append(bars(Math.max(0, maxValue - level), ChatFormatting.DARK_RED))
                 .append(bars(Math.max(0, Math.min(18 - maxValue, ((maxValue / 5 + 1) * 5) - maxValue)),
                         ChatFormatting.DARK_GRAY));
-
     }
 
     private static MutableComponent bars(int level, ChatFormatting format) {

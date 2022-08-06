@@ -3,6 +3,7 @@
   "values": [
     "createutilities:sprinkler",
     "createutilities:typewriter",
-    "createutilities:bellow"
+    "createutilities:bellow",
+    "createutilities:punchcard_writer"
   ]
 }

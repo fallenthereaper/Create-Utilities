@@ -75,13 +75,13 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
                 //
                 };
 
-        addSlot(new SlotItemHandler(contentHolder.inventory, 4, x + 173, yOffsets[1]));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 5, x + 173, yOffsets[2]));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 45, yOffsets[0]));
-        addSlot(new SlotItemHandler(contentHolder.inventory, 1, x + 45, yOffsets[3]));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 4, x + 173, yOffsets[1] + 5));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 5, x + 173, yOffsets[2] + 5));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 0, x + 45, yOffsets[0] + 5));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 1, x + 45, yOffsets[3] + 5));
 
 
-        addPlayerSlots(8, 148);
+        addPlayerSlots(8, 165 - 16);
     }
 
     @Override

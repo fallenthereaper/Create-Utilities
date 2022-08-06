@@ -13,7 +13,11 @@ public enum GuiTextures {
     TYPEWRITER("typewriter_screen", 184, 144),
     ARROW_INDICATOR("typewriter_screen",216, 44, 8, 24),
     PROGRESS_BAR("typewriter_screen",47, 162, 46, 12),
-    HIGHLIGHT("typewriter_screen",139, 196, 26, 26);
+    HIGHLIGHT("typewriter_screen",139, 196, 26, 26),
+    PUNCHCARD_WRITER_SCREEN("punchcard_writer_screen",201, 174),
+    BUTTON_FILLED("punchcard_writer_screen",240, 48, 16, 16),
+    BUTTON_EMPTY("punchcard_writer_screen",208, 48, 16, 16),
+    BUTTON_HOVER("punchcard_writer_screen",240, 64, 16, 16);
 
     public final ResourceLocation location;
     public int width, height;

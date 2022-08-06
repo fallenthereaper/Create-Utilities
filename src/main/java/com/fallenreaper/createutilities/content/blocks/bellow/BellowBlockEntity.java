@@ -111,7 +111,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
 
     @Override
     public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        tooltip.add(new TextComponent("test").withStyle(ChatFormatting.GREEN));
+
         return true;
     }
 
@@ -176,7 +176,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
        BlockEntity be = getLevel().getBlockEntity(pos);
         return be;
     }
-    //Credits: Create Aeronautics, i had no idea i could use += on strings lol
+    //Credits: Create Aeronautics, i had no idea i could use "+=" on strings lol
     protected String getTotalTime(int ticks) {
         String base = "";
         int seconds = ticks / 20;
@@ -202,7 +202,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
             base += minutes + "m ";
 
         base += seconds + "s ";
-        return  base;
+        return base;
 
     }
 

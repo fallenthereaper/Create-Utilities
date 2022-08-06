@@ -1,21 +1,21 @@
 package com.fallenreaper.createutilities.events;
 
 import com.fallenreaper.createutilities.CreateUtilities;
+import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterScreen;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterScreen;
 import com.fallenreaper.createutilities.content.items.InstructionEntry;
 import com.fallenreaper.createutilities.content.items.InstructionManager;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
+import com.fallenreaper.createutilities.data.DoorLock;
 import com.fallenreaper.createutilities.data.PunchcardDoorInfo;
-import com.fallenreaper.createutilities.data.doorlock.DoorLockManagerStored;
+import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.CUContainerTypes;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.Create;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
 import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.ServerSpeedProvider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -23,8 +23,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -61,24 +61,24 @@ public class CommonEvents {
 
     @SubscribeEvent
     public static void registerMenuScreens(FMLClientSetupEvent event) {
-
+        MenuScreens.register(CUContainerTypes.PUNCHCARD_WRITER.get(), PunchcardWriterScreen::new);
         MenuScreens.register(CUContainerTypes.TYPEWRITER.get(), TypewriterScreen::new);
     }
-    public  void onServerTick(TickEvent.ServerTickEvent event) {
+    public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START)
             return;
-        Create.SCHEMATIC_RECEIVER.tick();
-        Create.LAGGER.tick();
-        ServerSpeedProvider.serverTick();
-        Create.RAILWAYS.sync.serverTick();
+
     }
     public static void onClientTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START)
             return;
-        Create.SCHEMATIC_RECEIVER.tick();
-        Create.LAGGER.tick();
-        ServerSpeedProvider.serverTick();
-        Create.RAILWAYS.sync.serverTick();
+
+    }
+    public void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (event.phase == TickEvent.Phase.START)
+            return;
+
+        CreateUtilities.DOORLOCK_MANAGER.tick();
     }
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -120,44 +120,43 @@ public class CommonEvents {
             return;
         if(!(itemStack.getItem() instanceof PunchcardItem item))
                 return;
-
+        DoorLockManager doorManager = CreateUtilities.DOORLOCK_MANAGER;
         InstructionManager manager;
+
         if(!itemStack.hasTag()) {
             if(player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor) {
-                for (BlockPos positerator : CreateUtilities.DOORLOCK_MANAGER.dataList)
-                    if (!positerator.equals(clickedPos.below(1)) || positerator.equals(clickedPos.above(1)) || positerator.equals(clickedPos)) {
-                        LangBuilder lang = Lang.builder(CreateUtilities.ID);
-                        player.displayClientMessage(lang.translate("door_bind.set_already").component().withStyle(ChatFormatting.YELLOW), true);
-                    }
-
-
+               for(DoorLock man : CreateUtilities.DOORLOCK_MANAGER.dataList) {
+                   if(clickedPos.equals(man.getBlockPos().below(1)) || clickedPos.equals(man.getBlockPos().above(1)) || clickedPos.equals(man.getBlockPos())) {
+                       LangBuilder lang = Lang.builder(CreateUtilities.ID);
+                       player.displayClientMessage(lang.translate("door_bind.set_already").component().withStyle(ChatFormatting.YELLOW), true);
+                       if(player.getLevel().isClientSide)
+                       player.getLevel().playSound(player, clickedPos, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.75f, 0.75f );
+                       return;
+                   }
+               }
                 list = new ArrayList<>();
-                DoorLockManagerStored doorManager = CreateUtilities.DOORLOCK_MANAGER;
+
                 InstructionEntry doorInstruction = new InstructionEntry();
                 doorInstruction.instruction = new PunchcardDoorInfo();
-
                 list.add(doorInstruction);
 
                 CompoundTag tag = itemStack.getOrCreateTag();
 
-                CompoundTag blockTag = NbtUtils.writeBlockPos(clickedPos);
-
-                CompoundTag blockTagf = NbtUtils.writeBlockState(event.getWorld().getBlockState(clickedPos));
-
-                ListTag listTag = NBTHelper.writeCompoundList(list, InstructionEntry::write);
-
-                tag.put("EntryValues", listTag);
-                tag.put("DoorState", blockTagf);
-
-
                 id = tag.contains("Key") ? tag.getUUID("Key") : UUID.randomUUID();
-
                 tag.putUUID("Key", id);
 
-                doorManager.add(NbtUtils.readBlockPos(blockTag), tag.getUUID("Key"));
 
-                tag.put("DoorPosition", NbtUtils.writeBlockPos(doorManager.dataStored.get(id)));
-              ;
+                doorManager.add(new DoorLock(clickedPos, id, player.getUUID()));
+
+
+
+                ListTag listTag = NBTHelper.writeCompoundList(list, InstructionEntry::write);
+                tag.put("EntryValues", listTag);
+
+
+
+
+
                 list = NBTHelper.readCompoundList(tag.getList("EntryValues", Tag.TAG_COMPOUND), InstructionEntry::fromTag);
 
 
@@ -173,28 +172,19 @@ public class CommonEvents {
                 }
 
                 LangBuilder lang = Lang.builder(CreateUtilities.ID);
-                for(ItemStack itmem : player.getInventory().items)
-                    if(itmem.getItem() instanceof PunchcardItem) {
-                        if (itmem.hasTag() && itmem.getTag().contains("DoorPosition")) {
+
                             player.getCooldowns()
-                                    .addCooldown(itmem.getItem(), 20 / 4);
-                        }
-                    }
-                player.displayClientMessage(lang.translate("door_bind.set").component().withStyle(ChatFormatting.GREEN).append(" ").append( NbtUtils.readBlockPos(tag.getCompound("DoorPosition")).toString()), true);
-                ;
+                                    .addCooldown(itemStack.getItem(), 20 / 4);
+
+
+                player.displayClientMessage(lang.translate("door_bind.set").component().withStyle(ChatFormatting.GREEN).append(" ").append(CreateUtilities.DOORLOCK_MANAGER.dataStored.get(tag.getUUID("Key")).blockPos.toString()), true);
+                if(player.getLevel().isClientSide)
+                   player.getLevel().playSound(player, clickedPos, AllSoundEvents.CONFIRM.getMainEvent(), SoundSource.BLOCKS, 0.75f, 0.75f );
                 event.setUseBlock(Event.Result.ALLOW);
             }
 
         }
-         if(itemStack.hasTag() && player.isShiftKeyDown() && !( player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor)) {
-            if (player.getLevel().isClientSide) {
-                player.getLevel().playSound(player, player.getX(), player.getY(), player.getZ(), AllSoundEvents.CONTROLLER_TAKE.getMainEvent(), SoundSource.PLAYERS, 0.5f, 0.5f);
-            }
-            LangBuilder lang = Lang.builder(CreateUtilities.ID);
-            player.displayClientMessage(lang.translate("door_bind.clear").component().withStyle(ChatFormatting.YELLOW), true);
-            CreateUtilities.DOORLOCK_MANAGER.remove(itemStack.getTag().getUUID("Key"));
-            itemStack.setTag(null);
-        }
+
     }
 
     @SubscribeEvent

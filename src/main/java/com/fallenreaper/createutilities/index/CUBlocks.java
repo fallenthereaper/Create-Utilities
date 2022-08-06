@@ -2,6 +2,7 @@ package com.fallenreaper.createutilities.index;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlock;
+import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterBlock;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlock;
@@ -56,6 +57,16 @@ public class CUBlocks {
             .item()
             .transform(customItemModel())
             .addLayer(() -> RenderType::cutoutMipped)
+            .defaultLoot()
+            .register();
+    public static final BlockEntry<PunchcardWriterBlock> PUNCHCARD_WRITER = REGISTRATE.block("punchcard_writer", PunchcardWriterBlock::new)
+            .initialProperties(DefaultProperties::brassMetal)
+            .transform(pickaxeOnly())
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .item()
+            .transform(customItemModel())
+            .addLayer(() -> RenderType::translucent)
             .defaultLoot()
             .register();
 
