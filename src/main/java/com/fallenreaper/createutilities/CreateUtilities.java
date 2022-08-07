@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities;
 
+import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchwriterNetwork;
 import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
 import com.fallenreaper.createutilities.events.CommonEvents;
 import com.fallenreaper.createutilities.index.*;
@@ -49,9 +50,7 @@ public class CreateUtilities {
 
     public static final String ID = "createutilities";
     public static final String MOD_VERSION = "1.0";
-    public static List<Block> blockList = new ArrayList<>();
     public static final LangBuilder ModLangBuilder = Lang.builder(ID);
-    public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
     public static final CreativeModeTab TAB = new CreativeModeTab(ID) {
         @Override
         public @NotNull ItemStack makeIcon() {
@@ -63,8 +62,10 @@ public class CreateUtilities {
             return new TextComponent("Create Utilities");
         }
     };
-
     private static final NonNullSupplier<CreateRegistrate> registrate = CreateRegistrate.lazy(ID);
+    public static List<Block> BLOCKLIST = new ArrayList<>();
+    public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
+    public static PunchwriterNetwork PUNCHWRITER_NETWORK = new PunchwriterNetwork();
 
     public CreateUtilities() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -72,6 +73,7 @@ public class CreateUtilities {
         onStart();
 
     }
+
     public static void onStart() {
         ModPackets.registerPackets();
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -96,22 +98,24 @@ public class CreateUtilities {
         registerModContents();
 
     }
+
     public static void registerModContents() {
         CUBlocks.register();
         CUItems.register();
         CUBlockPartials.register();
         CUBlockEntities.register();
         CUContainerTypes.register();
-        addToBlockList(()-> Blocks.FURNACE);
-        addToBlockList(()-> Blocks.CRAFTING_TABLE);
+        addToBlockList(() -> Blocks.FURNACE);
+        addToBlockList(() -> Blocks.CRAFTING_TABLE);
     }
 
     public static void addToBlockList(Supplier<Block> sup) {
-        if(!(sup.get() == null))
-            blockList.add(sup.get());
+        if (!(sup.get() == null))
+            BLOCKLIST.add(sup.get());
     }
+
     private static void doClientStuff(final FMLClientSetupEvent event) {
-       event.enqueueWork(CUPonder::register);
+        event.enqueueWork(CUPonder::register);
     }
 
     private static void setup(final FMLCommonSetupEvent event) {
@@ -135,6 +139,17 @@ public class CreateUtilities {
                 collect(Collectors.toList()));
     }
 
+    public static ResourceLocation defaultResourceLocation(String path) {
+        return new ResourceLocation(ID, path);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static CreateRegistrate registrate() {
+
+        LOGGER.info("Registrate created");
+        return registrate.get();
+    }
+
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
@@ -151,16 +166,5 @@ public class CreateUtilities {
             // register a new block here
             LOGGER.info("HELLO from Register Block");
         }
-    }
-
-    public static ResourceLocation defaultResourceLocation(String path) {
-        return new ResourceLocation(ID, path);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static CreateRegistrate registrate() {
-
-        LOGGER.info("Registrate created");
-        return registrate.get();
     }
 }

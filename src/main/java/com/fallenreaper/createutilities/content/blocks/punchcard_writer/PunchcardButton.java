@@ -12,9 +12,10 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
+
 public class PunchcardButton extends AbstractSimiWidget {
     boolean clicked;
-    boolean mode;
     Mode state;
     PunchcardTextWriter writer;
 
@@ -25,21 +26,20 @@ public class PunchcardButton extends AbstractSimiWidget {
     }
 
 
-
     @Override
     public void renderButton(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
-            GuiTextures button = clicked || !active ||  getState() != Mode.ACTIVATED  ? GuiTextures.BUTTON_EMPTY
+            GuiTextures button = clicked || getState() != Mode.ACTIVATED ? GuiTextures.BUTTON_EMPTY
                     : isHoveredOrFocused() ? GuiTextures.BUTTON_HOVER : GuiTextures.BUTTON_FILLED;
-           //DEBUG CODE
+            //DEBUG CODE
             for (int i = 1; i < writer.getYsize() + 1; i++) {
                 int max = i * writer.getXsize();
                 int min = Math.max(max - writer.getXsize(), 0);
                 int y = 40;
                 PoseStack stack = matrixStack;
-                drawString(stack, Minecraft.getInstance().font, writer.drawBox().substring(min, max), 200 / 3, (((int) (((9f) * i)) + y)), Theme.c(Theme.Key.BUTTON_HOVER).scaleAlpha(0.5f).getRGB());
+                drawString(stack, Minecraft.getInstance().font, writer.drawBox().substring(min, max), 200 / 3, (((int) (((9f) * i)) + y)), Theme.c(Theme.Key.BUTTON_HOVER).scaleAlpha(0.25f).getRGB());
 
             }
 
@@ -70,27 +70,27 @@ public class PunchcardButton extends AbstractSimiWidget {
     }
 
     public void setDeactivated() {
-       this.visible = false;
+        this.visible = false;
         this.active = false;
     }
 
     public void setActive() {
         this.active = true;
-       this.visible = true;
+        this.visible = true;
 
-    }
-
-    public void setState(Mode state) {
-        this.state = state;
     }
 
     public Mode getState() {
         return state;
     }
 
+    public void setState(Mode state) {
+        this.state = state;
+    }
+
     @Override
     protected boolean clicked(double pMouseX, double pMouseY) {
-        return this.active && this.visible && pMouseX >= (double)this.x && pMouseY >= (double)this.y && pMouseX <= (double)(this.x + this.width) && pMouseY <= (double)(this.y + this.height);
+        return this.active && this.visible && pMouseX >= (double) this.x && pMouseY >= (double) this.y && pMouseX <= (double) (this.x + this.width) && pMouseY <= (double) (this.y + this.height);
     }
 
     @Override
@@ -99,30 +99,29 @@ public class PunchcardButton extends AbstractSimiWidget {
     }
 
     protected void drawBg(PoseStack matrixStack, GuiTextures button) {
-       GuiTextures.BUTTON_FILLED.bind();
+        GuiTextures.BUTTON_FILLED.bind();
         blit(matrixStack, x, y, button.startX, button.startY, button.width, button.height);
     }
 
     @Override
     public void playDownSound(SoundManager pHandler) {
-        pHandler.play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 2.0F));
+        pHandler.play(SimpleSoundInstance.forUI(new Random().nextInt(100) < 50 ? SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT : SoundEvents.BOOK_PAGE_TURN, new Random().nextInt(100) < 50 ? 1f : 2f));
     }
 
     @Override
     public void tick() {
-       super.tick();
+        super.tick();
 
-        }
+    }
 
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-   super.onClick(mouseX, mouseY);
+        super.onClick(mouseX, mouseY);
 
-       // this.setState(getState() == PunchcardButton.Mode.DEACTIVATED ? Mode.ACTIVATED : Mode.DEACTIVATED);
+        //this.setState(getState() == PunchcardButton.Mode.DEACTIVATED ? Mode.ACTIVATED : Mode.DEACTIVATED);
 
     }
-
 
     public enum Mode {
         ACTIVATED,

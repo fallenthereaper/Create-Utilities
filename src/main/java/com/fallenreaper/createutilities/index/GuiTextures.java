@@ -10,7 +10,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public enum GuiTextures {
 
-    TYPEWRITER("typewriter_screen", 184, 144),
+    TYPEWRITER("typewriter_screen", 184, 174),
     ARROW_INDICATOR("typewriter_screen",216, 44, 8, 24),
     PROGRESS_BAR("typewriter_screen",47, 162, 46, 12),
     HIGHLIGHT("typewriter_screen",139, 196, 26, 26),

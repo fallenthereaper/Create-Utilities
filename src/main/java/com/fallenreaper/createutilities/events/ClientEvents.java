@@ -17,23 +17,23 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class ClientEvents {
-@SubscribeEvent
+    @SubscribeEvent
     public static void onRenderOverlay(RenderGameOverlayEvent.Text event) {
-    Minecraft mc = Minecraft.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
-    if (!mc.level.isClientSide())
-        return;
+        if (!mc.level.isClientSide())
+            return;
 
-    if(mc.player != null) {
+        if (mc.player != null) {
 
-        String fps = mc.fpsString;
+            String fps = mc.fpsString;
 
 
-
-        Player player = mc.player;
-       // event.getLeft().add(fps);
+            Player player = mc.player;
+            // event.getLeft().add(fps);
+        }
     }
-}
+
     @SubscribeEvent
     public static void onTick(TickEvent.ClientTickEvent event) {
         if (!isGameActive())
@@ -48,27 +48,28 @@ public class ClientEvents {
 
         if (player == null)
             return;
-        if(world == null)
+        if (world == null)
             return;
 
 
-       for(ItemStack item : player.getInventory().items)
-           if(item.getItem() instanceof PunchcardItem) {
-               if(item.hasTag()) {
-                   CompoundTag stackTag = item.getTag();
+        for (ItemStack item : player.getInventory().items)
+            if (item.getItem() instanceof PunchcardItem) {
+                if (item.hasTag() && item.getTag().contains("Key")) {
+                    CompoundTag stackTag = item.getTag();
 
-                   BlockPos selectedBlockPos = CreateUtilities.DOORLOCK_MANAGER.dataStored.get(stackTag.getUUID("Key")).blockPos;
+                    BlockPos selectedBlockPos = CreateUtilities.DOORLOCK_MANAGER.dataStored.get(stackTag.getUUID("Key")).blockPos;
 
-                   if (!(player.level.getBlockState(selectedBlockPos).getBlock() instanceof LockSlidingDoor))
-                       return;
+                    if (!(player.level.getBlockState(selectedBlockPos).getBlock() instanceof LockSlidingDoor))
+                        return;
                     //   item.setTag(null);
 
-               }
-           }
+                }
+            }
         PunchcardItem.clientTick();
 
 
     }
+
     protected static boolean isGameActive() {
         return !(Minecraft.getInstance().level == null || Minecraft.getInstance().player == null);
     }

@@ -1,11 +1,13 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
+import com.fallenreaper.createutilities.content.blocks.typewriter.ContainerUtil;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.ITE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -33,10 +35,8 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
                                  BlockHitResult hit) {
 
 
-
-
         ItemStack stack = player.getItemInHand(handIn);
-        if (!worldIn.isClientSide && worldIn.getBlockEntity(pos) instanceof final PunchcardWriterBlockEntity be ) {
+        if (!worldIn.isClientSide && worldIn.getBlockEntity(pos) instanceof final PunchcardWriterBlockEntity be) {
             withTileEntityDo(worldIn, pos,
                     card -> NetworkHooks.openGui((ServerPlayer) player, card, card::sendToContainer));
         }
@@ -50,10 +50,26 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
     public Class<PunchcardWriterBlockEntity> getTileEntityClass() {
         return PunchcardWriterBlockEntity.class;
     }
+
     @Override
     public BlockEntityType<? extends PunchcardWriterBlockEntity> getTileEntityType() {
         return CUBlockEntities.PUNCHCARD_WRITER.get();
     }
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        if (!pState.is(pNewState.getBlock())) {
+            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+            if (blockentity instanceof PunchcardWriterBlockEntity te) {
+                if (pLevel instanceof ServerLevel) {
+
+                    ContainerUtil.dropContents(pLevel, pPos, te.inventory);
+                    pLevel.removeBlockEntity(pPos);
+                }
+            }
+
+            super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+        }
+    }
+
     @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.MODEL;
@@ -80,6 +96,7 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
         return state.getValue(HORIZONTAL_FACING)
                 .getAxis();
     }
+
     @Override
     public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
         return ITE.super.newBlockEntity(p_153215_, p_153216_);

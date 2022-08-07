@@ -2,6 +2,7 @@ package com.fallenreaper.createutilities.events;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterScreen;
+import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchwriterNetwork;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterScreen;
 import com.fallenreaper.createutilities.content.items.InstructionEntry;
@@ -52,34 +53,43 @@ import java.util.UUID;
 
 @Mod.EventBusSubscriber
 public class CommonEvents {
-      public static List<Block> blockList = CreateUtilities.blockList;
-    int count;
-    public static List<Block> getBlockList() {
-        return blockList;
-    }
-
+    public static List<Block> blockList = CreateUtilities.BLOCKLIST;
 
     @SubscribeEvent
     public static void registerMenuScreens(FMLClientSetupEvent event) {
         MenuScreens.register(CUContainerTypes.PUNCHCARD_WRITER.get(), PunchcardWriterScreen::new);
         MenuScreens.register(CUContainerTypes.TYPEWRITER.get(), TypewriterScreen::new);
     }
-    public void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START)
-            return;
 
-    }
     public static void onClientTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START)
             return;
 
     }
+
+    protected static boolean isGameActive() {
+        return !(Minecraft.getInstance().level == null || Minecraft.getInstance().player == null);
+    }
+
+    @SubscribeEvent
+    public static void onLoadWorld(WorldEvent.Load event) {
+        LevelAccessor world = event.getWorld();
+        CreateUtilities.DOORLOCK_MANAGER.levelLoaded(world);
+    }
+
+    public void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START)
+            return;
+
+    }
+
     public void onWorldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.START)
             return;
 
         CreateUtilities.DOORLOCK_MANAGER.tick();
     }
+
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (!isGameActive())
@@ -90,8 +100,8 @@ public class CommonEvents {
             return;
         if (event.player.isSpectator())
             return;
-       // if (!(event.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof BaseItem))
-         //   return;
+        // if (!(event.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof BaseItem))
+        //   return;
 
 
         Level world = Minecraft.getInstance().level;
@@ -99,14 +109,6 @@ public class CommonEvents {
 
     }
 
-    protected static boolean isGameActive() {
-        return !(Minecraft.getInstance().level == null || Minecraft.getInstance().player == null);
-    }
-    @SubscribeEvent
-    public static void onLoadWorld(WorldEvent.Load event) {
-        LevelAccessor world = event.getWorld();
-        CreateUtilities.DOORLOCK_MANAGER.levelLoaded(world);
-    }
     @SubscribeEvent
     public void onLivingEntityUseItem(PlayerInteractEvent.RightClickBlock event) {
         boolean isPlayer = event.getEntity() instanceof Player;
@@ -116,24 +118,25 @@ public class CommonEvents {
         UUID id;
         List<InstructionEntry> list;
 
-        if(!(event.getEntity() instanceof Player player))
+        if (!(event.getEntity() instanceof Player player))
             return;
-        if(!(itemStack.getItem() instanceof PunchcardItem item))
-                return;
+        if (!(itemStack.getItem() instanceof PunchcardItem item))
+            return;
         DoorLockManager doorManager = CreateUtilities.DOORLOCK_MANAGER;
+        PunchwriterNetwork punchcardNetwork = CreateUtilities.PUNCHWRITER_NETWORK;
         InstructionManager manager;
 
-        if(!itemStack.hasTag()) {
-            if(player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor) {
-               for(DoorLock man : CreateUtilities.DOORLOCK_MANAGER.dataList) {
-                   if(clickedPos.equals(man.getBlockPos().below(1)) || clickedPos.equals(man.getBlockPos().above(1)) || clickedPos.equals(man.getBlockPos())) {
-                       LangBuilder lang = Lang.builder(CreateUtilities.ID);
-                       player.displayClientMessage(lang.translate("door_bind.set_already").component().withStyle(ChatFormatting.YELLOW), true);
-                       if(player.getLevel().isClientSide)
-                       player.getLevel().playSound(player, clickedPos, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.75f, 0.75f );
-                       return;
-                   }
-               }
+        if (!itemStack.hasTag()) {
+            if (player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor) {
+                for (DoorLock man : CreateUtilities.DOORLOCK_MANAGER.dataList) {
+                    if (clickedPos.equals(man.getBlockPos().below(1)) || clickedPos.equals(man.getBlockPos().above(1)) || clickedPos.equals(man.getBlockPos())) {
+                        LangBuilder lang = Lang.builder(CreateUtilities.ID);
+                        player.displayClientMessage(lang.translate("door_bind.set_already").component().withStyle(ChatFormatting.YELLOW), true);
+                        if (player.getLevel().isClientSide)
+                            player.getLevel().playSound(player, clickedPos, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.75f, 0.75f);
+                        return;
+                    }
+                }
                 list = new ArrayList<>();
 
                 InstructionEntry doorInstruction = new InstructionEntry();
@@ -145,41 +148,34 @@ public class CommonEvents {
                 id = tag.contains("Key") ? tag.getUUID("Key") : UUID.randomUUID();
                 tag.putUUID("Key", id);
 
-
                 doorManager.add(new DoorLock(clickedPos, id, player.getUUID()));
-
-
 
                 ListTag listTag = NBTHelper.writeCompoundList(list, InstructionEntry::write);
                 tag.put("EntryValues", listTag);
 
-
-
-
-
                 list = NBTHelper.readCompoundList(tag.getList("EntryValues", Tag.TAG_COMPOUND), InstructionEntry::fromTag);
 
 
-              if(!list.isEmpty())
-                for (int i = 0; i < list.size(); i++) {
+                if (!list.isEmpty())
+                    for (int i = 0; i < list.size(); i++) {
 
-                    InstructionEntry entry = list.get(i);
+                        InstructionEntry entry = list.get(i);
 
 
-                        System.out.println(entry.instruction.getLabeledText());
+                        // System.out.println(entry.instruction.getLabeledText());
                         tag.putString("Description", entry.instruction.getLabeledText());
 
-                }
+                    }
 
                 LangBuilder lang = Lang.builder(CreateUtilities.ID);
 
-                            player.getCooldowns()
-                                    .addCooldown(itemStack.getItem(), 20 / 4);
+                player.getCooldowns()
+                        .addCooldown(itemStack.getItem(), 20 / 4);
 
 
                 player.displayClientMessage(lang.translate("door_bind.set").component().withStyle(ChatFormatting.GREEN).append(" ").append(CreateUtilities.DOORLOCK_MANAGER.dataStored.get(tag.getUUID("Key")).blockPos.toString()), true);
-                if(player.getLevel().isClientSide)
-                   player.getLevel().playSound(player, clickedPos, AllSoundEvents.CONFIRM.getMainEvent(), SoundSource.BLOCKS, 0.75f, 0.75f );
+                if (player.getLevel().isClientSide)
+                    player.getLevel().playSound(player, clickedPos, AllSoundEvents.CONFIRM.getMainEvent(), SoundSource.BLOCKS, 0.75f, 0.75f);
                 event.setUseBlock(Event.Result.ALLOW);
             }
 
@@ -203,7 +199,7 @@ public class CommonEvents {
 
     @SubscribeEvent
     public void onAnimalTame(AnimalTameEvent event) {
-       boolean isPlayer = event.getEntity() instanceof Player;
+        boolean isPlayer = event.getEntity() instanceof Player;
     }
 
     @SubscribeEvent
@@ -220,7 +216,7 @@ public class CommonEvents {
     public void onLivingFall(LivingFallEvent event) {
         boolean isPlayer = event.getEntity() instanceof Player;
     }
-    //Player Specific Events
+
     @SubscribeEvent
     public void rightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         ItemStack item = event.getItemStack();
@@ -233,7 +229,7 @@ public class CommonEvents {
 
         BlockState state = event.getWorld().getBlockState(event.getPos());
 
-        for(Block blocks : blockList) {
+        for (Block blocks : blockList) {
             if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks))
                 event.setUseBlock(Event.Result.DENY);
         }

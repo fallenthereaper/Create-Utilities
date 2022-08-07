@@ -105,7 +105,7 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
             if (blockentity instanceof TypewriterBlockEntity te) {
                 if (pLevel instanceof ServerLevel) {
 
-                    TypewriterRemoval.dropContents(pLevel, pPos, te);
+                    ContainerUtil.dropContents(pLevel, pPos, te.inventory);
                     pLevel.removeBlockEntity(pPos);
                 }
             }

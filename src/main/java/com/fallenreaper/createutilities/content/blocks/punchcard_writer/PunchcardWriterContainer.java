@@ -51,10 +51,14 @@ public class PunchcardWriterContainer extends ContainerBase<PunchcardWriterBlock
         }
         return null;
     }
+
     @Override
     protected void initAndReadInventory(PunchcardWriterBlockEntity contentHolder) {
 
     }
+
+
+
     public static PunchcardWriterContainer create(int id, Inventory inv, PunchcardWriterBlockEntity te) {
         return new PunchcardWriterContainer(CUContainerTypes.PUNCHCARD_WRITER.get(), id, inv, te);
     }
@@ -72,4 +76,6 @@ public class PunchcardWriterContainer extends ContainerBase<PunchcardWriterBlock
     protected void saveData(PunchcardWriterBlockEntity contentHolder) {
 
     }
+
+
 }

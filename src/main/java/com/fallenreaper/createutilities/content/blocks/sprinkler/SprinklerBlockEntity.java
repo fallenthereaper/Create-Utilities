@@ -51,28 +51,31 @@ import java.util.Random;
 import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlock.HORIZONTAL_FACING;
 
 public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGoggleInformation, RadiusProvider<Integer>, IContainerHelper<FluidStack> {
-    public enum State {
-        HYDRATING, NONE, LOADED
-    }
-
+    private static final int maxTankCapacity = 1500;
     public static int ticks;
     public static int chance = CUConfig.FARMLAND_HYDRATE_CHANCE.get();
+    public State currentState;
+    public int radius;
+    public boolean shouldSpawnParticles;
     boolean hasWaterStored;
     boolean hasFluidIn;
-    private static final int maxTankCapacity = 1500;
     SmartFluidTankBehaviour fluidTankBehaviour;
-    public State currentState;
     float fluidUsagePerTick;
     boolean isReadyToHydrate;
     float generatedSpeed;
-    public int radius;
-    public boolean shouldSpawnParticles;
-
     public SprinklerBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
 
         this.currentState = State.NONE;
         setLazyTickRate(20);
+    }
+
+    private static int secondsInTicks(int seconds) {
+        return seconds * 20;
+    }
+
+    public static void resetTicks() {
+        ticks = 0;
     }
 
     @Override
@@ -89,6 +92,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     public int getFluidAmount() {
         return fluidTankBehaviour.getPrimaryHandler().getFluid().getAmount();
     }
+
     @Override
     public boolean isWater() {
         FluidStack fluidStack = new FluidStack(Fluids.WATER, getFluidAmount());
@@ -160,7 +164,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         }
     }
 
-
     protected void applyEffects(AABB axisAlignedBB, boolean lava) {
         if (getLevel() == null)
             return;
@@ -183,25 +186,21 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                         if (list.isEmpty()) {
                             return;
                         }
-                       int entitiesAmount = entitiesWithinAABB.size();
-                       float value = 16F / entitiesAmount;
-                       if(entity instanceof Player pPlayer)
-                           pPlayer.displayClientMessage(new TextComponent("Amount Value:" + " " + value).withStyle(ChatFormatting.LIGHT_PURPLE.BOLD), true);
+                        int entitiesAmount = entitiesWithinAABB.size();
+                        float value = 16F / entitiesAmount;
+                        if (entity instanceof Player pPlayer)
+                            pPlayer.displayClientMessage(new TextComponent("Amount Value:" + " " + value).withStyle(ChatFormatting.BOLD), true);
 
                         for (MobEffectInstance effectsInTheList : list) {
                             MobEffect actualEffect = effectsInTheList.getEffect();
                             MobEffectCategory effectCategory = actualEffect.getCategory();
-                            MobEffectInstance effectInstance = new MobEffectInstance(actualEffect, effectCategory == MobEffectCategory.HARMFUL ? secondsInTicks((int) (value/2) + 1) : secondsInTicks((int) (value/3) + 1), (int) ((int) value * (getSpeed()/256F)));
+                            MobEffectInstance effectInstance = new MobEffectInstance(actualEffect, effectCategory == MobEffectCategory.HARMFUL ? secondsInTicks((int) (value / 2) + 1) : secondsInTicks((int) (value / 3) + 1), (int) ((int) value * (getSpeed() / 256F)));
                             entity.addEffect(effectInstance);
                         }
                     }
                 }
             }
         }
-    }
-
-    private static int secondsInTicks(int seconds) {
-        return seconds * 20;
     }
 
     @Override
@@ -212,7 +211,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     protected int getTankMaxCapacity() {
         return maxTankCapacity;
     }
-
 
 
     @Override
@@ -239,7 +237,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
         super.read(compound, clientPacket);
-        if(getWorld() != null) {
+        if (getWorld() != null) {
             NBTHelper.readAABB(NBTHelper.writeAABB(aabb()));
         }
         radius = compound.getInt("Radius");
@@ -259,6 +257,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         return currentState == State.HYDRATING;
     }
+
     @Override
     public boolean isLoaded() {
 
@@ -282,10 +281,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         ticks++;
         refuel();
 
-    }
-
-    public static void resetTicks() {
-        ticks = 0;
     }
 
     public int getComparatorOutput() {
@@ -363,31 +358,31 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         AABB axisAlignedBB2 = new AABB(getBlockPos()).inflate(getRadius(), 0, getRadius());
         Vec3 globPosition = new Vec3(0, getBlockPos().getY(), 0);
 
-       if(getWorld() != null) {
-           for (BlockPos bos : BlockPos.betweenClosed(
-                   getBlockPos().getX() - getRadius(),
-                   getBlockPos().getY() - getWorld().getHeight(),
-                   getBlockPos().getZ() - getRadius(),
-                   getBlockPos().getX() + getRadius(),
-                   getBlockPos().getY() - 1,
-                   getBlockPos().getZ() + getRadius())) {
-               BlockState blockState = getWorld().getBlockState(bos);
-               if (blockState.isAir())
-                   continue;
+        if (getWorld() != null) {
+            for (BlockPos bos : BlockPos.betweenClosed(
+                    getBlockPos().getX() - getRadius(),
+                    getBlockPos().getY() - getWorld().getHeight(),
+                    getBlockPos().getZ() - getRadius(),
+                    getBlockPos().getX() + getRadius(),
+                    getBlockPos().getY() - 1,
+                    getBlockPos().getZ() + getRadius())) {
+                BlockState blockState = getWorld().getBlockState(bos);
+                if (blockState.isAir())
+                    continue;
 
-               Vec3 detectedblockPos = new Vec3(0, bos.getY(), 0);
+                Vec3 detectedblockPos = new Vec3(0, bos.getY(), 0);
 
-               int dist = (int) Math.abs(Math.sqrt(globPosition.distanceToSqr(detectedblockPos)));
+                int dist = (int) Math.abs(Math.sqrt(globPosition.distanceToSqr(detectedblockPos)));
 
               /*
                 ClientPlayerEntity clientPlayerEntity = Minecraft.getInstance().player;
                 clientPlayerEntity.sendMessage(slasha, clientPlayerEntity.getUUID());
               */
-               AABB axisAlignedBB = axisAlignedBB2.expandTowards(0, -dist + 1, 0);
-               return axisAlignedBB;
+                AABB axisAlignedBB = axisAlignedBB2.expandTowards(0, -dist + 1, 0);
+                return axisAlignedBB;
 
-           }
-       }
+            }
+        }
         return axisAlignedBB2;
 
     }
@@ -400,7 +395,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     public Level getWorld() {
         return this.level;
     }
-
 
     protected double getFillState() {
         return (getFluidAmount() / getTankMaxCapacity()) * 100;
@@ -474,7 +468,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
             LangBuilder amount = Lang.builder(String.valueOf((fluidTankBehaviour.getPrimaryHandler().getTankCapacity(0)))).add(mb).style(ChatFormatting.GOLD);
 
             tooltip.add(indent.plainCopy()
-                    .append( maxCapacity.string())
+                    .append(maxCapacity.string())
                     .append(amount.string()));
         }
 
@@ -508,7 +502,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         return true;
     }
-
 
     @Override
     public void addBehaviours(List<TileEntityBehaviour> behaviours) {
@@ -579,9 +572,13 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         return super.getCapability(cap, side);
     }
 
-
     @Override
     protected boolean isFluidHandlerCap(Capability<?> cap) {
         return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY;
+    }
+
+
+    public enum State {
+        HYDRATING, NONE, LOADED
     }
 }

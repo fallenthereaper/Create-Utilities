@@ -3,9 +3,11 @@ package com.fallenreaper.createutilities.content.items.data;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("all")
 public class PunchcardTextWriter {
 
     protected char emptyBox = '\u2592';
@@ -29,77 +31,84 @@ public class PunchcardTextWriter {
     /**
      * Gets the size on the X axis.
      */
-    public int getXsize (){
+    public int getXsize() {
         return dataMap[1].length;
     }
 
     /**
      * Gets the size on the Y axis.
      */
-    public int getYsize (){
+    public int getYsize() {
         return dataMap.length;
     }
 
     /**
      * Sets a box at the specified position.
      */
-    public void setBox(BoxFrame box) {
-        dataMap[Math.min(dataMap.length - 1, box.y)][Math.min(dataMap[1].length - 1, box.x)] = emptyBox;
+    public void setBox(Point point) {
+        dataMap[Math.min(dataMap.length - 1, point.y)][Math.min(dataMap[1].length - 1, point.x)] = emptyBox;
 
     }
+
     /**
      * Fills a box at the specified position.
      */
-    public void fillBox(BoxFrame box) {
-        dataMap[Math.min(dataMap.length - 1, box.y)][Math.min(dataMap[1].length - 1, box.x)] = filledBox;
+    public void fillBox(Point point) {
+        dataMap[Math.min(dataMap.length - 1, point.y)][Math.min(dataMap[1].length - 1, point.x)] = filledBox;
 
     }
 
-    private void addBox(BoxFrame boxFrame, char type) {
+    /**
+     * Adds a box at the specified position.
+     */
+    private void addBox(Point point, char type) {
         if (dataMap[1].length <= 0 || dataMap[0].length <= 0)
             return;
 
-        dataMap[boxFrame.y][boxFrame.x] = type;
+        dataMap[point.y][point.x] = type;
     }
 
     /**
      * This must be called immediately after instancing otherwise it will cause a null pointer exception.
+     *
      * @param x size
      * @param y size
      */
-    public void writeText(int x, int y) {
-        //For safety reasons I'm going to add a max cap to them.
+    //TODO, return this
+    public PunchcardTextWriter writeText(int x, int y) {
         int safeX = Math.min(20, x);
         int safeY = Math.min(20, y);
         dataMap = new char[safeY][safeX];
 
         for (int xx = 0; xx < safeY; xx++)
             for (int yy = 0; yy < safeX; yy++)
-                this.addBox(new BoxFrame(yy, xx), filledBox);
+                this.addBox(new Point(yy, xx), filledBox);
+
+        return this;
     }
 
     /**
      * Instantly sets all boxes inside the square.
      */
     public void setAll() {
-        for (int xx = 0; xx < dataMap.length ; xx++)
-            for (int yy = 0; yy < dataMap[1].length ; yy++)
-                this.addBox(new BoxFrame(yy, xx), emptyBox);
+        for (int xx = 0; xx < dataMap.length; xx++)
+            for (int yy = 0; yy < dataMap[1].length; yy++)
+                this.addBox(new Point(yy, xx), emptyBox);
     }
 
     /**
      * Instantly fills all boxes inside the square.
      */
-    public void fillall() {
-        for (int xx = 0; xx < dataMap.length ; xx++)
-            for (int yy = 0; yy < dataMap[1].length ; yy++)
-                this.addBox(new BoxFrame(yy, xx), filledBox);
+    public void fillAll() {
+        for (int xx = 0; xx < dataMap.length; xx++)
+            for (int yy = 0; yy < dataMap[1].length; yy++)
+                this.addBox(new Point(yy, xx), filledBox);
     }
 
     /**
      * Gets the lines between the string for parsing.
      */
-    public TextComponent getLines(PunchcardTextWriter punchcardWriter, ChatFormatting formatting){
+    public TextComponent getLines(PunchcardTextWriter punchcardWriter, ChatFormatting formatting) {
         List<TextComponent> dataList = new ArrayList<>();
 
         for (int i = 1; i < punchcardWriter.getYsize() + 1; i++) {
@@ -118,7 +127,7 @@ public class PunchcardTextWriter {
         int[] value = new int[2];
         for (int yy = 0; yy < dataMap[0].length; yy++)
             for (int xx = 0; xx < dataMap[1].length; xx++)
-                if(dataMap[box.y][box.x] == emptyBox) {
+                if (dataMap[box.y][box.x] == emptyBox) {
 
                     return true;
                 }

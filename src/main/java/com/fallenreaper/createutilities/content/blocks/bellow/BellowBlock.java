@@ -66,7 +66,7 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
         BlockPos baseBlockPos = getBaseBlockPos(pos);
         BlockState getState = world.getBlockState(baseBlockPos);
         Minecraft mc = Minecraft.getInstance();
-        for(Block blocks : CreateUtilities.blockList) {
+        for(Block blocks : CreateUtilities.BLOCKLIST) {
 
             if ((getState.getBlock() instanceof AbstractFurnaceBlock) || getState.getBlock().equals(blocks) ) {
                 return true;

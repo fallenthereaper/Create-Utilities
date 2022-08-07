@@ -9,6 +9,7 @@
   "item.createutilities.red_wax": "Wax",
   "createutilities.display_source.time_duration": "Time Duration",
   "createutilities.door_bind.set": "Bound Set",
+  "createutilities.punchcard_info.clear": "Punchcard Data Cleared",
   "createutilities.door_bind.fail": "Bound Failed",
   "createutilities.door_bind.clear": "Bound Cleared",
   "createutilities.door_bind.set_already": " Bound Is Already Set",

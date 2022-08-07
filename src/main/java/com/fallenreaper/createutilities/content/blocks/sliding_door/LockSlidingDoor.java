@@ -43,8 +43,7 @@ public class LockSlidingDoor extends SlidingDoorBlock {
           if(bos.equals(pPos.above(1)) || bos.equals(pPos.below(1)) || bos.equals(pPos) ) {
               CompoundTag ta = NbtUtils.writeBlockPos(bos);
               tag.put("SavedInfo", ta);
-              BlockPos ppos = NbtUtils.readBlockPos(tag.getCompound("SavedInfo"));
-              System.out.println(ppos);
+
               super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
 
               return InteractionResult.SUCCESS;

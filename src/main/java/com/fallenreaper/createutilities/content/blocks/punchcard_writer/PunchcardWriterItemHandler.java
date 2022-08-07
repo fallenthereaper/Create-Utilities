@@ -6,9 +6,9 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class PunchcardWriterItemHandler extends ItemStackHandler {
-     public PunchcardWriterBlockEntity be;
+     public ContainerBlockEntity<PunchcardWriterItemHandler> be;
 
-    public PunchcardWriterItemHandler(PunchcardWriterBlockEntity be) {
+    public PunchcardWriterItemHandler(ContainerBlockEntity<PunchcardWriterItemHandler> be) {
         super(2);
         this.be = be;
 

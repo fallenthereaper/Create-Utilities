@@ -11,8 +11,5 @@ public class DoorLockManager extends AbstractStoredDataManager<DoorLock> {
 
     @Override
     public void tick() {
-
     }
-
-
 }

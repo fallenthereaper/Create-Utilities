@@ -17,7 +17,7 @@ public class PunchcardWriterRenderer extends SmartTileEntityRenderer<PunchcardWr
     @Override
     protected void renderSafe(PunchcardWriterBlockEntity tileEntityIn, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         BlockState blockState = tileEntityIn.getBlockState();
-        if(tileEntityIn.hasPunchcard()) {
+        if(!tileEntityIn.inventory.getStackInSlot(0).isEmpty()) {
             SuperByteBuffer blueprint = CachedBufferer.partial(CUBlockPartials.PUNCHCARD, blockState);
 
             blueprint.renderInto(ms, buffer.getBuffer(RenderType.solid()));
