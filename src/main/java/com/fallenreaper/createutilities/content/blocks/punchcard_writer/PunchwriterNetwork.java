@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
-import com.fallenreaper.createutilities.content.items.data.PunchcardTextWriter;
+import com.fallenreaper.createutilities.utils.data.PunchcardTextWriter;
+import com.fallenreaper.createutilities.utils.data.PunchcardWriter;
 
 import java.util.*;
 

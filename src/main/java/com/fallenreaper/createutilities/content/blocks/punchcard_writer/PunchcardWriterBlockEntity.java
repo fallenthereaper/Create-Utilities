@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
+import com.fallenreaper.createutilities.utils.ContainerBlockEntity;
 import com.simibubi.create.foundation.tileEntity.TileEntityBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

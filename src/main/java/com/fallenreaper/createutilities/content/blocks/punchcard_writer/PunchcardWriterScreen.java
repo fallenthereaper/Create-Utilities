@@ -1,23 +1,27 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.content.items.data.PunchcardTextWriter;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.ModPackets;
 import com.fallenreaper.createutilities.networking.PunchcardWriterEditPacket;
+import com.fallenreaper.createutilities.utils.data.PunchcardTextWriter;
+import com.fallenreaper.createutilities.utils.data.PunchcardWriter;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.relays.advanced.sequencer.Instruction;
 import com.simibubi.create.content.contraptions.relays.advanced.sequencer.SequencerInstructions;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
+import com.simibubi.create.foundation.gui.Theme;
 import com.simibubi.create.foundation.gui.element.GuiGameElement;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
 import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.LangBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
@@ -25,19 +29,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.*;
 
-public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<PunchcardWriterContainer> {
+public class PunchcardWriterScreen extends AbstractSmartContainerScreen<PunchcardWriterContainer> {
     protected static final GuiTextures BG = GuiTextures.PUNCHCARD_WRITER_SCREEN;
     protected static final AllGuiTextures PLAYER = AllGuiTextures.PLAYER_INVENTORY;
     private final ItemStack renderedItem = CUBlocks.PUNCHCARD_WRITER.asStack();
     public PunchcardTextWriter writer;
     public IconButton resetButton;
-    public PunchcardTextWriter defaultTextWriter;
-    PunchcardWriter buttonWriter;
-    PunchcardWriter defaultWriter;
+    public LangBuilder lang = Lang.builder(CreateUtilities.ID);
+    PunchcardWriter punchcardWriter;
     private IconButton closeButton;
     private IconButton removeButton;
     private IconButton saveButton;
@@ -75,6 +77,9 @@ public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<Punchca
 
         int invX = leftPos;
         int invY = 150 + 6;
+        if (punchcardWriter != null)
+            punchcardWriter.draw(Minecraft.getInstance().font, pPoseStack, x / 4, y / 2, Theme.c(Theme.Key.TEXT_ACCENT_STRONG).scaleAlpha(1f).getRGB());
+
         //    renderPlayerInventory(pPoseStack, invX, invY);
         renderModel(pPoseStack, x + BG.width + 50, y + BG.height + 10, pPartialTick);
     }
@@ -92,6 +97,15 @@ public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<Punchca
         // font.drawShadow(ms, text, guiLeft + x, guiTop + 26 + y, 0xFFFFEE);
     }
 
+    public void readFrom() {
+
+    }
+
+    @Override
+    public int getXSize() {
+        return super.getXSize();
+    }
+
     public void addWidget(AbstractWidget widget) {
         addRenderableWidget(widget);
     }
@@ -103,31 +117,8 @@ public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<Punchca
         int y = topPos;
         setWindowSize(30 + BG.width, BG.height + PLAYER.height - 35);
         setWindowOffset(-11, 0);
-
+        readWriter(x, y);
         setButtons();
-        //TODO, MAKE IT SO IT READS THE PunchcardWriter from the item inside
-
-
-        defaultWriter = new PunchcardWriter(this, x, y, 5, 7);
-        defaultTextWriter = defaultWriter.getTextWriter();
-
-        ItemStack itemStack = getInventory().getStackInSlot(0);
-        //  writer = getMainBlockEntity().hasPunchcard() ? CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")).getTextWriter() : defaultTextWriter;
-
-
-        //  getMainBlockEntity().hasPunchcard() && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.containsKey(itemStack.getTag().getUUID("WriterKey")) ? CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(itemStack.getTag().getUUID("WriterKey"))
-        buttonWriter = new PunchcardWriter(this, x, y, 5, 7);
-        buttonWriter.write();
-        writer = buttonWriter.getTextWriter();
-
-        if (buttonWriter != null) {
-            if (getInventory().getStackInSlot(0).isEmpty()) {
-                buttonWriter.setDisabled();
-            } else {
-                buttonWriter.setEnabled();
-            }
-        }
-
         extraAreas = ImmutableList.of(
                 new Rect2i(leftPos + 30 + BG.width, topPos + BG.height - 15 - 34 - 6, 72, 68)
         );
@@ -139,6 +130,14 @@ public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<Punchca
     }
 
     public void initTooltips() {
+
+        if (resetButton.isHoveredOrFocused()) {
+            resetButton.setToolTip(new TextComponent(lang.translate("gui.punchcardwriter.button.reset").string()));
+        } else if (saveButton.isHoveredOrFocused()) {
+            saveButton.setToolTip(new TextComponent(lang.translate("gui.punchcardwriter.button.save").string()));
+        } else if (removeButton.isHoveredOrFocused()) {
+            removeButton.setToolTip(new TextComponent(lang.translate("gui.punchcardwriter.button.remove").string()));
+        }
 
     }
 
@@ -156,7 +155,8 @@ public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<Punchca
         addRenderableWidget(closeButton);
         addRenderableWidget(resetButton);
         addRenderableWidget(removeButton);
-        initTooltips();
+        if (punchcardWriter != null)
+            initTooltips();
     }
 
     private void initGatheringSettings() {
@@ -170,26 +170,21 @@ public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<Punchca
                 .writingTo(lineLabel)
                 .titled(Lang.builder(CreateUtilities.ID).translate("punchcard_writer.screen.scroll_input").component())
                 .inverted()
-                .calling(i -> lineLabel.text = new TextComponent("test"))
+                .calling(i -> lineLabel.text = new TextComponent("screen.scroll_input"))
                 .setState(0);
         optionsInput.onChanged();
         addRenderableWidget(optionsInput);
         addRenderableWidget(lineLabel);
     }
 
-    protected ItemStackHandler getInventory() {
-        return getBlockEntity().inventory;
-    }
-
-
 
     public void callBacks() {
 
         closeButton.withCallback(() -> minecraft.player.closeContainer());
-        buttonWriter.initCallbacks();
+        punchcardWriter.sync();
         resetButton.withCallback(() -> {
-            if (writer != null && buttonWriter != null) {
-                buttonWriter.fillAll();
+            if (punchcardWriter != null) {
+                punchcardWriter.fillAll();
                 getBlockEntity().notifyUpdate();
 
             }
@@ -201,23 +196,26 @@ public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<Punchca
                     CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.remove(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"));
                     CreateUtilities.PUNCHWRITER_NETWORK.savedWriterText.remove(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"));
                     ItemStack stack = getInventory().getStackInSlot(0);
-                    getInventory().getStackInSlot(0).setTag(null);
+                    stack.setTag(null);
                     ModPackets.channel.sendToServer(new PunchcardWriterEditPacket(getInventory(), stack));
                     getBlockEntity().notifyUpdate();
                 }
             }
         });
+
         saveButton.withCallback(() -> {
             if (!getInventory().getStackInSlot(0).isEmpty()) {
                 ItemStack itemStack = getInventory().getStackInSlot(0);
                 CompoundTag tag = itemStack.getOrCreateTag();
-                UUID key = tag.contains("WriterKey") ? tag.getUUID("WriterKey") : UUID.randomUUID();
+                UUID key = UUID.randomUUID();
                 tag.putUUID("WriterKey", key);
                 itemStack.setTag(tag);
                 int x = leftPos + imageWidth - BG.width;
                 int y = topPos;
+                List<Instruction> list = new ArrayList<>();
 
-                CreateUtilities.PUNCHWRITER_NETWORK.addWriter(buttonWriter, key);
+
+                CreateUtilities.PUNCHWRITER_NETWORK.addWriter(punchcardWriter, key);
                 CreateUtilities.PUNCHWRITER_NETWORK.add(writer, key);
                 ModPackets.channel.sendToServer(new PunchcardWriterEditPacket(getInventory(), itemStack));
                 getBlockEntity().notifyUpdate();
@@ -296,24 +294,46 @@ public class PunchcardWriterScreen  extends AbstractSmartContainerScreen<Punchca
             lineLabel.active = !getInventory().getStackInSlot(0).isEmpty();
         }
         removeButton.active = !getInventory().getStackInSlot(0).isEmpty();
-        resetButton.active = !getInventory().getStackInSlot(0).isEmpty() && getInventory().getStackInSlot(0).hasTag();
+        resetButton.active = !getInventory().getStackInSlot(0).isEmpty();
         saveButton.active = !getInventory().getStackInSlot(0).isEmpty();
-        if (buttonWriter != null) {
+
+        if (punchcardWriter != null) {
             if (getInventory().getStackInSlot(0).isEmpty()) {
-                buttonWriter.setDisabled();
+                punchcardWriter.setDisabled();
             } else {
-                buttonWriter.setEnabled();
+                punchcardWriter.setEnabled();
             }
         }
-        if (buttonWriter != null)
-            buttonWriter.tick();
 
-        if (!getBlockEntity().inventory.getStackInSlot(0).isEmpty() && getInventory().getStackInSlot(0).hasTag()) {
-
-                //   writer = getMainBlockEntity().hasPunchcard() && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")) != null ? CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")).getTextWriter() : new PunchcardTextWriter();
-                //   writer.writeText(5, 7);
+        //   initTooltips();
+        if (punchcardWriter != null)
+            punchcardWriter.tick();
+        ItemStack itemStack = getInventory().getStackInSlot(0);
 
 
+        int x = leftPos + imageWidth - BG.width;
+        int y = topPos;
+        ///   buttonWriter = !getInventory().getStackInSlot(0).isEmpty() && getInventory().getStackInSlot(0).hasTag() ? CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")) : buttonWriter;
+        //   writer = getMainBlockEntity().hasPunchcard() && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")) != null ? CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")).getTextWriter() : new PunchcardTextWriter();
+        //   writer.writeText(5, 7);
+
+
+    }
+
+    public void readWriter(int x, int y) {
+        ItemStack stack = getInventory().getStackInSlot(0);
+        this.punchcardWriter = new PunchcardWriter(this, x, y, 5, 7).write();
+        this.punchcardWriter.modifyAt(2, 2, (button, writer) -> {
+            button.setDeactivated();
+        });
+
+
+        if (stack.isEmpty()) {
+            punchcardWriter.setDisabled();
+        } else {
+            punchcardWriter.setEnabled();
         }
+
+
     }
 }

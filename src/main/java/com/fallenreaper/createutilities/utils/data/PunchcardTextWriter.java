@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.content.items.data;
+package com.fallenreaper.createutilities.utils.data;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
@@ -8,19 +8,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("all")
-public class PunchcardTextWriter {
+public final class PunchcardTextWriter {
 
-    protected char emptyBox = '\u2592';
-    protected char filledBox = '\u2588';
-    private char[][] dataMap;
+    private String empty;
+    private String full;
+    private String[][] dataMap;
+
+    public PunchcardTextWriter(TextIcon icon) {
+        this.empty = icon.getEmptyIcon();
+        this.full = icon.getFullIcon();
+    }
+
+    /**
+     * Changes the icon type.
+     */
+    public PunchcardTextWriter setIcon(TextIcon icon) {
+        this.empty = icon.getEmptyIcon();
+        this.full = icon.getFullIcon();
+        return this;
+    }
 
     /**
      * Draws a box with the specified dimensions.
      * This must be called after every change so that the changes can actually have effect.
      */
-    public String drawBox() {
+    public String getRawText() {
         String base = "";
-        for (char[] map : dataMap) {
+        for (String[] map : dataMap) {
             for (int col = 0; col < dataMap[1].length; col++) {
                 base += map[col];
             }
@@ -46,22 +60,21 @@ public class PunchcardTextWriter {
      * Sets a box at the specified position.
      */
     public void setBox(Point point) {
-        dataMap[Math.min(dataMap.length - 1, point.y)][Math.min(dataMap[1].length - 1, point.x)] = emptyBox;
-
+        dataMap[Math.min(dataMap.length - 1, point.y)][Math.min(dataMap[1].length - 1, point.x)] = empty;
     }
 
     /**
      * Fills a box at the specified position.
      */
     public void fillBox(Point point) {
-        dataMap[Math.min(dataMap.length - 1, point.y)][Math.min(dataMap[1].length - 1, point.x)] = filledBox;
+        dataMap[Math.min(dataMap.length - 1, point.y)][Math.min(dataMap[1].length - 1, point.x)] = full;
 
     }
 
     /**
      * Adds a box at the specified position.
      */
-    private void addBox(Point point, char type) {
+    private void addBox(Point point, String type) {
         if (dataMap[1].length <= 0 || dataMap[0].length <= 0)
             return;
 
@@ -74,15 +87,14 @@ public class PunchcardTextWriter {
      * @param x size
      * @param y size
      */
-    //TODO, return this
     public PunchcardTextWriter writeText(int x, int y) {
         int safeX = Math.min(20, x);
         int safeY = Math.min(20, y);
-        dataMap = new char[safeY][safeX];
+        dataMap = new String[safeY][safeX];
 
         for (int xx = 0; xx < safeY; xx++)
             for (int yy = 0; yy < safeX; yy++)
-                this.addBox(new Point(yy, xx), filledBox);
+                this.addBox(new Point(yy, xx), full);
 
         return this;
     }
@@ -93,7 +105,7 @@ public class PunchcardTextWriter {
     public void setAll() {
         for (int xx = 0; xx < dataMap.length; xx++)
             for (int yy = 0; yy < dataMap[1].length; yy++)
-                this.addBox(new Point(yy, xx), emptyBox);
+                this.addBox(new Point(yy, xx), empty);
     }
 
     /**
@@ -102,7 +114,7 @@ public class PunchcardTextWriter {
     public void fillAll() {
         for (int xx = 0; xx < dataMap.length; xx++)
             for (int yy = 0; yy < dataMap[1].length; yy++)
-                this.addBox(new Point(yy, xx), filledBox);
+                this.addBox(new Point(yy, xx), full);
     }
 
     /**
@@ -114,7 +126,7 @@ public class PunchcardTextWriter {
         for (int i = 1; i < punchcardWriter.getYsize() + 1; i++) {
             int max = i * punchcardWriter.getXsize();
             int min = Math.max(max - this.getXsize(), 0);
-            dataList.add((TextComponent) new TextComponent("   " + punchcardWriter.drawBox().substring(min, max)).withStyle(formatting));
+            dataList.add((TextComponent) new TextComponent("   " + punchcardWriter.getRawText().substring(min, max)).withStyle(formatting));
         }
 
         for (TextComponent component : dataList) {
@@ -123,11 +135,11 @@ public class PunchcardTextWriter {
         return null;
     }
 
-    public boolean findBoxAt(BoxFrame box) {
+    public boolean getAt(int x, int y) {
         int[] value = new int[2];
         for (int yy = 0; yy < dataMap[0].length; yy++)
             for (int xx = 0; xx < dataMap[1].length; xx++)
-                if (dataMap[box.y][box.x] == emptyBox) {
+                if (dataMap[y][x] == empty) {
 
                     return true;
                 }

@@ -157,10 +157,7 @@ public class CommonEvents {
 
 
                 if (!list.isEmpty())
-                    for (int i = 0; i < list.size(); i++) {
-
-                        InstructionEntry entry = list.get(i);
-
+                    for (InstructionEntry entry : list) {
 
                         // System.out.println(entry.instruction.getLabeledText());
                         tag.putString("Description", entry.instruction.getLabeledText());

@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
+import com.fallenreaper.createutilities.utils.ContainerBlockEntity;
 import com.simibubi.create.foundation.gui.container.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.container.ContainerBase;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -11,13 +12,13 @@ public abstract class AbstractSmartContainerScreen<T extends ContainerBase<? ext
 
     public AbstractSmartContainerScreen(T container, Inventory inv, Component title) {
         super(container, inv, title);
-
     }
+
     public void addWidget(AbstractWidget widget) {
         addRenderableWidget(widget);
     }
 
-    protected ItemStackHandler getInventory() {
+    public ItemStackHandler getInventory() {
         return getBlockEntity().inventory;
     }
 

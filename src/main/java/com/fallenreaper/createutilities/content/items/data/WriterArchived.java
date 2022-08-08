@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.content.items.data;
 
+import java.awt.*;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -17,17 +18,17 @@ public class WriterArchived {
         yCoordinates = new TreeMap<>();
     }
 
-    private void addBox(BoxFrame boxFrame) {
+    private void addBox(Point boxFrame) {
         xCoordinates.put(boxFrame.x, filledBox);
         yCoordinates.put(boxFrame.y, filledBox);
     }
 
-    private void removeBox(BoxFrame box){
+    private void removeBox(Point box){
         xCoordinates.remove(box.x);
         yCoordinates.remove(box.y);
     }
 
-    public void setBox(BoxFrame box){
+    public void setBox(Point box){
         xCoordinates.replace(box.x, emptyBox);
         yCoordinates.replace(box.y, emptyBox);
     }
@@ -42,15 +43,11 @@ public class WriterArchived {
 
     }
 
-    /**
-     * This must be called immediately after instancing otherwise it will cause a null pointer exception
-     * @param x size
-     * @param y size
-     */
+
     public void writeBox(int x, int y) {
         for (int xx = 0; xx < x  ; xx++) {
 
-            this.addBox(new BoxFrame(xx, 0));
+            this.addBox(new Point(xx, 0));
 
         }
     }

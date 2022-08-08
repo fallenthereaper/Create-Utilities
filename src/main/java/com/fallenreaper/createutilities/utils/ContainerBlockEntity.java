@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
+package com.fallenreaper.createutilities.utils;
 
 import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
 import net.minecraft.core.BlockPos;
@@ -11,19 +11,20 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class ContainerBlockEntity<K extends ItemStackHandler> extends SmartTileEntity {
-    LazyOptional<K> inventoryProvider;
     public K inventory;
+    LazyOptional<K> inventoryProvider;
 
     public ContainerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         inventoryProvider = LazyOptional.of(() -> inventory);
-
     }
+
     @Override
     public void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
         compound.put("Inventory", inventory.serializeNBT());
     }
+
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
         super.read(compound, clientPacket);

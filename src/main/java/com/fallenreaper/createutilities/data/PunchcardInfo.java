@@ -16,7 +16,7 @@ public abstract class PunchcardInfo implements ISavedInfo {
     public PunchcardInfo() {
         data = new CompoundTag();
         LangBuilder lang = Lang.builder(CreateUtilities.ID);
-        Component txt = new TextComponent(lang.translate( "instruction." + getId()).string());
+        Component txt = new TextComponent(lang.translate("instruction." + getId()).string());
 
         data.putString("text", txt.getString());
 
@@ -28,11 +28,12 @@ public abstract class PunchcardInfo implements ISavedInfo {
 
     @Override
     public String getTextData(String key) {
-        if(!data.contains(key))
+        if (!data.contains(key))
             return " ";
 
-        return data.getString("text");
+        return data.getString(key);
     }
+
     public CompoundTag getTagInfo() {
         //info for this class and all other PunchcardInfos
         CompoundTag tag = new CompoundTag();
@@ -40,11 +41,10 @@ public abstract class PunchcardInfo implements ISavedInfo {
         tag.put("Data", this.data.copy());
 
         LangBuilder lang = Lang.builder(CreateUtilities.ID);
-        Component txt = new TextComponent(lang.translate( "instruction." + getId()).string());
+        Component txt = new TextComponent(lang.translate("instruction." + getId()).string());
 
 
         tag.getCompound("Data").putString("text", txt.getString());
-
 
 
         return tag;
@@ -70,7 +70,6 @@ public abstract class PunchcardInfo implements ISavedInfo {
     public CompoundTag getData() {
         return data;
     }
-
 
 
 }

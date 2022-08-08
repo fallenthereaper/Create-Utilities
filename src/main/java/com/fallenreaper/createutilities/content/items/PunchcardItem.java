@@ -2,8 +2,8 @@ package com.fallenreaper.createutilities.content.items;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
-import com.fallenreaper.createutilities.content.items.data.PunchcardTextWriter;
 import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.utils.data.PunchcardTextWriter;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.goggles.GogglesItem;
@@ -114,6 +114,9 @@ public class PunchcardItem extends BaseItem {
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack itemStack = pPlayer.getItemInHand(pUsedHand);
 
+
+
+
         if (itemStack.hasTag() && pPlayer.isShiftKeyDown()) {
             if (pPlayer.getLevel().isClientSide)
                 pPlayer.getLevel().playSound(pPlayer, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), AllSoundEvents.CONTROLLER_TAKE.getMainEvent(), SoundSource.PLAYERS, 0.5f, 0.5f);
@@ -124,7 +127,7 @@ public class PunchcardItem extends BaseItem {
                 CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.remove(itemStack.getTag().getUUID("WriterKey"));
                 pPlayer.displayClientMessage(lang.translate("punchcard_info.clear").component().withStyle(ChatFormatting.YELLOW), true);
                 itemStack.setTag(null);
-            } else if (itemStack.getTag().contains("WriterKey")) {
+            } else if (itemStack.getTag().contains("Key")) {
                 CreateUtilities.DOORLOCK_MANAGER.remove(itemStack.getTag().getUUID("Key"));
                 pPlayer.displayClientMessage(lang.translate("door_bind.clear").component().withStyle(ChatFormatting.YELLOW), true);
                 itemStack.setTag(null);
@@ -185,7 +188,7 @@ public class PunchcardItem extends BaseItem {
             for (int i = 1; i < writer.getYsize() + 1; i++) {
                 int max = i * writer.getXsize();
                 int min = Math.max(max - writer.getXsize(), 0);
-                tooltip.add(new TextComponent("    " + writer.drawBox().substring(min, max)).withStyle(ChatFormatting.YELLOW));
+                tooltip.add(new TextComponent("    " + writer.getRawText().substring(min, max)).withStyle(ChatFormatting.YELLOW));
             }
 
 

@@ -520,7 +520,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     public FluidStack getContainedFluid() {
         return this.fluidTankBehaviour.getPrimaryHandler().getFluid();
     }
-
+//TODO, redo this completely
     void initiateParticles() {
         if (this.getWorld() == null) {
             return;

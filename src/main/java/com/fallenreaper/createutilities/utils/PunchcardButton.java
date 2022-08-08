@@ -1,10 +1,9 @@
-package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
+package com.fallenreaper.createutilities.utils;
 
-import com.fallenreaper.createutilities.content.items.data.PunchcardTextWriter;
 import com.fallenreaper.createutilities.index.GuiTextures;
+import com.fallenreaper.createutilities.utils.data.PunchcardTextWriter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.foundation.gui.Theme;
 import com.simibubi.create.foundation.gui.widget.AbstractSimiWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -15,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 public class PunchcardButton extends AbstractSimiWidget {
+    public Mode state;
+    public PunchcardTextWriter writer;
     boolean clicked;
-    Mode state;
-    PunchcardTextWriter writer;
 
     public PunchcardButton(int x, int y, int w, int h, PunchcardTextWriter punchcardWriter) {
         super(x, y, w, h);
@@ -33,15 +32,17 @@ public class PunchcardButton extends AbstractSimiWidget {
 
             GuiTextures button = clicked || getState() != Mode.ACTIVATED ? GuiTextures.BUTTON_EMPTY
                     : isHoveredOrFocused() ? GuiTextures.BUTTON_HOVER : GuiTextures.BUTTON_FILLED;
-            //DEBUG CODE
+            /*
             for (int i = 1; i < writer.getYsize() + 1; i++) {
                 int max = i * writer.getXsize();
                 int min = Math.max(max - writer.getXsize(), 0);
                 int y = 40;
                 PoseStack stack = matrixStack;
-                drawString(stack, Minecraft.getInstance().font, writer.drawBox().substring(min, max), 200 / 3, (((int) (((9f) * i)) + y)), Theme.c(Theme.Key.BUTTON_HOVER).scaleAlpha(0.25f).getRGB());
+                drawString(stack, Minecraft.getInstance().font, writer.getRawText().substring(min, max), 200 / 3, (((int) (((9f) * i)) + y)), Theme.c(Theme.Key.BUTTON_HOVER).scaleAlpha(0.25f).getRGB());
 
             }
+
+             */
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             drawBg(matrixStack, button);
@@ -58,9 +59,7 @@ public class PunchcardButton extends AbstractSimiWidget {
                     this.playDownSound(Minecraft.getInstance().getSoundManager());
                     setState(Mode.DEACTIVATED);
                     this.onClick(pMouseX, pMouseY);
-
                     return true;
-
                 }
             }
 

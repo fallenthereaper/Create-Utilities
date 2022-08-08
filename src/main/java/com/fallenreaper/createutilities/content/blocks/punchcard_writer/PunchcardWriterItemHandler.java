@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
 import com.fallenreaper.createutilities.index.CUItems;
+import com.fallenreaper.createutilities.utils.ContainerBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;

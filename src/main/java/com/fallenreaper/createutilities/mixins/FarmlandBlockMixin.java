@@ -5,20 +5,23 @@ import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerIntera
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(FarmBlock.class)
-public class FarmlandBlockMixin {
+public class FarmlandBlockMixin extends Block {
 
+    public FarmlandBlockMixin(Properties pProperties) {
+        super(pProperties);
+    }
 
     /**
      * @author FallenReaper
      * @reason Overwriting
      */
-
     @Overwrite(remap = false)
     private static boolean isNearWater(LevelReader pLevel, BlockPos pPos) {
         for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-4, 0, -4), pPos.offset(4, 1, 4))) {
