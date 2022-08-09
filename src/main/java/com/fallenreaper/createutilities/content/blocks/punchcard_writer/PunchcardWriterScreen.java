@@ -181,7 +181,10 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     public void callBacks() {
 
         closeButton.withCallback(() -> minecraft.player.closeContainer());
+
+        if(!getInventory().getStackInSlot(0).isEmpty())
         punchcardWriter.sync();
+
         resetButton.withCallback(() -> {
             if (punchcardWriter != null) {
                 punchcardWriter.fillAll();
@@ -293,12 +296,16 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
             optionsInput.active = !getInventory().getStackInSlot(0).isEmpty();
             lineLabel.active = !getInventory().getStackInSlot(0).isEmpty();
         }
+        ItemStack stack = getInventory().getStackInSlot(0);
         removeButton.active = !getInventory().getStackInSlot(0).isEmpty();
         resetButton.active = !getInventory().getStackInSlot(0).isEmpty();
         saveButton.active = !getInventory().getStackInSlot(0).isEmpty();
 
-        if (punchcardWriter != null) {
-            if (getInventory().getStackInSlot(0).isEmpty()) {
+        if(stack.hasTag() && stack.getTag().contains("WriterKey"))
+            this.punchcardWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey"));
+
+        if(punchcardWriter != null) {
+            if (stack.isEmpty()) {
                 punchcardWriter.setDisabled();
             } else {
                 punchcardWriter.setEnabled();
@@ -308,8 +315,6 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         //   initTooltips();
         if (punchcardWriter != null)
             punchcardWriter.tick();
-        ItemStack itemStack = getInventory().getStackInSlot(0);
-
 
         int x = leftPos + imageWidth - BG.width;
         int y = topPos;
@@ -322,16 +327,24 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
 
     public void readWriter(int x, int y) {
         ItemStack stack = getInventory().getStackInSlot(0);
-        this.punchcardWriter = new PunchcardWriter(this, x, y, 5, 7).write();
-        this.punchcardWriter.modifyAt(2, 2, (button, writer) -> {
-            button.setDeactivated();
+     if(stack.isEmpty())
+         return;
+
+        if (stack.hasTag() && stack.getTag().contains("WriterKey")) {
+            this.punchcardWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey"));
+        }
+        else {
+            this.punchcardWriter = new PunchcardWriter(this, x, y, 5, 7).write();
+        }
+        this.punchcardWriter.modifyAt(3, 5, (button, writer) -> {
+            button.visible = false;
         });
-
-
-        if (stack.isEmpty()) {
-            punchcardWriter.setDisabled();
-        } else {
-            punchcardWriter.setEnabled();
+        if(punchcardWriter != null) {
+            if (stack.isEmpty()) {
+                punchcardWriter.setDisabled();
+            } else {
+                punchcardWriter.setEnabled();
+            }
         }
 
 

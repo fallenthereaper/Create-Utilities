@@ -3,14 +3,11 @@ package com.fallenreaper.createutilities.content.blocks.typewriter;
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.items.InstructionManager;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
-import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
-import com.fallenreaper.createutilities.index.CUItems;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.ModPackets;
 import com.fallenreaper.createutilities.networking.TypewriterEditPacket;
 import com.google.common.collect.ImmutableList;
-import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
@@ -28,7 +25,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -66,7 +62,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     @Override
     protected void renderBg(PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
         int x = leftPos + imageWidth - BG.width;
-        int y = topPos  + 5;
+        int y = topPos  + 13;
 
         BG.render(pPoseStack, x, y, this);
         font.draw(pPoseStack, title, x + 15, y + 3, 0x442000);
@@ -105,6 +101,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         GuiTextures.HIGHLIGHT.render(matrixStack, x + 10, y + 56, this);
     }
     protected void renderModel(PoseStack ms, int x, int y, float partialTicks) {
+        /*
         TransformStack.cast(ms)
                 .pushPose()
                 .translate(x, y, 100)
@@ -127,6 +124,13 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         }
         ms.popPose();
 
+         */
+
+        GuiGameElement.of(CUBlocks.TYPEWRITER.asStack())
+                .<GuiGameElement.GuiRenderBuilder>at(x - 50, y - 100 + 28, -100)
+                .scale(4.5f)
+                .render(ms);
+
 
     }
 
@@ -143,11 +147,11 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         setWindowSize(30 + BG.width, BG.height + PLAYER.height - 10);
         setWindowOffset(-11, 0);
         super.init();
-        confirmButton = new IconButton(leftPos + 118 + BG.width - 154, topPos + BG.height - 91 + 4 + 5, AllIcons.I_PLAY);
-        closeButton = new IconButton(leftPos + 30 + BG.width - 33, topPos + BG.height - (42 - 17) + 5, AllIcons.I_CONFIRM);
+        confirmButton = new IconButton(leftPos + 118 + BG.width - 154, topPos + BG.height - 97 - 7 , AllIcons.I_PLAY);
+        closeButton = new IconButton(leftPos + 30 + BG.width - 33, topPos + BG.height - 22 - 13, AllIcons.I_CONFIRM);
 
      //   extraAreas = ImmutableList.of(new Rect2i(x + BG.width, y + BG.height + BG.height - 62 - 2, 84, 92 - 2));
-        clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 98+4+5, new TextComponent("Off"));
+        clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 97 - 14 , new TextComponent("Off"));
 
 
 

@@ -12,7 +12,6 @@ import java.util.function.BiConsumer;
 
 @SuppressWarnings("ALL")
 public final class PunchcardWriter {
-    public PunchcardButton button;
     public PunchcardTextWriter textWriter;
     private AbstractSmartContainerScreen<?> screen;
     private int xPosition;
@@ -158,7 +157,7 @@ public final class PunchcardWriter {
         for (int i = 1; i < textWriter.getYsize() + 1; i++) {
             for (int j = 1; j < textWriter.getXsize() + 1; j++) {
                 //the first calculations are for configuring the spaces between the buttons
-                button = new PunchcardButton((int) (((int) ((103) / 6.5f * j)) + (xPosition + xPosition / 1.627f)), (int) (((int) (22 / (2 - 0.625f) * i)) + yPosition + 6), 16, 16, textWriter);
+                PunchcardButton button = new PunchcardButton((int) (((int) ((103) / 6.5f * j)) + (xPosition + xPosition / 1.627f)), (int) (((int) (22 / (2 - 0.625f) * i)) + yPosition + 6), 16, 16, textWriter);
                 this.addButton(new Point(j - 1, i - 1), button);
                 screen.addWidget(button);
             }
