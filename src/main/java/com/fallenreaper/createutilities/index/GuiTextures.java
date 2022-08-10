@@ -17,7 +17,8 @@ public enum GuiTextures {
     PUNCHCARD_WRITER_SCREEN("punchcard_writer_screen",201, 174),
     BUTTON_FILLED("punchcard_writer_screen",240, 48, 16, 16),
     BUTTON_EMPTY("punchcard_writer_screen",208, 48, 16, 16),
-    BUTTON_HOVER("punchcard_writer_screen",240, 64, 16, 16);
+    BUTTON_HOVER("punchcard_writer_screen",240, 64, 16, 16),
+    SINGLE_INVENTORY("punchcard_writer_screen",68, 179, 178, 72);
 
     public final ResourceLocation location;
     public int width, height;

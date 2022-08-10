@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.utils;
 
 import com.fallenreaper.createutilities.index.GuiTextures;
-import com.fallenreaper.createutilities.utils.data.PunchcardTextWriter;
+import com.fallenreaper.createutilities.utils.data.PunchcardWriter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.widget.AbstractSimiWidget;
@@ -11,19 +11,19 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.Random;
 
 public class PunchcardButton extends AbstractSimiWidget {
     public Mode state;
-    public PunchcardTextWriter writer;
     boolean clicked;
+    public PunchcardWriter writer;
 
-    public PunchcardButton(int x, int y, int w, int h, PunchcardTextWriter punchcardWriter) {
+    public PunchcardButton(int x, int y, int w, int h, PunchcardWriter writer) {
         super(x, y, w, h);
-        this.writer = punchcardWriter;
         this.state = Mode.ACTIVATED;
+        this.writer = writer;
     }
-
 
     @Override
     public void renderButton(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
@@ -53,17 +53,27 @@ public class PunchcardButton extends AbstractSimiWidget {
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
         if (this.active && this.visible) {
-            if (this.isValidClickButton(pButton)) {
+            if (this.isValidClickButton(pButton) && getState() == Mode.ACTIVATED) {
                 boolean flag = this.clicked(pMouseX, pMouseY);
                 if (flag) {
-                    this.playDownSound(Minecraft.getInstance().getSoundManager());
+                    this.playDownSound(Minecraft.getInstance().getSoundManager(), true);
                     setState(Mode.DEACTIVATED);
+                    if (this.writer != null)
+                        this.writer.textWriter.setBox(new Point(this.writer.xCoords.get(this.x) - 1, this.writer.yCoords.get(this.y) - 1));
                     this.onClick(pMouseX, pMouseY);
                     return true;
                 }
+            } else if (isValidRightClickButton(pButton) && getState() == Mode.DEACTIVATED) {
+                if (this.clicked(pMouseX, pMouseY)) {
+                    this.playDownSound(Minecraft.getInstance().getSoundManager(), false);
+                    setState(Mode.ACTIVATED);
+                    if (this.writer != null)
+                        this.writer.textWriter.fillBox(new Point(this.writer.xCoords.get(this.x) - 1, this.writer.yCoords.get(this.y) - 1));
+                    this.onClick(pMouseX, pMouseY);
+                    return true;
+                }
+
             }
-
-
         }
         return false;
     }
@@ -94,7 +104,10 @@ public class PunchcardButton extends AbstractSimiWidget {
 
     @Override
     protected boolean isValidClickButton(int pButton) {
-        return pButton == 0 || pButton == 1;
+        return pButton == 0;
+    }
+    protected boolean isValidRightClickButton(int pButton) {
+        return pButton == 1;
     }
 
     protected void drawBg(PoseStack matrixStack, GuiTextures button) {
@@ -102,9 +115,9 @@ public class PunchcardButton extends AbstractSimiWidget {
         blit(matrixStack, x, y, button.startX, button.startY, button.width, button.height);
     }
 
-    @Override
-    public void playDownSound(SoundManager pHandler) {
-        pHandler.play(SimpleSoundInstance.forUI(new Random().nextInt(100) < 50 ? SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT : SoundEvents.BOOK_PAGE_TURN, new Random().nextInt(100) < 50 ? 1f : 2f));
+
+    public void playDownSound(SoundManager pHandler, boolean rightClick) {
+        pHandler.play(SimpleSoundInstance.forUI(rightClick ? SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT : SoundEvents.BOOK_PAGE_TURN, new Random().nextInt(100) < 50 ? 1f : 2f));
     }
 
     @Override
@@ -118,7 +131,6 @@ public class PunchcardButton extends AbstractSimiWidget {
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
 
-        //this.setState(getState() == PunchcardButton.Mode.DEACTIVATED ? Mode.ACTIVATED : Mode.DEACTIVATED);
 
     }
 

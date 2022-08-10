@@ -177,7 +177,7 @@ public class PunchcardItem extends BaseItem {
         MutableComponent arrow = new TextComponent("-> ").withStyle(ChatFormatting.GOLD);
 
         ChatFormatting format = ChatFormatting.GOLD;
-        if (pStack.hasTag() && pStack.getTag().contains("WriterKey")) {
+        if (pStack.hasTag() && pStack.getTag().contains("WriterKey") && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.containsKey(pStack.getTag().getUUID("WriterKey"))) {
 
 
             PunchcardTextWriter writer = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(pStack.getTag().getUUID("WriterKey")).getTextWriter();
@@ -188,7 +188,7 @@ public class PunchcardItem extends BaseItem {
             for (int i = 1; i < writer.getYsize() + 1; i++) {
                 int max = i * writer.getXsize();
                 int min = Math.max(max - writer.getXsize(), 0);
-                tooltip.add(new TextComponent("    " + writer.getRawText().substring(min, max)).withStyle(ChatFormatting.YELLOW));
+                tooltip.add(new TextComponent(" " + writer.getRawText().substring(min, max)).withStyle(ChatFormatting.YELLOW));
             }
 
 

@@ -39,7 +39,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     public PunchcardTextWriter writer;
     public IconButton resetButton;
     public LangBuilder lang = Lang.builder(CreateUtilities.ID);
-    PunchcardWriter punchcardWriter;
+    public PunchcardWriter punchcardWriter;
     private IconButton closeButton;
     private IconButton removeButton;
     private IconButton saveButton;
@@ -75,13 +75,19 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         BG.render(pPoseStack, x, y, this);
         font.draw(pPoseStack, title, x + 15, y + 3, 0x442000);
 
-        int invX = leftPos;
-        int invY = 150 + 6;
-        if (punchcardWriter != null)
-            punchcardWriter.draw(Minecraft.getInstance().font, pPoseStack, x / 4, y / 2, Theme.c(Theme.Key.TEXT_ACCENT_STRONG).scaleAlpha(1f).getRGB());
+        int invX = (leftPos + imageWidth / 4) - 12;
+        int invY = y + 199 - 22;
+        if (punchcardWriter != null && !getInventory().getStackInSlot(0).isEmpty())
+            punchcardWriter.draw(Minecraft.getInstance().font, pPoseStack, x / 4, y, Theme.c(Theme.Key.TEXT_ACCENT_STRONG).scaleAlpha(1f).getRGB());
 
-        //    renderPlayerInventory(pPoseStack, invX, invY);
+        renderPlayerInventory(pPoseStack, invX, invY);
         renderModel(pPoseStack, x + BG.width + 50, y + BG.height + 10, pPartialTick);
+    }
+
+    @Override
+    public void renderPlayerInventory(PoseStack ms, int x, int y) {
+        GuiTextures.SINGLE_INVENTORY.render(ms, x, y, this);
+        this.font.draw(ms, playerInventoryTitle, x + 8, y + 6, 0x404040);
     }
 
     protected void renderModel(PoseStack ms, int x, int y, float partialTicks) {
@@ -91,6 +97,13 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
                 .scale(4.5f)
                 .render(ms);
 
+    }
+
+    @Override
+    protected void renderTooltip(PoseStack pPoseStack, int pX, int pY) {
+        if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
+            this.renderTooltip(pPoseStack, this.hoveredSlot.getItem(), pX, pY);
+        }
     }
 
     private void label(PoseStack ms, int x, int y, Component text) {
@@ -119,12 +132,11 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         setWindowOffset(-11, 0);
         readWriter(x, y);
         setButtons();
+
         extraAreas = ImmutableList.of(
                 new Rect2i(leftPos + 30 + BG.width, topPos + BG.height - 15 - 34 - 6, 72, 68)
         );
 
-        if (!getInventory().getStackInSlot(0).isEmpty())
-            initGatheringSettings();
 
         callBacks();
     }
@@ -150,13 +162,13 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         removeButton.active = false;
         resetButton.active = false;
         saveButton.active = false;
-
+        initTooltips();
         addRenderableWidget(saveButton);
         addRenderableWidget(closeButton);
         addRenderableWidget(resetButton);
         addRenderableWidget(removeButton);
-        if (punchcardWriter != null)
-            initTooltips();
+
+
     }
 
     private void initGatheringSettings() {
@@ -180,10 +192,10 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
 
     public void callBacks() {
 
-        closeButton.withCallback(() -> minecraft.player.closeContainer());
-
-        if(!getInventory().getStackInSlot(0).isEmpty())
-        punchcardWriter.sync();
+        closeButton.withCallback(this::onClose);
+        initTooltips();
+     //   if (!getInventory().getStackInSlot(0).isEmpty())
+         //   punchcardWriter.sync();
 
         resetButton.withCallback(() -> {
             if (punchcardWriter != null) {
@@ -194,7 +206,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         });
         removeButton.withCallback(() -> {
             if (getBlockEntity().inventory.getStackInSlot(0).hasTag()) {
-                if (getInventory().getStackInSlot(0).getTag().contains("WriterKey")) {
+                if (getInventory().getStackInSlot(0).getTag().contains("WriterKey") && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.containsKey(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"))) {
                     //  CreateUtilities.DOORLOCK_MANAGER.remove(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"));
                     CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.remove(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"));
                     CreateUtilities.PUNCHWRITER_NETWORK.savedWriterText.remove(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"));
@@ -216,7 +228,10 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
                 int x = leftPos + imageWidth - BG.width;
                 int y = topPos;
                 List<Instruction> list = new ArrayList<>();
-
+       /*
+        Punchcard writer = new PunchcardWriter(this, 20, 20, 6, 6);
+        writer.write();
+         */
 
                 CreateUtilities.PUNCHWRITER_NETWORK.addWriter(punchcardWriter, key);
                 CreateUtilities.PUNCHWRITER_NETWORK.add(writer, key);
@@ -292,19 +307,9 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     @Override
     protected void containerTick() {
         super.containerTick();
-        if (optionsInput != null && lineLabel != null) {
-            optionsInput.active = !getInventory().getStackInSlot(0).isEmpty();
-            lineLabel.active = !getInventory().getStackInSlot(0).isEmpty();
-        }
         ItemStack stack = getInventory().getStackInSlot(0);
-        removeButton.active = !getInventory().getStackInSlot(0).isEmpty();
-        resetButton.active = !getInventory().getStackInSlot(0).isEmpty();
-        saveButton.active = !getInventory().getStackInSlot(0).isEmpty();
 
-        if(stack.hasTag() && stack.getTag().contains("WriterKey"))
-            this.punchcardWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey"));
-
-        if(punchcardWriter != null) {
+        if (punchcardWriter != null) {
             if (stack.isEmpty()) {
                 punchcardWriter.setDisabled();
             } else {
@@ -312,12 +317,28 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
             }
         }
 
-        //   initTooltips();
+        if (optionsInput != null && lineLabel != null) {
+            optionsInput.visible = !getInventory().getStackInSlot(0).isEmpty();
+            optionsInput.active = !getInventory().getStackInSlot(0).isEmpty();
+            lineLabel.visible = !getInventory().getStackInSlot(0).isEmpty();
+            lineLabel.active = !getInventory().getStackInSlot(0).isEmpty();
+        }
+
+        removeButton.active = !getInventory().getStackInSlot(0).isEmpty();
+        resetButton.active = !getInventory().getStackInSlot(0).isEmpty();
+        saveButton.active = !getInventory().getStackInSlot(0).isEmpty();
+
+
+        //initTooltips();
         if (punchcardWriter != null)
             punchcardWriter.tick();
 
         int x = leftPos + imageWidth - BG.width;
         int y = topPos;
+
+
+        if (stack.hasTag() && stack.getTag().contains("WriterKey") && this.punchcardWriter != null)
+            this.punchcardWriter.textWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey")).getTextWriter();
         ///   buttonWriter = !getInventory().getStackInSlot(0).isEmpty() && getInventory().getStackInSlot(0).hasTag() ? CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")) : buttonWriter;
         //   writer = getMainBlockEntity().hasPunchcard() && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")) != null ? CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")).getTextWriter() : new PunchcardTextWriter();
         //   writer.writeText(5, 7);
@@ -327,26 +348,33 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
 
     public void readWriter(int x, int y) {
         ItemStack stack = getInventory().getStackInSlot(0);
-     if(stack.isEmpty())
-         return;
 
-        if (stack.hasTag() && stack.getTag().contains("WriterKey")) {
-            this.punchcardWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey"));
-        }
-        else {
-            this.punchcardWriter = new PunchcardWriter(this, x, y, 5, 7).write();
-        }
-        this.punchcardWriter.modifyAt(3, 5, (button, writer) -> {
-            button.visible = false;
-        });
-        if(punchcardWriter != null) {
+
+        //TODO, try to check if this button Mode is the same as the one saved
+
+            this.punchcardWriter = PunchcardWriter.create(this, leftPos + imageWidth - BG.width, topPos, 5, 7).write();
+        if (stack.hasTag() && stack.getTag().contains("WriterKey") && this.punchcardWriter != null)
+            this.punchcardWriter.textWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey")).getTextWriter();
+
+
+            // PunchcardWriter.copy(this.punchcardWriter);
+            if (stack.hasTag() && stack.getTag().contains("WriterKey") && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.containsKey(stack.getTag().getUUID("WriterKey"))) {
+                //   this.punchcardWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey"));
+                //      this.punchcardWriter.coordinatesMap = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey")).coordinatesMap;
+                this.punchcardWriter.textWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey")).getTextWriter();
+            }
+
             if (stack.isEmpty()) {
                 punchcardWriter.setDisabled();
             } else {
                 punchcardWriter.setEnabled();
-            }
         }
-
-
+        initGatheringSettings();
+        if (optionsInput != null && lineLabel != null) {
+            optionsInput.visible = !getInventory().getStackInSlot(0).isEmpty();
+            optionsInput.active = !getInventory().getStackInSlot(0).isEmpty();
+            lineLabel.visible = !getInventory().getStackInSlot(0).isEmpty();
+            lineLabel.active = !getInventory().getStackInSlot(0).isEmpty();
+        }
     }
 }

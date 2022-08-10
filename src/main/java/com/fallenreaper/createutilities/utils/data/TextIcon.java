@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("ALL")
-public class TextIcon {
-    private String fillIcon;
-    private String emptyIcon;
+public class TextIcon<F extends String, E extends String> {
+    private F fillIcon;
+    private E emptyIcon;
     private Map<String, Integer> size;
 
-    private TextIcon(String fillIcon, String emptyIcon) {
+    private TextIcon(F fillIcon, E emptyIcon) {
         this.size = new HashMap<>();
         this.size.put(fillIcon, fillIcon.length());
         this.size.put(emptyIcon, emptyIcon.length());
@@ -17,7 +17,7 @@ public class TextIcon {
         this.emptyIcon = emptyIcon;
     }
 
-    public static TextIcon create(String icon1, String icon2) {
+    public static TextIcon<String, String> create(String icon1, String icon2) {
         return new TextIcon(icon1, icon2);
     }
 
@@ -34,12 +34,12 @@ public class TextIcon {
     }
 
     public TextIcon swap() {
-        this.emptyIcon = fillIcon;
-        this.fillIcon = emptyIcon;
+        this.emptyIcon = (E) fillIcon;
+        this.fillIcon = (F) emptyIcon;
         return this;
     }
 
-    public TextIcon setIcon(String icon1, String icon2) {
+    public TextIcon setIcon(F icon1, E icon2) {
         this.fillIcon = icon1;
         this.emptyIcon = icon2;
         return this;

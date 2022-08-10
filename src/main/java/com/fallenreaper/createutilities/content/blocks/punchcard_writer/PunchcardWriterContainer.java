@@ -33,8 +33,7 @@ public class PunchcardWriterContainer extends ContainerBase<PunchcardWriterBlock
             moveItemStackTo(stack, 0, slots.size(), false);
         } else {
             if (moveItemStackTo(stack, 0, 1, false) || moveItemStackTo(stack, 2, 3, false)
-                    || moveItemStackTo(stack, 4, 5, false))
-                ;
+                    || moveItemStackTo(stack, 4, 5, false));
         }
 
         return ItemStack.EMPTY;
@@ -62,14 +61,18 @@ public class PunchcardWriterContainer extends ContainerBase<PunchcardWriterBlock
     public static PunchcardWriterContainer create(int id, Inventory inv, PunchcardWriterBlockEntity te) {
         return new PunchcardWriterContainer(CUContainerTypes.PUNCHCARD_WRITER.get(), id, inv, te);
     }
+
     @Override
     protected void addSlots() {
 
-        addSlot(new SlotItemHandler(contentHolder.inventory, 0, 53 + 16+15, 33));
+        addSlot(new SlotItemHandler(contentHolder.inventory, 0, 53 + 16 + 14, 33));
         addSlot(new SlotItemHandler(contentHolder.inventory, 1, 0, 0));
+        for (int row = 0; row < 2; ++row) {
+            for (int col = 0; col < 9; ++col)
+                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 18 * col + 64 - 10,  (row * 18) + 199));
+        }
+        // addPlayerSlots(8, 148);
 
-
-        addPlayerSlots(8, 148);
     }
 
     @Override

@@ -10,7 +10,7 @@ public class PunchcardWriterItemHandler extends ItemStackHandler {
      public ContainerBlockEntity<PunchcardWriterItemHandler> be;
 
     public PunchcardWriterItemHandler(ContainerBlockEntity<PunchcardWriterItemHandler> be) {
-        super(2);
+        super(10);
         this.be = be;
 
     }
