@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(FarmBlock.class)
-public class FarmlandBlockMixin extends Block {
+public class FarmBlockMixin extends Block {
 
-    public FarmlandBlockMixin(Properties pProperties) {
+    public FarmBlockMixin(Properties pProperties) {
         super(pProperties);
     }
 

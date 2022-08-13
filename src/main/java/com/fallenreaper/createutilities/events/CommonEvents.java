@@ -49,11 +49,12 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber
 public class CommonEvents {
-    public static List<Block> blockList = CreateUtilities.BLOCKLIST;
+    public static Set<Block> blockList = CreateUtilities.BLOCKLIST;
 
     @SubscribeEvent
     public static void registerMenuScreens(FMLClientSetupEvent event) {
@@ -108,7 +109,7 @@ public class CommonEvents {
 
 
     }
-
+//TODO, move this to punchcard item class
     @SubscribeEvent
     public void onLivingEntityUseItem(PlayerInteractEvent.RightClickBlock event) {
         boolean isPlayer = event.getEntity() instanceof Player;

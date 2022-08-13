@@ -37,8 +37,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Supplier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mod("createutilities")
@@ -63,7 +63,7 @@ public class CreateUtilities {
         }
     };
     private static final NonNullSupplier<CreateRegistrate> registrate = CreateRegistrate.lazy(ID);
-    public static List<Block> BLOCKLIST = new ArrayList<>();
+    public static Set<Block> BLOCKLIST = new HashSet<>();
     public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
     public static PunchwriterNetwork PUNCHWRITER_NETWORK = new PunchwriterNetwork();
 
@@ -106,7 +106,7 @@ public class CreateUtilities {
         CUBlockEntities.register();
         CUContainerTypes.register();
         addToBlockList(() -> Blocks.FURNACE);
-        addToBlockList(() -> Blocks.CRAFTING_TABLE);
+      //  addToBlockList(() -> Blocks.CRAFTING_TABLE);
     }
 
     public static void addToBlockList(Supplier<Block> sup) {

@@ -1,21 +1,22 @@
 package com.fallenreaper.createutilities.utils.data;
 
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.AbstractSmartContainerScreen;
-import com.fallenreaper.createutilities.utils.PunchcardButton;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @SuppressWarnings("ALL")
 public final class PunchcardWriter {
     public PunchcardTextWriter textWriter;
-    public Map<Integer, Integer> yCoords;
-    public Map<Integer, Integer> xCoords;
     public PunchcardButton[][] coordinatesMap;
+    public Map<Point, PunchcardButton> allButtons;
+    Map<Integer, Integer> yCoords;
+    Map<Integer, Integer> xCoords;
+    private PunchcardButton button;
     private AbstractSmartContainerScreen<?> screen;
     private int xPosition;
     private int yPosition;
@@ -36,14 +37,14 @@ public final class PunchcardWriter {
     }
 
     /**
-     * {@code write()} must called before calling any other method otherwise it will cause a NullPointerException.
+     * Make sure to call {@code write()} right after.
      */
     public static PunchcardWriter create(AbstractSmartContainerScreen<?> screen, int x, int y, int width, int height) {
         return new PunchcardWriter(screen, x, y, width, height);
     }
 
     /**
-     * Creates a copy of the specified {@link PunchcardWriter}
+     * Returns a copy of the specified {@link PunchcardWriter}
      */
     public static PunchcardWriter copy(PunchcardWriter copied$writer) {
         PunchcardWriter copy = new PunchcardWriter(copied$writer.screen, copied$writer.xPosition, copied$writer.yPosition, copied$writer.width, copied$writer.height);
@@ -67,20 +68,21 @@ public final class PunchcardWriter {
     private void addButton(Point position, PunchcardButton button) {
         if (coordinatesMap[1].length <= 0 || coordinatesMap[0].length <= 0)
             return;
-        coordinatesMap[position.y][position.x] = button;
+        this.coordinatesMap[position.y][position.x] = button;
+        this.allButtons.put(position, button);
     }
 
     /**
      * Sets a box and a button at the specified position.
      */
-    private void setBox(Point position) {
+    void setBox(Point position) {
         this.textWriter.setBox(position);
     }
 
     /**
      * Fill a box and a button at the specified position.
      */
-    private void fillBox(Point position) {
+    void fillBox(Point position) {
         this.textWriter.fillBox(position);
     }
 
@@ -88,19 +90,21 @@ public final class PunchcardWriter {
      * Changes the text icon.
      */
     public PunchcardWriter setIcon(TextIcon icon) {
+        this.defaultFull = icon.getFullIcon();
+        this.defaultEmpty = icon.getEmptyIcon();
         this.textWriter.setIcon(icon);
         return this;
     }
 
     /**
-     * Handles the mapping of every button by attaching it's position to an index.
+     * Handles the mapping of all buttons by attaching it's position to an index.
      */
-    private void addPositions() {
+    private void syncPositions() {
         this.yCoords = new HashMap<>(textWriter.getYsize());
         this.xCoords = new HashMap<>(textWriter.getXsize());
         for (int y = 1; y < textWriter.getYsize() + 1; y++) {
             for (int x = 1; x < textWriter.getXsize() + 1; x++) {
-                PunchcardButton button = coordinatesMap[y - 1][x - 1];
+                this.button = coordinatesMap[y - 1][x - 1];
                 this.yCoords.put(button.y, y);
                 this.xCoords.put(button.x, x);
             }
@@ -121,7 +125,7 @@ public final class PunchcardWriter {
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
-                button.state = PunchcardButton.Mode.DEACTIVATED;
+                button.state = PunchcardButton.Mode.OFF;
                 this.textWriter.setAll();
             }
         }
@@ -135,7 +139,7 @@ public final class PunchcardWriter {
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
-                button.state = PunchcardButton.Mode.ACTIVATED;
+                button.state = PunchcardButton.Mode.ON;
                 this.textWriter.fillAll();
             }
         }
@@ -143,15 +147,19 @@ public final class PunchcardWriter {
     }
 
     /**
-     * Renders a box with the specified dimensions.
+     * Renders a square with the specified dimensions.
      */
-    public PunchcardWriter draw(Font font, PoseStack matrixStack, int x, int y, int rgb) {
+    public PunchcardWriter draw(Font font, float x, float y, float scaleFactor, int rgb) {
+        PoseStack poseStack = new PoseStack();
+        poseStack.pushPose();
+        poseStack.scale(scaleFactor, scaleFactor, 0);
+        poseStack.translate(x, y, 0);
+
         if (getTextWriter() != null)
             for (int i = 1; i < this.textWriter.getYsize() + 1; i++) {
                 int max = i * this.textWriter.getXsize();
                 int min = Math.max(max - textWriter.getXsize(), 0);
-
-                font.drawShadow(matrixStack, this.textWriter.getRawText().substring(min, max), x, ((9 * i) + y), rgb);
+                font.drawShadow(poseStack, this.textWriter.getRawText().substring(min, max), x, ((9f * i) + y), rgb);
             }
         return this;
     }
@@ -183,19 +191,19 @@ public final class PunchcardWriter {
     }
 
     /**
-     * This  must be called before doing anything otherwise it will cause a NullPointerException.
+     * This  must be called before doing anything otherwise it will cause a {@link NullPointerException}.
      */
     public PunchcardWriter write() {
-        coordinatesMap = new PunchcardButton[textWriter.getYsize()][textWriter.getXsize()];
-
+        this.coordinatesMap = new PunchcardButton[textWriter.getYsize()][textWriter.getXsize()];
+        this.allButtons = new HashMap<>(textWriter.getYsize() * textWriter.getXsize());
         for (int i = 1; i < textWriter.getYsize() + 1; i++) {
             for (int j = 1; j < textWriter.getXsize() + 1; j++) {
-                PunchcardButton button = new PunchcardButton(16 * j + xPosition + (5 * 16) + 6, 16 * i + yPosition + 6, 16, 16, this);
+                this.button = new PunchcardButton(16 * j + xPosition + (5 * 16) + 6, 16 * i + yPosition + 6, 16, 16, this);
                 this.addButton(new Point(j - 1, i - 1), button);
-                screen.addWidget(button);
+                this.screen.addWidget(button);
             }
         }
-        addPositions();
+        syncPositions();
         return this;
     }
 
@@ -204,27 +212,18 @@ public final class PunchcardWriter {
     }
 
     /**
-     *(Deprecated because the clicking is now handled inside the {@link PunchcardButton},
+     * ({@literal @Deprecated} because the clicking is now handled inside {@link PunchcardButton},
      * this makes it way easier to sychronize between the box and button, it also has way less bugs than before and easier to manage) -
-     *
-     *  Creates a bound between boxes and buttons.
+     * <p>
+     * Creates a bound between boxes and buttons.
      */
     @Deprecated
-    public PunchcardWriter sync() {
+    private PunchcardWriter sync() {
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
-
                 button.withCallback(() -> {
-                            // button.setState(button.getState() == PunchcardButton.Mode.ACTIVATED ? PunchcardButton.Mode.DEACTIVATED: PunchcardButton.Mode.ACTIVATED);
-                            if (!screen.getInventory().getStackInSlot(0).isEmpty()) {
-                                if (yCoords != null && xCoords != null) {
-                                    if (button.getState() == PunchcardButton.Mode.ACTIVATED) {
-                                    }
-                                }
-                            }
-                        }
-                );
+                });
             }
         }
         return this;
@@ -233,11 +232,11 @@ public final class PunchcardWriter {
     /**
      * Performs an action on the specified position.
      */
-    public PunchcardWriter modifyAt(int x, int y, BiConsumer<PunchcardButton, PunchcardTextWriter> action) {
-        if (coordinatesMap != null) {
-            PunchcardButton button = coordinatesMap[Math.min(coordinatesMap.length - 1, y - 1)][Math.min(coordinatesMap[1].length - 1, x - 1)];
+    public PunchcardWriter modifyAt(Point coordinates, Consumer<PunchcardButton> action) {
+        if (coordinatesMap != null && allButtons != null) {
+            PunchcardButton button = coordinatesMap[coordinates.y][coordinates.x];
             if (button != null)
-                action.accept(button, getTextWriter());
+                action.accept(button);
         }
         return this;
     }

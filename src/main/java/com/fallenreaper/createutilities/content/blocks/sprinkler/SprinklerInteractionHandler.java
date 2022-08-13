@@ -46,10 +46,8 @@ public class SprinklerInteractionHandler extends InteractionHandler {
 
     }
 
-    public static boolean checkForPlants(BlockState blockState) {
-        Block foundBlock = blockState.getBlock();
-
-        return foundBlock instanceof BonemealableBlock;
+    public static boolean checkForPlants(Block block) {
+        return block instanceof BonemealableBlock;
     }
 
     public static double randomWithRange(double min, double max) {

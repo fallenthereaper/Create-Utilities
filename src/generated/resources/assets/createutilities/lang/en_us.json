@@ -17,5 +17,7 @@
   "createutilities.sprinkler.ponder.description_1": "Hydrating Farmland areas using a sprinkler.",
   "createutilities.instruction.train_ticket": "Train Ticket",
   "createutilities.instruction.door_info": "Door Lock",
-  "createutilities.instruction.textcard_info": "Text"
+  "createutilities.instruction.textcard_info": "Text",
+  "createutilities.instruction.instruction": "Instruction"
+
 }

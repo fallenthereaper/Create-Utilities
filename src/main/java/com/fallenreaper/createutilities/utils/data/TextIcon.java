@@ -39,7 +39,7 @@ public class TextIcon<F extends String, E extends String> {
         return this;
     }
 
-    public TextIcon setIcon(F icon1, E icon2) {
+    TextIcon setIcon(F icon1, E icon2) {
         this.fillIcon = icon1;
         this.emptyIcon = icon2;
         return this;

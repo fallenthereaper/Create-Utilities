@@ -29,9 +29,9 @@ public class ContainerUtil {
         double d5 = Math.floor(pZ) + RANDOM.nextDouble() * d1 + d2;
 
         while(!pStack.isEmpty()) {
-            ItemEntity itementity = new ItemEntity(pLevel, d3, d4, d5, pStack.split(RANDOM.nextInt(21) + 10));
+            ItemEntity itementity = new ItemEntity(pLevel, d3, d4, d5, pStack.split(RANDOM.nextInt(25) + 10));
             float f = 0.05F;
-            itementity.setDeltaMovement(RANDOM.nextGaussian() * (double)0.05F, RANDOM.nextGaussian() * (double)0.05F + (double)0.2F, RANDOM.nextGaussian() * (double)0.05F);
+            itementity.setDeltaMovement(RANDOM.nextGaussian() * (double)f, RANDOM.nextGaussian() * (double)0.05F + (double)0.2F, RANDOM.nextGaussian() * (double)0.05F);
             pLevel.addFreshEntity(itementity);
         }
 

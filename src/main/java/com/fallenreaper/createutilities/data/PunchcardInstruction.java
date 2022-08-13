@@ -3,7 +3,7 @@ package com.fallenreaper.createutilities.data;
 import com.fallenreaper.createutilities.CreateUtilities;
 import net.minecraft.nbt.CompoundTag;
 
-public class PunchcardInstruction extends PunchcardInfo{
+public class PunchcardInstruction extends PunchcardInfo {
 
 
     public PunchcardInstruction() {

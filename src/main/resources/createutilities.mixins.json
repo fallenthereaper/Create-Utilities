@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "createutilities.refmap.json",
   "mixins": [
-    "FarmlandBlockMixin",
+    "FarmBlockMixin",
     "FurnaceBlockEntityMixin"
   ],
   "client": [

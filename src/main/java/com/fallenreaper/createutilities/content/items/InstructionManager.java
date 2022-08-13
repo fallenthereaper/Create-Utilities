@@ -20,34 +20,30 @@ public class InstructionManager {
     public static List<Supplier<? extends PunchcardInfo>> INSTRUCTIONS = new ArrayList<>();
     public static LangBuilder lang = new LangBuilder(CreateUtilities.ID).text("instruction.");
 
+    static {
+        //TODO, figure out why is it stacking for every getLabeledText));
+        addInstruction("door_info", PunchcardDoorInfo::new);
+        addInstruction("text_info", TextPunchcardInfo::new);
+        addInstruction("train_ticket_info", PunchcardTrainTicket::new);
+        addInstruction("instruction", PunchcardInstruction::new);
+
+    }
+
     public List<InstructionEntry> savedInfo;
     public CompoundTag doorPos;
     public int savedProgress;
 
-   static void addInstruction(String name, Supplier<? extends PunchcardInfo> sup) {
+    public InstructionManager() {
+        savedInfo = new ArrayList<>();
+    }
+
+    static void addInstruction(String name, Supplier<? extends PunchcardInfo> sup) {
 
 
         INSTRUCTIONS.add(sup);
-         INSTRUCTIONS_LOCATIONS.add(lang.translate(name));
+        INSTRUCTIONS_LOCATIONS.add(lang.translate(name));
     }
 
-   static {
-       //TODO, figure out why is it stacking for every getLabeledText));
-       addInstruction("door_info", PunchcardDoorInfo::new);
-       addInstruction("text_info", TextPunchcardInfo::new);
-       addInstruction("train_ticket_info", PunchcardTrainTicket::new);
-       addInstruction("instruction", PunchcardInstruction::new);
-
-   }
-    public CompoundTag write(BlockPos pos) {
-        CompoundTag tag = new CompoundTag();
-        ListTag list = NBTHelper.writeCompoundList(savedInfo, InstructionEntry::write);
-        CompoundTag blockpos = NbtUtils.writeBlockPos(pos);
-        tag.put("Pos", blockpos);
-        tag.put("EntryValues", list);
-
-        return tag;
-    }
     public static InstructionManager fromTag(CompoundTag tag) {
 
         InstructionManager manager = new InstructionManager();
@@ -57,8 +53,9 @@ public class InstructionManager {
 
         return manager;
     }
+
     public static PunchcardInfo getAllEntries(CompoundTag tag) {
-        String  message = tag.getString("Id");
+        String message = tag.getString("Id");
 
         Supplier<? extends PunchcardInfo> supplier = null;
 
@@ -78,7 +75,13 @@ public class InstructionManager {
         return punchcards;
     }
 
-    public InstructionManager() {
-        savedInfo = new ArrayList<>();
+    public CompoundTag write(BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        ListTag list = NBTHelper.writeCompoundList(savedInfo, InstructionEntry::write);
+        CompoundTag blockpos = NbtUtils.writeBlockPos(pos);
+        tag.put("Pos", blockpos);
+        tag.put("EntryValues", list);
+
+        return tag;
     }
 }

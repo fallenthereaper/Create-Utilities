@@ -41,9 +41,6 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn,
                                  BlockHitResult hit) {
 
-
-
-
         ItemStack stack = player.getItemInHand(handIn);
         if (!worldIn.isClientSide && worldIn.getBlockEntity(pos) instanceof final TypewriterBlockEntity be && !stack.is(AllItems.CRAFTING_BLUEPRINT.get())) {
             withTileEntityDo(worldIn, pos,

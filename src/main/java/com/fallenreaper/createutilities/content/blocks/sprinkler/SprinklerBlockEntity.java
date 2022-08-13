@@ -1,9 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
-
 import com.fallenreaper.createutilities.index.CUConfig;
 import com.jozufozu.flywheel.repack.joml.Math;
-import com.mojang.math.Vector3d;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.fluids.FluidFX;
@@ -28,7 +26,6 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.FireBlock;
@@ -50,19 +47,21 @@ import java.util.Random;
 
 import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlock.HORIZONTAL_FACING;
 
+//todo, redo this some day
+
 public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGoggleInformation, RadiusProvider<Integer>, IContainerHelper<FluidStack> {
-    private static final int maxTankCapacity = 1500;
-    public static int ticks;
-    public static int chance = CUConfig.FARMLAND_HYDRATE_CHANCE.get();
+    private static final int chance = CUConfig.FARMLAND_HYDRATE_CHANCE.get();
+    private static int ticks;
     public State currentState;
-    public int radius;
-    public boolean shouldSpawnParticles;
-    boolean hasWaterStored;
-    boolean hasFluidIn;
     SmartFluidTankBehaviour fluidTankBehaviour;
-    float fluidUsagePerTick;
-    boolean isReadyToHydrate;
-    float generatedSpeed;
+    private int radius;
+    private boolean shouldSpawnParticles;
+    private boolean hasWaterStored;
+    private boolean hasFluidIn;
+    private float fluidUsagePerTick;
+    private boolean isReadyToHydrate;
+    private float generatedSpeed;
+
     public SprinklerBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
 
@@ -72,10 +71,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
     private static int secondsInTicks(int seconds) {
         return seconds * 20;
-    }
-
-    public static void resetTicks() {
-        ticks = 0;
     }
 
     @Override
@@ -111,10 +106,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         return getContainedFluid().isFluidEqual(fluidStack) && !getContainedFluid().isEmpty();
     }
 
-    protected boolean emptyContainer() {
-        return this.currentState != State.LOADED && getContainedFluid().isEmpty();
-    }
-
     protected boolean checkFluidIn() {
         return !getContainedFluid().isEmpty();
 
@@ -146,11 +137,9 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                 isReadyToHydrate = true;
                 this.currentState = State.HYDRATING;
             }
-        } else if (!isHydrating() && !isLoaded()) {
+        } else if (!isHydrating() && !isLoaded() || getContainedFluid().isEmpty()) {
             this.currentState = State.NONE;
             reset();
-        } else if (getContainedFluid().isEmpty()) {
-            this.currentState = State.NONE;
         }
         if (!isServer) {
             if (isHydrating() && !getContainedFluid().isEmpty()) {
@@ -162,9 +151,11 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
             if (isHydrating() && isWater() && getFluidAmount() > 10)
                 findFarmland();
         }
+        if (isHydrating())
+            refill();
     }
 
-    protected void applyEffects(AABB axisAlignedBB, boolean lava) {
+    private void applyEffects(AABB axisAlignedBB, boolean lava) {
         if (getLevel() == null)
             return;
 
@@ -187,9 +178,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                             return;
                         }
                         int entitiesAmount = entitiesWithinAABB.size();
-                        float value = 16F / entitiesAmount;
-                        if (entity instanceof Player pPlayer)
-                            pPlayer.displayClientMessage(new TextComponent("Amount Value:" + " " + value).withStyle(ChatFormatting.BOLD), true);
+                        float value = 8f / entitiesAmount;
 
                         for (MobEffectInstance effectsInTheList : list) {
                             MobEffect actualEffect = effectsInTheList.getEffect();
@@ -203,13 +192,8 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         }
     }
 
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-    }
-
     protected int getTankMaxCapacity() {
-        return maxTankCapacity;
+        return 1500;
     }
 
 
@@ -237,16 +221,16 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     @Override
     public void read(CompoundTag compound, boolean clientPacket) {
         super.read(compound, clientPacket);
-        if (getWorld() != null) {
+        if (getWorld() != null)
             NBTHelper.readAABB(NBTHelper.writeAABB(aabb()));
-        }
-        radius = compound.getInt("Radius");
-        hasFluidIn = compound.getBoolean("ContainerFluid");
-        hasWaterStored = compound.getBoolean("HasWaterIn");
-        isReadyToHydrate = compound.getBoolean("IsReady");
+
+        this.radius = compound.getInt("Radius");
+        this.hasFluidIn = compound.getBoolean("ContainerFluid");
+        this.hasWaterStored = compound.getBoolean("HasWaterIn");
+        this.isReadyToHydrate = compound.getBoolean("IsReady");
         // currentState = SprinklerTileEntity.State.values()[compound.getInt("StateInteger")];
 
-        currentState = NBTHelper.readEnum(compound, "StateIn", State.class);
+        this.currentState = NBTHelper.readEnum(compound, "StateIn", State.class);
 
         if (compound.contains("Particle")) {
             shouldSpawnParticles = true;
@@ -279,7 +263,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     public void lazyTick() {
         super.lazyTick();
         ticks++;
-        refuel();
+
 
     }
 
@@ -287,17 +271,15 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         return ComparatorUtil.levelOfSmartFluidTank(getLevel(), getBlockPos());
     }
 
-    protected void refuel() {
+    //TODO, rename to refill
+    protected void refill() {
         if (isHydrating()) {
             if (ticks == 0) {
                 fluidUsagePerTick += 0.25F;
                 // ticks -= 72000*10;
             }
         }
-
         fluidTankBehaviour.getPrimaryHandler().drain((Math.abs(Math.round(fluidUsagePerTick * Math.abs((getSpeed() / 256)) * 2))), IFluidHandler.FluidAction.EXECUTE);
-
-
     }
 
     @Override
@@ -310,29 +292,19 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         return new Random();
     }
 
-    protected void findFarmland() {
+    private void findFarmland() {
 
-        BlockPos globalBlockPos = this.getBlockPos();
-        Vector3d worldPosAsVec = new Vector3d(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
-        AABB axisAlignedBB = new AABB(worldPosition).inflate(getRadius(), 0, getRadius());
+        AABB aabb = new AABB(worldPosition).inflate(getRadius(), 0, getRadius());
 
         // MutableBoundingBox boundingBox = new MutableBoundingBox(worldPosition.offset(-getRadius(), -1, -getRadius()), worldPosition.offset(getRadius(), -1, getRadius()));
         // Farmland hydration & plants growth logic
-        for (BlockPos blockPositions : BlockPos.randomBetweenClosed(getRandom(), 25, globalBlockPos.getX() - getRadius(), (int) (globalBlockPos.getY() - aabb().getYsize()), globalBlockPos.getZ() - getRadius(), globalBlockPos.getX() + getRadius(), globalBlockPos.getY() + 1, globalBlockPos.getZ() + getRadius())) {
+        for (BlockPos blockPositions : BlockPos.randomBetweenClosed(getRandom(), 25, getBlockPos().getX() - getRadius(), (int) (getBlockPos().getY() - aabb().getYsize()), getBlockPos().getZ() - getRadius(), getBlockPos().getX() + getRadius(), getBlockPos().getY() + 1, getBlockPos().getZ() + getRadius())) {
             BlockState blockState = getLevel().getBlockState(blockPositions);
-
-            //ignore air
-            if (blockState.isAir()) {
+            if (blockState.isAir())
                 continue;
-            }
-            //System.out.println(blockState.getBlock() + " " + " At" + " " + blockPositions);
-            worldPosAsVec.add(new Vector3d(blockPositions.getX(), blockPositions.getY(), blockPositions.getZ()));
-            //check if the detected block is a instance of farmland
             if (SprinklerInteractionHandler.hasFarmlandBlock(blockPositions, getLevel())) {
-                //check if it's inside a circle radius
-                if (SprinklerInteractionHandler.isInsideCircle(getRadius(), globalBlockPos, blockPositions)) {
-                    SprinklerInteractionHandler.hydrateFarmland(blockPositions, getLevel(), blockState, axisAlignedBB);
-                }
+                if (SprinklerInteractionHandler.isInsideCircle(getRadius(), getBlockPos(), blockPositions))
+                    SprinklerInteractionHandler.hydrateFarmland(blockPositions, getLevel(), blockState, aabb);
             }
             //WIP, obviously this doesn't get called so just a placeholder for now
             if (isLava() && isHydrating()) {
@@ -344,11 +316,10 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                 }
             }
             //Crops grow logic
-            if (SprinklerInteractionHandler.checkForPlants(blockState)) {
-                if (SprinklerInteractionHandler.isInsideCircle(getRadius(), globalBlockPos, blockPositions)) {
-                    if (getRandom().nextInt(100) < chance) {
+            if (SprinklerInteractionHandler.checkForPlants(blockState.getBlock())) {
+                if (SprinklerInteractionHandler.isInsideCircle(getRadius(), getBlockPos(), blockPositions)) {
+                    if (getRandom().nextInt(100) < chance)
                         blockState.getBlock().randomTick(blockState, (ServerLevel) this.getLevel(), blockPositions, getRandom());
-                    }
                 }
             }
         }
@@ -397,9 +368,10 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     }
 
     protected double getFillState() {
-        return (getFluidAmount() / getTankMaxCapacity()) * 100;
+        return (getFluidAmount() / getTankMaxCapacity()) * 100f;
     }
 
+    //todo, redo tooltip because 0.5 broke  literally everything
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
@@ -520,8 +492,9 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     public FluidStack getContainedFluid() {
         return this.fluidTankBehaviour.getPrimaryHandler().getFluid();
     }
-//TODO, redo this completely
-    void initiateParticles() {
+
+    //TODO, redo this completely
+    private void initiateParticles() {
         if (this.getWorld() == null) {
             return;
         }
@@ -579,6 +552,8 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
 
     public enum State {
-        HYDRATING, NONE, LOADED
+        HYDRATING,
+        NONE,
+        LOADED
     }
 }

@@ -59,16 +59,15 @@ public final class PunchcardTextWriter {
     /**
      * Sets a box at the specified position.
      */
-    public void setBox(Point point) {
-        dataMap[Math.min(dataMap.length - 1, point.y)][Math.min(dataMap[1].length - 1, point.x)] = empty;
+    void setBox(Point point) {
+        dataMap[point.y % dataMap.length][point.x % dataMap[1].length] = this.empty;
     }
 
     /**
      * Fills a box at the specified position.
      */
-    public void fillBox(Point point) {
-        dataMap[Math.min(dataMap.length - 1, point.y)][Math.min(dataMap[1].length - 1, point.x)] = full;
-
+    void fillBox(Point point) {
+        dataMap[point.y % dataMap.length][point.x % dataMap[1].length] = this.full;
     }
 
     /**
