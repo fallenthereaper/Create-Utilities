@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
-import com.fallenreaper.createutilities.content.blocks.typewriter.ContainerUtil;
+import com.fallenreaper.createutilities.utils.ContainerUtil;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;

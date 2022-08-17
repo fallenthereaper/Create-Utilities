@@ -2,11 +2,9 @@ package com.fallenreaper.createutilities.events;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterScreen;
-import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchwriterNetwork;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterScreen;
 import com.fallenreaper.createutilities.content.items.InstructionEntry;
-import com.fallenreaper.createutilities.content.items.InstructionManager;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import com.fallenreaper.createutilities.data.DoorLock;
 import com.fallenreaper.createutilities.data.PunchcardDoorInfo;
@@ -109,7 +107,8 @@ public class CommonEvents {
 
 
     }
-//TODO, move this to punchcard item class
+
+    //TODO, move this to punchcard item class
     @SubscribeEvent
     public void onLivingEntityUseItem(PlayerInteractEvent.RightClickBlock event) {
         boolean isPlayer = event.getEntity() instanceof Player;
@@ -124,9 +123,6 @@ public class CommonEvents {
         if (!(itemStack.getItem() instanceof PunchcardItem item))
             return;
         DoorLockManager doorManager = CreateUtilities.DOORLOCK_MANAGER;
-        PunchwriterNetwork punchcardNetwork = CreateUtilities.PUNCHWRITER_NETWORK;
-        InstructionManager manager;
-
         if (!itemStack.hasTag()) {
             if (player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor) {
                 for (DoorLock man : CreateUtilities.DOORLOCK_MANAGER.dataList) {
@@ -176,9 +172,7 @@ public class CommonEvents {
                     player.getLevel().playSound(player, clickedPos, AllSoundEvents.CONFIRM.getMainEvent(), SoundSource.BLOCKS, 0.75f, 0.75f);
                 event.setUseBlock(Event.Result.ALLOW);
             }
-
         }
-
     }
 
     @SubscribeEvent

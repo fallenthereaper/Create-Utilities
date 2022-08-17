@@ -37,7 +37,7 @@ public final class PunchcardWriter {
     }
 
     /**
-     * Make sure to call {@code write()} right after.
+     * Make sure to call {@link #write()} right after.
      */
     public static PunchcardWriter create(AbstractSmartContainerScreen<?> screen, int x, int y, int width, int height) {
         return new PunchcardWriter(screen, x, y, width, height);
@@ -121,12 +121,12 @@ public final class PunchcardWriter {
     /**
      * Instantly disables and sets all boxes.
      */
-    public PunchcardWriter setAll() {
+    public PunchcardWriter set() {
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
                 button.state = PunchcardButton.Mode.OFF;
-                this.textWriter.setAll();
+                this.textWriter.set();
             }
         }
         return this;
@@ -135,12 +135,12 @@ public final class PunchcardWriter {
     /**
      * Instantly fills all boxes.
      */
-    public PunchcardWriter fillAll() {
+    public PunchcardWriter fill() {
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
                 button.state = PunchcardButton.Mode.ON;
-                this.textWriter.fillAll();
+                this.textWriter.fill();
             }
         }
         return this;
@@ -218,11 +218,12 @@ public final class PunchcardWriter {
      * Creates a bound between boxes and buttons.
      */
     @Deprecated
-    private PunchcardWriter sync() {
+    public PunchcardWriter sync(Runnable action) {
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
                 button.withCallback(() -> {
+                    action.run();
                 });
             }
         }

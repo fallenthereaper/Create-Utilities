@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("all")
-public final class PunchcardTextWriter {
+public class PunchcardTextWriter {
 
     private String empty;
     private String full;
@@ -28,10 +28,6 @@ public final class PunchcardTextWriter {
         return this;
     }
 
-    /**
-     * Draws a box with the specified dimensions.
-     * This must be called after every change so that the changes can actually have effect.
-     */
     public String getRawText() {
         String base = "";
         for (String[] map : dataMap) {
@@ -101,7 +97,7 @@ public final class PunchcardTextWriter {
     /**
      * Instantly sets all boxes inside the square.
      */
-    public void setAll() {
+    void set() {
         for (int xx = 0; xx < dataMap.length; xx++)
             for (int yy = 0; yy < dataMap[1].length; yy++)
                 this.addBox(new Point(yy, xx), empty);
@@ -110,7 +106,7 @@ public final class PunchcardTextWriter {
     /**
      * Instantly fills all boxes inside the square.
      */
-    public void fillAll() {
+    void fill() {
         for (int xx = 0; xx < dataMap.length; xx++)
             for (int yy = 0; yy < dataMap[1].length; yy++)
                 this.addBox(new Point(yy, xx), full);

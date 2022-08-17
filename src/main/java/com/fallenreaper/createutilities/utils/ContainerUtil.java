@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.content.blocks.typewriter;
+package com.fallenreaper.createutilities.utils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;

@@ -114,10 +114,6 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         // font.drawShadow(ms, text, guiLeft + x, guiTop + 26 + y, 0xFFFFEE);
     }
 
-    @Override
-    public int getXSize() {
-        return super.getXSize();
-    }
 
     public void addWidget(AbstractWidget widget) {
         addRenderableWidget(widget);
@@ -138,7 +134,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         );
 
 
-        callBacks();
+        setupCallBacks();
     }
 
     //todo fix this
@@ -185,7 +181,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     }
 
 
-    public void callBacks() {
+    public void setupCallBacks() {
 
         closeButton.withCallback(super::onClose);
         //   if (!getInventory().getStackInSlot(0).isEmpty())
@@ -193,7 +189,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
 
         resetButton.withCallback(() -> {
             if (punchcardWriter != null) {
-                punchcardWriter.fillAll();
+                punchcardWriter.fill();
                 getBlockEntity().notifyUpdate();
 
             }
@@ -201,11 +197,11 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
                 if (getInventory().getStackInSlot(0).hasTag())
                     if (getInventory().getStackInSlot(0).getTag().contains("WriterKey"))
                         if (CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.containsKey(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")))
-                            CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")).fillAll();
+                            CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")).fill();
             getBlockEntity().notifyUpdate();
         });
         removeButton.withCallback(() -> {
-            if (getBlockEntity().inventory.getStackInSlot(0).hasTag()) {
+            if (getInventory().getStackInSlot(0).hasTag()) {
                 if (getInventory().getStackInSlot(0).getTag().contains("WriterKey") && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.containsKey(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"))) {
                     CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.remove(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"));
                     CreateUtilities.PUNCHWRITER_NETWORK.savedWriterText.remove(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"));
@@ -309,9 +305,10 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     protected void containerTick() {
         super.containerTick();
         ItemStack stack = getInventory().getStackInSlot(0);
+      boolean hasPunchcard = !stack.isEmpty();
 
         if (punchcardWriter != null) {
-            if (stack.isEmpty()) {
+            if (!hasPunchcard) {
                 punchcardWriter.setDisabled();
             } else {
                 punchcardWriter.setEnabled();
@@ -323,15 +320,15 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         //   writer.writeText(5, 7);
 
         if (optionsInput != null && lineLabel != null) {
-            optionsInput.visible = !getInventory().getStackInSlot(0).isEmpty();
-            optionsInput.active = !getInventory().getStackInSlot(0).isEmpty();
-            lineLabel.visible = !getInventory().getStackInSlot(0).isEmpty();
-            lineLabel.active = !getInventory().getStackInSlot(0).isEmpty();
+            optionsInput.visible = hasPunchcard;
+            optionsInput.active = hasPunchcard;
+            lineLabel.visible = hasPunchcard;
+            lineLabel.active = hasPunchcard;
         }
 
-        removeButton.active = !getInventory().getStackInSlot(0).isEmpty() && getInventory().getStackInSlot(0).hasTag();
-        resetButton.active = !getInventory().getStackInSlot(0).isEmpty();
-        if (!getInventory().getStackInSlot(0).isEmpty()) {
+        removeButton.active = hasPunchcard && getInventory().getStackInSlot(0).hasTag();
+        resetButton.active = hasPunchcard;
+        if (hasPunchcard) {
             saveButton.active = true;
             if (stack.hasTag() && stack.getTag().contains("WriterKey") && punchcardWriter != null)
                 saveButton.active = !this.punchcardWriter.getTextWriter().equals(CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey")).getTextWriter());
@@ -347,12 +344,12 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
 
     private void readWriter(int x, int y) {
         ItemStack stack = getInventory().getStackInSlot(0);
-
+        boolean hasPunchcard = !stack.isEmpty();
         readFromSavedWriter();
 
-        this.punchcardWriter = PunchcardWriter.create(this, x, y, 2, 2).write();
+        this.punchcardWriter = PunchcardWriter.create(this, x, y, 5, 7).write();
         //TODO, try to check if this button Mode is the same as the one saved, update: didn't work at all
-        if (stack.isEmpty()) {
+        if (!hasPunchcard) {
             punchcardWriter.setDisabled();
         } else {
             punchcardWriter.setEnabled();
@@ -361,10 +358,10 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         readButtons();
         initGatheringSettings();
         if (optionsInput != null && lineLabel != null) {
-            optionsInput.visible = !getInventory().getStackInSlot(0).isEmpty();
-            optionsInput.active = !getInventory().getStackInSlot(0).isEmpty();
-            lineLabel.visible = !getInventory().getStackInSlot(0).isEmpty();
-            lineLabel.active = !getInventory().getStackInSlot(0).isEmpty();
+            optionsInput.visible = hasPunchcard;
+            optionsInput.active = hasPunchcard;
+            lineLabel.visible = hasPunchcard;
+            lineLabel.active = hasPunchcard;
         }
     }
 
@@ -377,8 +374,6 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         PunchcardWriter savedWriter = CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(stack.getTag().getUUID("WriterKey"));
 
         this.punchcardWriter.textWriter = savedWriter.getTextWriter();
-
-
     }
 
     private void readButtons() {
