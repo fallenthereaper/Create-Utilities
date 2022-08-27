@@ -21,11 +21,10 @@ public class BellowDisplaySource extends NumericSingleLineDisplaySource {
         if(!te.isValid || te.getSpeed() == 0 )
             return EMPTY_LINE;
 
-        MutableComponent time = new TextComponent(te.getTotalTime(te.getMaxBurnTime(te.itemIn)));
 
-
-        return time;
+        return new TextComponent(te.getTotalTime(te.getMaxBurnTime(te.getItemIn())));
     }
+
     @Override
     @OnlyIn(Dist.CLIENT)
     public void initConfigurationWidgets(DisplayLinkContext context, ModularGuiLineBuilder builder, boolean isFirstLine) {

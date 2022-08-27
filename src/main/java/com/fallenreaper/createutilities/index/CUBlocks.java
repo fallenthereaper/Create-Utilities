@@ -15,8 +15,12 @@ import com.simibubi.create.foundation.data.BuilderTransformers;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.simibubi.create.repack.registrate.util.entry.BlockEntry;
+import com.simibubi.create.repack.registrate.util.nullness.NonNullFunction;
+import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MaterialColor;
 
 import static com.simibubi.create.AllTags.pickaxeOnly;
@@ -35,7 +39,7 @@ public class CUBlocks {
             .addLayer(() -> RenderType::cutoutMipped)
             .defaultLoot()
             .register();
-   public static final BlockEntry<LockSlidingDoor> BRASS_DOOR = REGISTRATE.block("brass_door", LockSlidingDoor::new)
+    public static final BlockEntry<LockSlidingDoor> BRASS_DOOR = REGISTRATE.block("brass_door", LockSlidingDoor::new)
             .transform(BuilderTransformers.slidingDoor("brass"))
             .properties(p -> p.color(MaterialColor.TERRACOTTA_CYAN)
                     .sound(SoundType.NETHERITE_BLOCK)
@@ -73,5 +77,12 @@ public class CUBlocks {
     public static void register() {
         Create.registrate().addToSection(BELLOWS, AllSections.KINETICS);
         Create.registrate().addToSection(SPRINKLER, AllSections.KINETICS);
+    }
+
+    public static BlockEntry<?> createHorizontal(String name, NonNullFunction<BlockBehaviour.Properties, ? extends Block> factory, NonNullSupplier<? extends Block> properties) {
+        return REGISTRATE.block(name, factory)
+                .initialProperties(properties)
+                .blockstate(BlockStateGen.horizontalBlockProvider(true))
+                .register();
     }
 }

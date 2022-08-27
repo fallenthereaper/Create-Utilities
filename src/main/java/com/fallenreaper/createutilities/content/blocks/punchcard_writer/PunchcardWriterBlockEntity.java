@@ -35,7 +35,7 @@ public class PunchcardWriterBlockEntity extends ContainerBlockEntity<PunchcardWr
     @Override
     public void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
-        compound.putBoolean("HasPunchcard", !inventory.getStackInSlot(0).isEmpty() && inventory.getStackInSlot(0).hasTag());
+        compound.putBoolean("HasPunchcard", !inventory.getStackInSlot(0).isEmpty());
     }
 
     public boolean hasPunchcard() {

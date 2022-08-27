@@ -10,7 +10,7 @@ import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class BellowDataHelper {
-//copied from create i have no idea whats gioing on here
+//copied from create I have no idea what's going on here
     public static MutableComponent barComponent(int level, int minValue, int maxValue) {
         return TextComponent.EMPTY.copy()
                 .append(bars(Math.max(0, minValue - 1), ChatFormatting.DARK_AQUA))

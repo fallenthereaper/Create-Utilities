@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -106,7 +105,7 @@ public class CreateUtilities {
         CUBlockEntities.register();
         CUContainerTypes.register();
         addToBlockList(() -> Blocks.FURNACE);
-      //  addToBlockList(() -> Blocks.CRAFTING_TABLE);
+        //  addToBlockList(() -> Blocks.CRAFTING_TABLE);
     }
 
     public static void addToBlockList(Supplier<Block> sup) {
@@ -150,12 +149,6 @@ public class CreateUtilities {
         return registrate.get();
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-        // do something when the server starts
-        LOGGER.info("HELLO from server starting");
-    }
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
     // Event bus for receiving Registry Events)

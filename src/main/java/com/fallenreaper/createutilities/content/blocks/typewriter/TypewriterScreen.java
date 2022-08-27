@@ -3,11 +3,14 @@ package com.fallenreaper.createutilities.content.blocks.typewriter;
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.items.InstructionManager;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
+import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
+import com.fallenreaper.createutilities.index.CUItems;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.ModPackets;
 import com.fallenreaper.createutilities.networking.TypewriterEditPacket;
 import com.google.common.collect.ImmutableList;
+import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
@@ -25,6 +28,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -101,7 +105,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         GuiTextures.HIGHLIGHT.render(matrixStack, x + 10, y + 56, this);
     }
     protected void renderModel(PoseStack ms, int x, int y, float partialTicks) {
-        /*
+
         TransformStack.cast(ms)
                 .pushPose()
                 .translate(x, y, 100)
@@ -124,7 +128,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         }
         ms.popPose();
 
-         */
+
 
         GuiGameElement.of(CUBlocks.TYPEWRITER.asStack())
                 .<GuiGameElement.GuiRenderBuilder>at(x - 50, y - 100 + 28, -100)

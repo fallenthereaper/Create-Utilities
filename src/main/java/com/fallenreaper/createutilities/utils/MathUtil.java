@@ -1,6 +1,8 @@
 package com.fallenreaper.createutilities.utils;
 
+import com.simibubi.create.foundation.render.SuperByteBuffer;
 import com.simibubi.create.foundation.utility.Couple;
+import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
 public class MathUtil {
@@ -23,6 +25,12 @@ public class MathUtil {
    public static double lerp(double start, double target, float increment) {
 
       return start + ((target - start) * increment);
+   }
+   private static double getAngleForFacing(Direction facing) {
+      return 90 * (facing.equals(Direction.NORTH) ? 4 : facing.equals(Direction.SOUTH) ? 2  : facing.equals(Direction.EAST) ? 3 : 1);
+   }
+   public static void rotateCenteredInDirection(SuperByteBuffer model, Direction direction, Direction facing) {
+      model.rotateCentered(direction, (float)  Math.toRadians(getAngleForFacing(facing)));
    }
    /**
     * https://en.wikipedia.org/wiki/B%C3%A9zier_curve

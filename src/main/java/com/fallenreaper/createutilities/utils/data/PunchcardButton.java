@@ -45,19 +45,21 @@ public class PunchcardButton extends AbstractSimiWidget {
                 if (flag) {
                     this.playDownSound(Minecraft.getInstance().getSoundManager(), true);
                     setState(Mode.OFF);
-                    if (this.writer != null)
+                    if (this.writer != null) {
                         this.writer.setBox(new Point(this.writer.xCoords.get(this.x) - 1, this.writer.yCoords.get(this.y) - 1));
-                    this.onClick(pMouseX, pMouseY);
-                    return true;
+                        this.onClick(pMouseX, pMouseY);
+                        return true;
+                    }
                 }
             } else if (isValidRightClickButton(pButton) && getState() == Mode.OFF) {
                 if (this.clicked(pMouseX, pMouseY)) {
                     this.playDownSound(Minecraft.getInstance().getSoundManager(), false);
                     setState(Mode.ON);
-                    if (this.writer != null)
+                    if (this.writer != null) {
                         this.writer.fillBox(new Point(this.writer.xCoords.get(this.x) - 1, this.writer.yCoords.get(this.y) - 1));
-                    this.onClick(pMouseX, pMouseY);
-                    return true;
+                        this.onClick(pMouseX, pMouseY);
+                        return true;
+                    }
                 }
             }
         }
@@ -115,7 +117,6 @@ public class PunchcardButton extends AbstractSimiWidget {
     @Override
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
-
     }
 
     public enum Mode {

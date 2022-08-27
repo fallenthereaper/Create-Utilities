@@ -56,7 +56,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     SmartFluidTankBehaviour fluidTankBehaviour;
     private int radius;
     private boolean shouldSpawnParticles;
-    private boolean hasWaterStored;
     private boolean hasFluidIn;
     private float fluidUsagePerTick;
     private boolean isReadyToHydrate;
@@ -226,7 +225,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         this.radius = compound.getInt("Radius");
         this.hasFluidIn = compound.getBoolean("ContainerFluid");
-        this.hasWaterStored = compound.getBoolean("HasWaterIn");
+        boolean hasWaterStored = compound.getBoolean("HasWaterIn");
         this.isReadyToHydrate = compound.getBoolean("IsReady");
         // currentState = SprinklerTileEntity.State.values()[compound.getInt("StateInteger")];
 
@@ -271,7 +270,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         return ComparatorUtil.levelOfSmartFluidTank(getLevel(), getBlockPos());
     }
 
-    //TODO, rename to refill
     protected void refill() {
         if (isHydrating()) {
             if (ticks == 0) {
@@ -298,7 +296,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         // MutableBoundingBox boundingBox = new MutableBoundingBox(worldPosition.offset(-getRadius(), -1, -getRadius()), worldPosition.offset(getRadius(), -1, getRadius()));
         // Farmland hydration & plants growth logic
-        for (BlockPos blockPositions : BlockPos.randomBetweenClosed(getRandom(), 25, getBlockPos().getX() - getRadius(), (int) (getBlockPos().getY() - aabb().getYsize()), getBlockPos().getZ() - getRadius(), getBlockPos().getX() + getRadius(), getBlockPos().getY() + 1, getBlockPos().getZ() + getRadius())) {
+        for (BlockPos blockPositions : BlockPos.randomBetweenClosed(getRandom(), 15, getBlockPos().getX() - getRadius(), (int) (getBlockPos().getY() - aabb().getYsize()), getBlockPos().getZ() - getRadius(), getBlockPos().getX() + getRadius(), getBlockPos().getY() + 1, getBlockPos().getZ() + getRadius())) {
             BlockState blockState = getLevel().getBlockState(blockPositions);
             if (blockState.isAir())
                 continue;

@@ -10,6 +10,7 @@ import java.util.List;
 @SuppressWarnings("all")
 public class PunchcardTextWriter {
 
+    public int count;
     private String empty;
     private String full;
     private String[][] dataMap;
@@ -28,11 +29,25 @@ public class PunchcardTextWriter {
         return this;
     }
 
+    public int getFillPercentage() {
+        return Math.max(0, Math.min(this.count, getXsize() * getYsize()));
+    }
+
+    void add(int value) {
+        this.count += Math.max(value, 0);;
+    }
+
+    void subtract(int value) {
+        this.count -= Math.max(value, 0);
+    }
+
     public String getRawText() {
         String base = "";
         for (String[] map : dataMap) {
-            for (int col = 0; col < dataMap[1].length; col++) {
+            for (int col = 0; col < this.dataMap[1].length; col++) {
                 base += map[col];
+
+
             }
         }
         return base;
@@ -70,8 +85,7 @@ public class PunchcardTextWriter {
      * Adds a box at the specified position.
      */
     private void addBox(Point point, String type) {
-        if (dataMap[1].length <= 0 || dataMap[0].length <= 0)
-            return;
+        if (dataMap[1].length <= 0 || dataMap[0].length <= 0) return;
 
         dataMap[point.y][point.x] = type;
     }
@@ -83,16 +97,17 @@ public class PunchcardTextWriter {
      * @param y size
      */
     public PunchcardTextWriter writeText(int x, int y) {
-        int safeX = Math.min(20, x);
-        int safeY = Math.min(20, y);
+        int safeX = Math.min(16, x);
+        int safeY = Math.min(16, y);
         dataMap = new String[safeY][safeX];
 
         for (int xx = 0; xx < safeY; xx++)
             for (int yy = 0; yy < safeX; yy++)
-                this.addBox(new Point(yy, xx), full);
+                this.addBox(new Point(yy, xx), this.full);
 
         return this;
     }
+
 
     /**
      * Instantly sets all boxes inside the square.
@@ -100,7 +115,7 @@ public class PunchcardTextWriter {
     void set() {
         for (int xx = 0; xx < dataMap.length; xx++)
             for (int yy = 0; yy < dataMap[1].length; yy++)
-                this.addBox(new Point(yy, xx), empty);
+                this.addBox(new Point(yy, xx), this.empty);
     }
 
     /**
@@ -109,7 +124,7 @@ public class PunchcardTextWriter {
     void fill() {
         for (int xx = 0; xx < dataMap.length; xx++)
             for (int yy = 0; yy < dataMap[1].length; yy++)
-                this.addBox(new Point(yy, xx), full);
+                this.addBox(new Point(yy, xx), this.full);
     }
 
     /**

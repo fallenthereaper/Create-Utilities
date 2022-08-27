@@ -20,7 +20,7 @@ public class FarmBlockMixin extends Block {
 
     /**
      * @author FallenReaper
-     * @reason Overwriting
+     * @reason Null
      */
     @Overwrite(remap = false)
     private static boolean isNearWater(LevelReader pLevel, BlockPos pPos) {

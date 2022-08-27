@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @SuppressWarnings("ALL")
-public final class PunchcardWriter {
+public class PunchcardWriter {
     public PunchcardTextWriter textWriter;
     public PunchcardButton[][] coordinatesMap;
     public Map<Point, PunchcardButton> allButtons;
@@ -40,7 +40,7 @@ public final class PunchcardWriter {
      * Make sure to call {@link #write()} right after.
      */
     public static PunchcardWriter create(AbstractSmartContainerScreen<?> screen, int x, int y, int width, int height) {
-        return new PunchcardWriter(screen, x, y, width, height);
+        return new PunchcardWriter(screen, x, y, Math.max(width, 2), Math.max(height, 2));
     }
 
     /**
@@ -66,8 +66,7 @@ public final class PunchcardWriter {
      * Adds a box and a button at the specified position.
      */
     private void addButton(Point position, PunchcardButton button) {
-        if (coordinatesMap[1].length <= 0 || coordinatesMap[0].length <= 0)
-            return;
+        if (coordinatesMap[1].length <= 0 || coordinatesMap[0].length <= 0) return;
         this.coordinatesMap[position.y][position.x] = button;
         this.allButtons.put(position, button);
     }
@@ -76,6 +75,7 @@ public final class PunchcardWriter {
      * Sets a box and a button at the specified position.
      */
     void setBox(Point position) {
+        this.textWriter.add(1);
         this.textWriter.setBox(position);
     }
 
@@ -83,6 +83,7 @@ public final class PunchcardWriter {
      * Fill a box and a button at the specified position.
      */
     void fillBox(Point position) {
+        this.textWriter.subtract(1);
         this.textWriter.fillBox(position);
     }
 
@@ -122,11 +123,14 @@ public final class PunchcardWriter {
      * Instantly disables and sets all boxes.
      */
     public PunchcardWriter set() {
+        int value = getTextWriter().getXsize() * getTextWriter().getYsize();
+        this.textWriter.add(value - textWriter.count );
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
                 button.state = PunchcardButton.Mode.OFF;
                 this.textWriter.set();
+
             }
         }
         return this;
@@ -136,11 +140,14 @@ public final class PunchcardWriter {
      * Instantly fills all boxes.
      */
     public PunchcardWriter fill() {
+        int value = getTextWriter().getXsize() * getTextWriter().getYsize();
+        this.textWriter.subtract(textWriter.count );
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
                 button.state = PunchcardButton.Mode.ON;
                 this.textWriter.fill();
+
             }
         }
         return this;
@@ -157,10 +164,11 @@ public final class PunchcardWriter {
 
         if (getTextWriter() != null)
             for (int i = 1; i < this.textWriter.getYsize() + 1; i++) {
-                int max = i * this.textWriter.getXsize();
-                int min = Math.max(max - textWriter.getXsize(), 0);
-                font.drawShadow(poseStack, this.textWriter.getRawText().substring(min, max), x, ((9f * i) + y), rgb);
-            }
+            int max = i * this.textWriter.getXsize();
+            int min = Math.max(max - textWriter.getXsize(), 0);
+            font.drawShadow(poseStack, this.textWriter.getRawText().substring(min, max), x, ((9 * i) + y), rgb);
+        }
+
         return this;
     }
 
@@ -210,6 +218,15 @@ public final class PunchcardWriter {
     public void tick() {
 
     }
+    public void renderFillPercentage(Font font, float x, float y, int rgb) {
+        PoseStack poseStack = new PoseStack();
+        poseStack.pushPose();
+        poseStack.translate(x, y, 0);
+
+        if (getTextWriter() != null)
+
+                font.draw(poseStack, this.getTextWriter().getFillPercentage() + "/" + getTextWriter().getXsize() * getTextWriter().getYsize(), x,y, rgb);
+            }
 
     /**
      * ({@literal @Deprecated} because the clicking is now handled inside {@link PunchcardButton},
@@ -236,8 +253,7 @@ public final class PunchcardWriter {
     public PunchcardWriter modifyAt(Point coordinates, Consumer<PunchcardButton> action) {
         if (coordinatesMap != null && allButtons != null) {
             PunchcardButton button = coordinatesMap[coordinates.y][coordinates.x];
-            if (button != null)
-                action.accept(button);
+            if (button != null) action.accept(button);
         }
         return this;
     }

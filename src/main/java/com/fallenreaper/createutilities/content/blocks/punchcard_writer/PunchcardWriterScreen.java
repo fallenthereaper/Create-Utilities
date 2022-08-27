@@ -20,6 +20,7 @@ import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
+import com.simibubi.create.foundation.utility.Color;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.client.Minecraft;
@@ -78,11 +79,13 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         BG.render(pPoseStack, x, y, this);
         font.draw(pPoseStack, title, x + 15, y + 3, 0x442000);
 
-        int invX = (leftPos + imageWidth / 4) - 12;
-        int invY = y + 199 - 22;
-        if (punchcardWriter != null && !getInventory().getStackInSlot(0).isEmpty())
-            punchcardWriter.draw(Minecraft.getInstance().font, x / 18f, y, 1.25f, Theme.c(Theme.Key.TEXT_ACCENT_STRONG).scaleAlpha(1f).getRGB());
+        int invX = (leftPos + imageWidth / 4) - 12, invY = y + 199 - 22;
 
+        if (punchcardWriter != null && !getInventory().getStackInSlot(0).isEmpty()) {
+            punchcardWriter.draw(
+                    Minecraft.getInstance().font, x / 18f, y, 1.25f, Theme.c(Theme.Key.TEXT_ACCENT_STRONG).scaleAlpha(1f).getRGB());
+            punchcardWriter.renderFillPercentage(Minecraft.getInstance().font, x - 18, 96 - 17, Color.BLACK.getRGB());
+        }
         renderPlayerInventory(pPoseStack, invX, invY);
         renderModel(pPoseStack, x + BG.width + 50, y + BG.height + 10, pPartialTick);
     }
@@ -95,12 +98,10 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     }
 
     protected void renderModel(PoseStack ms, int x, int y, float partialTicks) {
-
         GuiGameElement.of(renderedItem)
                 .<GuiGameElement.GuiRenderBuilder>at(x - 50, y - 100 + 28, -100)
                 .scale(4.5f)
                 .render(ms);
-
     }
 
     @Override
@@ -114,9 +115,8 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         // font.drawShadow(ms, text, guiLeft + x, guiTop + 26 + y, 0xFFFFEE);
     }
 
-
     public void addWidget(AbstractWidget widget) {
-        addRenderableWidget(widget);
+        this.addRenderableWidget(widget);
     }
 
     @Override
@@ -200,6 +200,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
                             CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.get(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey")).fill();
             getBlockEntity().notifyUpdate();
         });
+
         removeButton.withCallback(() -> {
             if (getInventory().getStackInSlot(0).hasTag()) {
                 if (getInventory().getStackInSlot(0).getTag().contains("WriterKey") && CreateUtilities.PUNCHWRITER_NETWORK.savedWriters.containsKey(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"))) {
@@ -305,7 +306,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     protected void containerTick() {
         super.containerTick();
         ItemStack stack = getInventory().getStackInSlot(0);
-      boolean hasPunchcard = !stack.isEmpty();
+        boolean hasPunchcard = !stack.isEmpty();
 
         if (punchcardWriter != null) {
             if (!hasPunchcard) {

@@ -11,7 +11,7 @@ displayURL="https://www.curseforge.com/minecraft/mc-mods/create-utilities"
 logoFile="logo.png"
 authors="FallenReaper"
 description='''
-Aims to expand the Create Mod by introducing various new tools and additions!
+Aims to expand the Create Mod by introducing new tools and additions!
 '''
 
 [[dependencies.createutilities]]

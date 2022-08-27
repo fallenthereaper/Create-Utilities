@@ -1,6 +1,5 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
-import com.fallenreaper.createutilities.content.blocks.steering_wheel.IRayTraceProvider;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
@@ -57,7 +56,6 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         BlockEntity tileentity = worldIn.getBlockEntity(pos);
-        IRayTraceProvider r = (s, w, f, g) -> true;
 
         SprinklerBlockEntity te = (SprinklerBlockEntity) tileentity;
         ItemStack heldItem = player.getMainHandItem();

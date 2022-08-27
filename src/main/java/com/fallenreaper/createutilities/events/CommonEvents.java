@@ -38,6 +38,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -178,7 +179,11 @@ public class CommonEvents {
     @SubscribeEvent
     public void onLivingEntityHurt(LivingHurtEvent event) {
     }
+    @SubscribeEvent
+    public void onServerStarting(ServerStartingEvent event) {
+        // do something when the server starts
 
+    }
     @SubscribeEvent
     public void onLivingEntityDeath(LivingDeathEvent event) {
 
