@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
+import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.index.CUConfig;
 import com.jozufozu.flywheel.repack.joml.Math;
 import com.simibubi.create.CreateClient;
@@ -374,7 +375,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
 
-
+        LangBuilder lang = Lang.builder(CreateUtilities.ID);
 /*
         if (Mth.equal(stressBase, 0))
             return added;
@@ -446,12 +447,12 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
             if (Math.abs(getSpeed()) < 8) {
 
                 tooltip.add(componentSpacing.plainCopy().plainCopy()
-                        .append("Range: ")
-                        .withStyle(ChatFormatting.GRAY).append(getRadius() + " " + "blocks").withStyle(ChatFormatting.RED));
+                        .append(lang.translate("sprinkler.content.range" + ":").string())
+                        .withStyle(ChatFormatting.GRAY).append(getRadius() + " " + lang.translate("sprinkler.content.units").string()).withStyle(ChatFormatting.RED));
             } else {
                 tooltip.add(componentSpacing.plainCopy()
-                        .append("Range: ")
-                        .append(getRadius() + " " + "blocks").withStyle(ChatFormatting.AQUA));
+                        .append(lang.translate("sprinkler.content.range").string() + ":")
+                        .append(getRadius() + " " + lang.translate("sprinkler.content.units").string()).withStyle(ChatFormatting.AQUA));
             }
 
 

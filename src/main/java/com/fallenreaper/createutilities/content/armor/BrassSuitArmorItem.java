@@ -21,9 +21,8 @@ public class BrassSuitArmorItem extends ArmorItem {
 
 
     public boolean isWornBy(Entity entity) {
-        if (!(entity instanceof LivingEntity))
+        if (!(entity instanceof LivingEntity livingEntity))
             return false;
-        LivingEntity livingEntity = (LivingEntity) entity;
         return livingEntity.getItemBySlot(slot).getItem() == this;
     }
 

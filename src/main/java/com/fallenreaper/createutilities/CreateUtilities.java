@@ -1,6 +1,5 @@
 package com.fallenreaper.createutilities;
 
-import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchwriterNetwork;
 import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
 import com.fallenreaper.createutilities.events.CommonEvents;
 import com.fallenreaper.createutilities.index.*;
@@ -64,7 +63,7 @@ public class CreateUtilities {
     private static final NonNullSupplier<CreateRegistrate> registrate = CreateRegistrate.lazy(ID);
     public static Set<Block> BLOCKLIST = new HashSet<>();
     public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
-    public static PunchwriterNetwork PUNCHWRITER_NETWORK = new PunchwriterNetwork();
+
 
     public CreateUtilities() {
         MinecraftForge.EVENT_BUS.register(this);

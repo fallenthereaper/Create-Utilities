@@ -12,6 +12,7 @@ public class DefaultProperties extends SharedProperties {
     public static Block brassMetal() {
         return AllBlocks.BRASS_BLOCK.get();
     }
+
     public static Block crystal() {
         return Blocks.AMETHYST_BLOCK;
     }

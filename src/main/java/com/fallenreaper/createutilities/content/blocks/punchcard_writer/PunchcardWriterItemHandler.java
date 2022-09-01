@@ -7,10 +7,10 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class PunchcardWriterItemHandler extends ItemStackHandler {
-     public ContainerBlockEntity<PunchcardWriterItemHandler> be;
+    public ContainerBlockEntity<PunchcardWriterItemHandler> be;
 
     public PunchcardWriterItemHandler(ContainerBlockEntity<PunchcardWriterItemHandler> be) {
-        super(10);
+        super(2);
         this.be = be;
 
     }
@@ -27,11 +27,13 @@ public class PunchcardWriterItemHandler extends ItemStackHandler {
             default -> super.isItemValid(slot, stack);
         };
     }
+
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
         be.notifyUpdate();
     }
+
     @Override
     protected void onLoad() {
 

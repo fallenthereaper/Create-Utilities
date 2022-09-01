@@ -1,22 +1,25 @@
 package com.fallenreaper.createutilities.utils;
 
 public class InteractionHandler {
-    public enum State{
+    public enum State {
         RUNNING,
         VALID,
         PAUSED,
         NONE;
 
-        public boolean isRunning(){
+        public boolean isRunning() {
             return this == RUNNING;
         }
-        public boolean isPaused(){
+
+        public boolean isPaused() {
             return this == PAUSED;
         }
-        public boolean isValid(){
+
+        public boolean isValid() {
             return this == VALID;
         }
-        public boolean isInvalid(){
+
+        public boolean isInvalid() {
             return this == NONE;
         }
     }

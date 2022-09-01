@@ -18,28 +18,9 @@ import static net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER;
 public enum ModPackets {
 
 
-
-
-
-
-
-
-
-
-
-  //  CONFIGURE_PUNCHCARD(PunchcardAccessPacket.class, PunchcardAccessPacket::new, PLAY_TO_SERVER),
-    TYPEWRITER_EDIT(TypewriterEditPacket.class,TypewriterEditPacket::new, PLAY_TO_SERVER),
-    PUNCHWRITER_EDIT(PunchcardWriterEditPacket.class,PunchcardWriterEditPacket::new, PLAY_TO_SERVER)
-
-
-    ;
-
-
-
-
-
-
-
+    //  CONFIGURE_PUNCHCARD(PunchcardAccessPacket.class, PunchcardAccessPacket::new, PLAY_TO_SERVER),
+    TYPEWRITER_EDIT(TypewriterEditPacket.class, TypewriterEditPacket::new, PLAY_TO_SERVER),
+    PUNCHWRITER_EDIT(PunchcardWriterEditPacket.class, PunchcardWriterEditPacket::new, PLAY_TO_SERVER);
 
 
     public static final ResourceLocation CHANNEL_NAME = CreateUtilities.defaultResourceLocation("main");
@@ -47,12 +28,13 @@ public enum ModPackets {
     public static final String NETWORK_VERSION_STR = String.valueOf(NETWORK_VERSION);
     public static SimpleChannel channel;
 
-    private ModPackets.LoadedPacket<?> packet;
+    private final ModPackets.LoadedPacket<?> packet;
 
     <T extends SimplePacketBase> ModPackets(Class<T> type, Function<FriendlyByteBuf, T> factory,
                                             NetworkDirection direction) {
         packet = new ModPackets.LoadedPacket<>(type, factory, direction);
     }
+
     public static void registerPackets() {
         channel = NetworkRegistry.ChannelBuilder.named(CHANNEL_NAME)
                 .serverAcceptedVersions(NETWORK_VERSION_STR::equals)
@@ -67,11 +49,11 @@ public enum ModPackets {
     private static class LoadedPacket<T extends SimplePacketBase> {
         private static int index = 0;
 
-        private BiConsumer<T, FriendlyByteBuf> encoder;
-        private Function<FriendlyByteBuf, T> decoder;
-        private BiConsumer<T, Supplier<NetworkEvent.Context>> handler;
-        private Class<T> type;
-        private NetworkDirection direction;
+        private final BiConsumer<T, FriendlyByteBuf> encoder;
+        private final Function<FriendlyByteBuf, T> decoder;
+        private final BiConsumer<T, Supplier<NetworkEvent.Context>> handler;
+        private final Class<T> type;
+        private final NetworkDirection direction;
 
         private LoadedPacket(Class<T> type, Function<FriendlyByteBuf, T> factory, NetworkDirection direction) {
             encoder = T::write;

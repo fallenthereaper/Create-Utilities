@@ -10,13 +10,13 @@ public abstract class AbstractStoredDataManager<T extends DoorLock> {
     public T type;
     public List<T> dataList;
     public Map<UUID, T> dataStored;
-   public DoorLockSavedData<T> savedData;
+    public DoorLockSavedData<T> savedData;
 
     public AbstractStoredDataManager() {
         clean();
     }
 
-    protected void clean(){
+    protected void clean() {
         dataStored = new HashMap<>();
         dataList = new LinkedList<>();
     }
@@ -25,6 +25,7 @@ public abstract class AbstractStoredDataManager<T extends DoorLock> {
         dataStored.put(type.id, type);
         dataList.add(type);
     }
+
     public void levelLoaded(LevelAccessor level) {
         MinecraftServer server = level.getServer();
         if (server == null || server.overworld() != level)
@@ -44,15 +45,17 @@ public abstract class AbstractStoredDataManager<T extends DoorLock> {
         dataStored.values()
                 .forEach(dataList::add);
     }
+
     public void remove(UUID id) {
         T removed = dataStored.get(id);
         if (removed == null)
             return;
 
-       dataStored.remove(id);
+        dataStored.remove(id);
         dataList.remove(removed);
     }
-   public abstract void tick();
+
+    public abstract void tick();
 
 
 }

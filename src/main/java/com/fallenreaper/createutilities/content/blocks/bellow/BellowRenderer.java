@@ -24,7 +24,7 @@ public class BellowRenderer extends KineticTileEntityRenderer {
     protected void renderSafe(KineticTileEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         BlockState blockState = te.getBlockState();
         Block block = blockState.getBlock();
-        if(block instanceof BellowBlock bellowBlock) {
+        if (block instanceof BellowBlock bellowBlock) {
             Direction facing = blockState.getValue(BellowBlock.HORIZONTAL_FACING);
             SuperByteBuffer bellows = CachedBufferer.partial(bellowBlock.getPartialModel(), blockState);
             MathUtil.rotateCenteredInDirection(bellows, Direction.UP, facing);
@@ -39,6 +39,7 @@ public class BellowRenderer extends KineticTileEntityRenderer {
     public int getViewDistance() {
         return 64;
     }
+
     @Override
     protected BlockState getRenderedBlockState(KineticTileEntity te) {
         return shaft(getRotationAxisOf(te));

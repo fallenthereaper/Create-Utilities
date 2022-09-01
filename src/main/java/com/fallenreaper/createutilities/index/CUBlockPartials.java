@@ -14,9 +14,10 @@ public class CUBlockPartials {
             BELLOWS = getPartialModel("bellow/bellows");
 
     public static PartialModel getPartialModel(String path) {
-       ResourceLocation resourceLocation = CreateUtilities.defaultResourceLocation("block/" + path);
+        ResourceLocation resourceLocation = CreateUtilities.defaultResourceLocation("block/" + path);
         return new PartialModel(resourceLocation);
     }
 
-    public static void register() {}
+    public static void register() {
+    }
 }

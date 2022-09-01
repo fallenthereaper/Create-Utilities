@@ -5,7 +5,7 @@ import com.fallenreaper.createutilities.data.DoorLock;
 
 public class DoorLockManager extends AbstractStoredDataManager<DoorLock> {
 
-  public DoorLockManager() {
+    public DoorLockManager() {
         super();
     }
 

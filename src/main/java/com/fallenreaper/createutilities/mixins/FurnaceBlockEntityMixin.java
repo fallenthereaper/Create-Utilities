@@ -16,13 +16,13 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(AbstractFurnaceBlockEntity.class)
 public abstract class FurnaceBlockEntityMixin extends BaseContainerBlockEntity implements WorldlyContainer, RecipeHolder, StackedContentsCompatible, IFurnaceBurnTimeAccessor {
+    @Final
+    @Shadow
+    protected ContainerData dataAccess;
     @Shadow
     int litTime;
     @Shadow
     int litDuration;
-    @Final
-    @Shadow
-    protected ContainerData dataAccess;
 
 
     protected FurnaceBlockEntityMixin(BlockEntityType<?> p_155076_, BlockPos p_155077_, BlockState p_155078_) {
@@ -31,12 +31,12 @@ public abstract class FurnaceBlockEntityMixin extends BaseContainerBlockEntity i
     }
 
     @Override
-    public void setBurnTime(int burnTime) {
-        this.litTime = burnTime;
+    public int getBurnTime() {
+        return this.litDuration;
     }
 
     @Override
-    public int getBurnTime() {
-        return this.litDuration;
+    public void setBurnTime(int burnTime) {
+        this.litTime = burnTime;
     }
 }

@@ -19,12 +19,12 @@ public class NotesItem extends BaseItem {
 
     @Override
     public int getMaxClicks() {
-        return super.getMaxClicks()/2;
+        return super.getMaxClicks() / 2;
     }
 
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
-        if(pStack.hasTag()) {
+        if (pStack.hasTag()) {
             tooltip.add(new TextComponent(pStack.getTag().getString("Description")).withStyle(ChatFormatting.GREEN).append(" ").append("Pos:").append(NbtUtils.readBlockPos(pStack.getTag().getCompound("DoorPosition")).toString()).withStyle(ChatFormatting.YELLOW));
 
         }

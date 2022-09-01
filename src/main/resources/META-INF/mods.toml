@@ -1,19 +1,17 @@
-
-modLoader="javafml"
-loaderVersion="[40,)"
-license="MIT"
+modLoader = "javafml"
+loaderVersion = "[40,)"
+license = "MIT"
 
 [[mods]]
-modId="createutilities"
-version="1.0"
-displayName="Create Utilities"
-displayURL="https://www.curseforge.com/minecraft/mc-mods/create-utilities"
-logoFile="logo.png"
-authors="FallenReaper"
-description='''
+modId = "createutilities"
+version = "1.0"
+displayName = "Create Utilities"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/create-utilities"
+logoFile = "logo.png"
+authors = "FallenReaper"
+description = '''
 Aims to expand the Create Mod by introducing new tools and additions!
 '''
-
 [[dependencies.createutilities]]
 modId = "forge"
 mandatory = true
@@ -29,15 +27,15 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.createutilities]]
-modId="create"
+modId = "create"
 mandatory = true
-versionRange="[mc1.18.2_v0.5.0,)"
-ordering="NONE"
-side="BOTH"
+versionRange = "[mc1.18.2_v0.5.0,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.createutilities]]
-modId="flywheel"
+modId = "flywheel"
 mandatory = true
-versionRange="[1.18-0.6.4,1.18-0.6.5)"
-ordering="AFTER"
-side="CLIENT"
+versionRange = "[1.18-0.6.4,1.18-0.6.5)"
+ordering = "AFTER"
+side = "CLIENT"

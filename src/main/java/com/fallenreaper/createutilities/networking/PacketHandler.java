@@ -7,8 +7,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
     protected static final String PROTOCOL = "1";
-    protected static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(CreateUtilities.ID, "main"), ()-> PROTOCOL,
+    protected static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(CreateUtilities.ID, "main"), () -> PROTOCOL,
             PROTOCOL::equals,
             PROTOCOL::equals
-            );
+    );
 }

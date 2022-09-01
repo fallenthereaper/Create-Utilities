@@ -24,7 +24,7 @@ public class BellowInstance extends ShaftInstance implements DynamicInstance {
         this.bellowMiddle = this.getOrientedMaterial().getModel(CUBlockPartials.BELLOWS, this.blockState).createInstance();
         this.bellowBottom = this.getOrientedMaterial().getModel(CUBlockPartials.BELLOWS, this.blockState).createInstance();
         updatePosition();
-        this.relight(this.pos, this.bellowTop,this.bellowMiddle,this.bellowBottom);
+        this.relight(this.pos, this.bellowTop, this.bellowMiddle, this.bellowBottom);
 
     }
 
@@ -46,6 +46,6 @@ public class BellowInstance extends ShaftInstance implements DynamicInstance {
 
     @Override
     public void beginFrame() {
-     updatePosition();
+        updatePosition();
     }
 }

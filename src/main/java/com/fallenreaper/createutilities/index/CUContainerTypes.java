@@ -23,5 +23,7 @@ public class CUContainerTypes {
                 .menu(name, factory, screenFactory)
                 .register();
     }
-    public static void register() {}
+
+    public static void register() {
+    }
 }

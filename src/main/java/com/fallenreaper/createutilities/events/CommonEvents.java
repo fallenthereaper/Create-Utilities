@@ -3,6 +3,7 @@ package com.fallenreaper.createutilities.events;
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterScreen;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
+import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoorBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterScreen;
 import com.fallenreaper.createutilities.content.items.InstructionEntry;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
@@ -34,8 +35,10 @@ import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -45,6 +48,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +66,16 @@ public class CommonEvents {
     }
 
     public static void onClientTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START)
-            return;
+        if (event.phase == TickEvent.Phase.START) {
+        }
+
+    }
+    public static void keyboardInput(InputEvent.KeyInputEvent keyInputEvent) {
+
+
+    }
+    public static void itemExpire(ItemExpireEvent itemExpireEvent) {
+      PunchcardItem.removeAfterDespawn(itemExpireEvent);
 
     }
 
@@ -78,8 +90,8 @@ public class CommonEvents {
     }
 
     public void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START)
-            return;
+        if (event.phase == TickEvent.Phase.START) {
+        }
 
     }
 
@@ -109,6 +121,7 @@ public class CommonEvents {
 
     }
 
+    //todo, redo this so it doesnt use block pos but uuid, there's a better way to do it by checking rope spool in aeronautics
     //TODO, move this to punchcard item class
     @SubscribeEvent
     public void onLivingEntityUseItem(PlayerInteractEvent.RightClickBlock event) {
@@ -123,6 +136,9 @@ public class CommonEvents {
             return;
         if (!(itemStack.getItem() instanceof PunchcardItem item))
             return;
+        if(!(player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor))
+            return;
+
         DoorLockManager doorManager = CreateUtilities.DOORLOCK_MANAGER;
         if (!itemStack.hasTag()) {
             if (player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor) {
@@ -143,24 +159,7 @@ public class CommonEvents {
 
                 CompoundTag tag = itemStack.getOrCreateTag();
 
-                id = tag.contains("Key") ? tag.getUUID("Key") : UUID.randomUUID();
-                tag.putUUID("Key", id);
-
-                doorManager.add(new DoorLock(clickedPos, id, player.getUUID()));
-
-                ListTag listTag = NBTHelper.writeCompoundList(list, InstructionEntry::write);
-                tag.put("EntryValues", listTag);
-
-                list = NBTHelper.readCompoundList(tag.getList("EntryValues", Tag.TAG_COMPOUND), InstructionEntry::fromTag);
-
-
-                if (!list.isEmpty())
-                    for (InstructionEntry entry : list) {
-
-                        // System.out.println(entry.instruction.getLabeledText());
-                        tag.putString("Description", entry.instruction.getLabeledText());
-
-                    }
+                registerKey(tag, player, clickedPos, list);
 
                 LangBuilder lang = Lang.builder(CreateUtilities.ID);
 
@@ -176,14 +175,42 @@ public class CommonEvents {
         }
     }
 
+
+    public void registerKey(CompoundTag tag, Player player, BlockPos clickedPos, @Nullable List<InstructionEntry> list) {
+        UUID id;
+        id = tag.contains("Key") ? tag.getUUID("Key") : UUID.randomUUID();
+        tag.putUUID("Key", id);
+        if(player.getLevel().getBlockEntity(clickedPos) instanceof LockSlidingDoorBlockEntity te) {
+            DoorLock doorLock = new DoorLock(clickedPos, id, player.getUUID());
+            CreateUtilities.DOORLOCK_MANAGER.add(doorLock);
+            te.createLock(doorLock);
+
+            assert list != null;
+            ListTag listTag = NBTHelper.writeCompoundList(list, InstructionEntry::write);
+            tag.put("EntryValues", listTag);
+            list = NBTHelper.readCompoundList(tag.getList("EntryValues", Tag.TAG_COMPOUND), InstructionEntry::fromTag);
+
+
+            if (!list.isEmpty())
+                for (InstructionEntry entry : list) {
+
+                    // System.out.println(entry.instruction.getLabeledText());
+                    tag.putString("Description", entry.instruction.getLabeledText());
+
+                }
+        }
+    }
+
     @SubscribeEvent
     public void onLivingEntityHurt(LivingHurtEvent event) {
     }
+
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         // do something when the server starts
 
     }
+
     @SubscribeEvent
     public void onLivingEntityDeath(LivingDeathEvent event) {
 
@@ -214,6 +241,7 @@ public class CommonEvents {
         boolean isPlayer = event.getEntity() instanceof Player;
     }
 
+//todo move this to BellowBlock
     @SubscribeEvent
     public void rightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         ItemStack item = event.getItemStack();
@@ -230,5 +258,9 @@ public class CommonEvents {
             if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks))
                 event.setUseBlock(Event.Result.DENY);
         }
+    }
+    @SubscribeEvent
+    public void rightClick(PlayerInteractEvent.RightClickBlock event) {
+        PunchcardItem.rightClick(event);
     }
 }

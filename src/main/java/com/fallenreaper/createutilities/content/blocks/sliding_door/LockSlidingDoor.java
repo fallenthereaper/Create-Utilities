@@ -37,17 +37,17 @@ public class LockSlidingDoor extends SlidingDoorBlock {
         CompoundTag copy = item.getOrCreateTag();
         CompoundTag tag = new CompoundTag();
 
-        if(item.getItem() instanceof PunchcardItem && item.hasTag() && item.getTag().contains("Key")) {
+        if (item.getItem() instanceof PunchcardItem && item.hasTag() && item.getTag().contains("Key")) {
             BlockPos bos = CreateUtilities.DOORLOCK_MANAGER.dataStored.get(item.getTag().getUUID("Key")).getBlockPos();
 
-          if(bos.equals(pPos.above(1)) || bos.equals(pPos.below(1)) || bos.equals(pPos) ) {
-              CompoundTag ta = NbtUtils.writeBlockPos(bos);
-              tag.put("SavedInfo", ta);
+            if (bos.equals(pPos.above(1)) || bos.equals(pPos.below(1)) || bos.equals(pPos)) {
+                CompoundTag ta = NbtUtils.writeBlockPos(bos);
+                tag.put("SavedInfo", ta);
 
-              super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+                super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
 
-              return InteractionResult.SUCCESS;
-          }
+                return InteractionResult.SUCCESS;
+            }
 
 
         }

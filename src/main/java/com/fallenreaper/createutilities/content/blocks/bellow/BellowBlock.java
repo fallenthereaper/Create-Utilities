@@ -31,15 +31,19 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
         super(properties);
     }
 
+    public static BlockPos getBaseBlockPos(BlockPos pos) {
+        return pos.below();
+    }
 
     @Override
     public Direction.Axis getRotationAxis(BlockState state) {
         return state.getValue(HORIZONTAL_FACING)
                 .getAxis();
     }
+
     @Override
     public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
-        return isValidPosition( worldIn, pos);
+        return isValidPosition(worldIn, pos);
     }
 
     @Override
@@ -66,9 +70,9 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
         BlockPos baseBlockPos = getBaseBlockPos(pos);
         BlockState getState = world.getBlockState(baseBlockPos);
         Minecraft mc = Minecraft.getInstance();
-        for(Block blocks : CreateUtilities.BLOCKLIST) {
+        for (Block blocks : CreateUtilities.BLOCKLIST) {
 
-            if ((getState.getBlock() instanceof AbstractFurnaceBlock) || getState.getBlock().equals(blocks) ) {
+            if ((getState.getBlock() instanceof AbstractFurnaceBlock) || getState.getBlock().equals(blocks)) {
                 return true;
             }
         }
@@ -76,26 +80,27 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
         return false;
     }
 
-    public static BlockPos getBaseBlockPos(BlockPos pos) {
-        return pos.below();
-    }
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
         return face.getAxis() == state.getValue(HORIZONTAL_FACING)
                 .getAxis();
 
     }
+
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         return super.onWrenched(state, context);
     }
+
     @Override
     public Class<BellowBlockEntity> getTileEntityClass() {
         return BellowBlockEntity.class;
     }
+
     public PartialModel getPartialModel() {
         return CUBlockPartials.BELLOWS;
     }
+
     @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.MODEL;
@@ -105,6 +110,7 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return CUBlockShapes.BELLOW.get(pState.getValue(HORIZONTAL_FACING));
     }
+
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return CUBlockShapes.BELLOW.get(pState.getValue(HORIZONTAL_FACING));

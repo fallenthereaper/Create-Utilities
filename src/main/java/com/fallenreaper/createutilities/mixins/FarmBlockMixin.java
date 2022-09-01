@@ -30,15 +30,15 @@ public class FarmBlockMixin extends Block {
             }
         }
 
-  //messy code I will redo after release, as of now it's just a placeholder
+        //messy code I will redo after release, as of now it's just a placeholder
         for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-8, 1, -8), pPos.offset(8, 1, 8))) {
             BlockEntity detectedBlock = pLevel.getBlockEntity(blockpos);
 
             if (detectedBlock instanceof SprinklerBlockEntity be) {
                 BlockPos posBe = be.getBlockPos();
-                if(be.isHydrating() && be.isWater()) {
+                if (be.isHydrating() && be.isWater()) {
                     for (BlockPos pos : BlockPos.betweenClosed(posBe.offset(-be.getRadius(), 1, -be.getRadius()), posBe.offset(be.getRadius(), 1, be.getRadius()))) {
-                        if(SprinklerInteractionHandler.isInsideCircle(be.getRadius(), posBe, pPos)) {
+                        if (SprinklerInteractionHandler.isInsideCircle(be.getRadius(), posBe, pPos)) {
                             return true;
                         }
                     }

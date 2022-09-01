@@ -15,14 +15,8 @@ import java.util.UUID;
 public class DoorLockSavedData<T> extends SavedData {
     private Map<UUID, T> saved = new HashMap<>();
 
-    @Override
-    public  CompoundTag save(CompoundTag nbt) {
-        DoorLockManager doors = CreateUtilities.DOORLOCK_MANAGER;
-
-        nbt.put("DoorsLocks", NBTHelper.writeCompoundList(doors.dataStored.values(), DoorLock::write));
-
-        return nbt;
-    };
+    private DoorLockSavedData() {
+    }
 
     public static DoorLockSavedData load(CompoundTag nbt) {
         DoorLockSavedData doorLockManager = new DoorLockSavedData();
@@ -33,22 +27,26 @@ public class DoorLockSavedData<T> extends SavedData {
         });
 
 
-
         return doorLockManager;
     }
-
-
-
-
-    private DoorLockSavedData() {}
 
     public static DoorLockSavedData load(MinecraftServer server) {
         return server.overworld()
                 .getDataStorage()
                 .computeIfAbsent(DoorLockSavedData::load, DoorLockSavedData::new, "door_locks");
     }
-   public Map<UUID, T> getDoorLocks(){
+
+    @Override
+    public CompoundTag save(CompoundTag nbt) {
+        DoorLockManager doors = CreateUtilities.DOORLOCK_MANAGER;
+
+        nbt.put("DoorsLocks", NBTHelper.writeCompoundList(doors.dataStored.values(), DoorLock::write));
+
+        return nbt;
+    }
+
+    public Map<UUID, T> getDoorLocks() {
         return saved;
-   }
+    }
 
 }

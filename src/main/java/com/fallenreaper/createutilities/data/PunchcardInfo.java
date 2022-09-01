@@ -42,8 +42,6 @@ public abstract class PunchcardInfo implements ISavedInfo {
 
         LangBuilder lang = Lang.builder(CreateUtilities.ID);
         Component txt = new TextComponent(lang.translate("instruction." + getId()).string());
-
-
         tag.getCompound("Data").putString("text", txt.getString());
 
 

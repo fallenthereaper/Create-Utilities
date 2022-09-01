@@ -1,5 +1,7 @@
 package com.fallenreaper.createutilities.utils.data;
 
+import com.fallenreaper.createutilities.events.DataEvents;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +17,8 @@ public class TextIcon<F extends String, E extends String> {
         this.size.put(emptyIcon, emptyIcon.length());
         this.fillIcon = fillIcon;
         this.emptyIcon = emptyIcon;
+        DataEvents.writerTranslations.add(emptyIcon);
+        DataEvents.writerTranslations.add(fillIcon);
     }
 
     public static TextIcon<String, String> create(String icon1, String icon2) {

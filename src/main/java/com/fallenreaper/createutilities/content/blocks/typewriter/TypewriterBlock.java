@@ -88,10 +88,12 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
     public BlockEntityType<? extends TypewriterBlockEntity> getTileEntityType() {
         return CUBlockEntities.TYPEWRITER.get();
     }
+
     @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.MODEL;
     }
+
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return CUBlockShapes.TYPEWRITER.get(pState.getValue(HORIZONTAL_FACING));
@@ -127,6 +129,7 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
         return state.getValue(HORIZONTAL_FACING)
                 .getAxis();
     }
+
     @Override
     public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
         return ITE.super.newBlockEntity(p_153215_, p_153216_);

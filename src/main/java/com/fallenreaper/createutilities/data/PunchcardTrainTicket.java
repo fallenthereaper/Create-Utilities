@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.data;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 
-public class PunchcardTrainTicket extends PunchcardInfo{
+public class PunchcardTrainTicket extends PunchcardInfo {
 
 
     public PunchcardTrainTicket() {

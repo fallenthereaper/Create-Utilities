@@ -1,31 +1,104 @@
 {
-	"credit": "Made with Blockbench",
-	"texture_size": [32, 32],
-	"textures": {
-		"1": "createutilities:block/punchcard_writer/punchcard",
-		"particle": "createutilities:block/punchcard_writer/punchcard"
-	},
-	"elements": [
-		{
-			"from": [4, 5, 5],
-			"to": [12, 5, 9],
-			"rotation": {"angle": 0, "axis": "y", "origin": [7.5, 0, 7.5]},
-			"faces": {
-				"north": {"uv": [2, 2, 6, 2], "texture": "#1"},
-				"east": {"uv": [0, 2, 2, 2], "texture": "#1"},
-				"south": {"uv": [8, 2, 12, 2], "texture": "#1"},
-				"west": {"uv": [6, 2, 8, 2], "texture": "#1"},
-				"up": {"uv": [6, 2, 2, 0], "texture": "#1"},
-				"down": {"uv": [10, 0, 6, 2], "texture": "#1"}
-			}
-		}
-	],
-	"groups": [
-		{
-			"name": "punchcard",
-			"origin": [-0.5, 0, -0.5],
-			"color": 0,
-			"children": [0]
-		}
-	]
+  "credit": "Made with Blockbench",
+  "texture_size": [
+    32,
+    32
+  ],
+  "textures": {
+    "1": "createutilities:block/punchcard_writer/punchcard",
+    "particle": "createutilities:block/punchcard_writer/punchcard"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        5,
+        5
+      ],
+      "to": [
+        12,
+        5,
+        9
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          7.5,
+          0,
+          7.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            2,
+            6,
+            2
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            0,
+            2,
+            2,
+            2
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            8,
+            2,
+            12,
+            2
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            6,
+            2,
+            8,
+            2
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            6,
+            2,
+            2,
+            0
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            10,
+            0,
+            6,
+            2
+          ],
+          "texture": "#1"
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "punchcard",
+      "origin": [
+        -0.5,
+        0,
+        -0.5
+      ],
+      "color": 0,
+      "children": [
+        0
+      ]
+    }
+  ]
 }

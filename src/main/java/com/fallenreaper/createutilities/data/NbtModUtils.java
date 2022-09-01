@@ -8,11 +8,12 @@ import java.util.UUID;
 
 public class NbtModUtils {
     public static DoorLock readDoorLock(CompoundTag tag) {
-       UUID id = tag.getUUID("Id");
-       UUID owner = tag.getUUID("OwnerId");
+        UUID id = tag.getUUID("Id");
+        UUID owner = tag.getUUID("OwnerId");
         BlockPos pos = NbtUtils.readBlockPos(tag.getCompound("Position"));
         return new DoorLock(pos, id, owner);
     }
+
     public static CompoundTag writeDoorLock(DoorLock doorLock) {
         CompoundTag tag = new CompoundTag();
         tag.putUUID("Id", doorLock.id);

@@ -57,14 +57,11 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
                     CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
             KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, vb, light);
             Font f = Minecraft.getInstance().font;
-          //  renderText(f,292, 234, String.valueOf(angle));
+            //  renderText(f,292, 234, String.valueOf(angle));
             VertexConsumer vertexBuilder = buffer.getBuffer(RenderType.cutoutMipped());
             kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
 
         }
-
-
-
 
 
     }
@@ -78,11 +75,12 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
     protected BlockState getRenderedBlockState(KineticTileEntity te) {
         return shaft(getRotationAxisOf(te));
     }
+
     public void renderText(Font pFr, int pXPosition, int pYPosition, @Nullable String pText) {
         PoseStack posestack = new PoseStack();
         posestack.scale(1.0f, 3.0f, 10);
         MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        pFr.drawInBatch(pText,(float) pXPosition, (float) pYPosition, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
+        pFr.drawInBatch(pText, (float) pXPosition, (float) pYPosition, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
         multibuffersource$buffersource.endBatch();
 
 

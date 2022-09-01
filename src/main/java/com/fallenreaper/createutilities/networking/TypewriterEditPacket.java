@@ -28,19 +28,21 @@ public class TypewriterEditPacket extends SimplePacketBase {
 
     public TypewriterEditPacket(FriendlyByteBuf buffer) {
 
-      this.itemStack = buffer.readItem();
+        this.itemStack = buffer.readItem();
         this.tag = buffer.readNbt();
         this.should = buffer.readBoolean();
         readAdditional(buffer);
 
     }
+
     protected void readAdditional(FriendlyByteBuf buffer) {
 
-    };
+    }
 
     protected void writeAdditional(FriendlyByteBuf buffer) {
 
-    };
+    }
+
     @Override
     public void write(FriendlyByteBuf buffer) {
         buffer.writeItem(itemStack);
@@ -49,33 +51,34 @@ public class TypewriterEditPacket extends SimplePacketBase {
         writeAdditional(buffer);
 
     }
+
     @Override
     public void handle(Supplier<NetworkEvent.Context> context) {
-      context.get().enqueueWork(()->{
-          ServerPlayer player = context.get()
-                  .getSender();
-          if (player == null)
-              return;
-          if (!(player.containerMenu instanceof TypewriterContainer container))
-              return;
-          TypewriterBlockEntity te = ((TypewriterContainer) player.containerMenu).contentHolder;
-          ItemStackHandler itemstackHandler = container.contentHolder.inventory;
-          System.out.println(itemStack.getItem().getDescriptionId() + 2);
+        context.get().enqueueWork(() -> {
+            ServerPlayer player = context.get()
+                    .getSender();
+            if (player == null)
+                return;
+            if (!(player.containerMenu instanceof TypewriterContainer container))
+                return;
+            TypewriterBlockEntity te = ((TypewriterContainer) player.containerMenu).contentHolder;
+            ItemStackHandler itemstackHandler = container.contentHolder.inventory;
+            System.out.println(itemStack.getItem().getDescriptionId() + 2);
 
-          te.changeFuelLevel();
-          te.notifyUpdate();
-    if(should) {
-        te.shouldSend();
-    }
+            te.changeFuelLevel();
+            te.notifyUpdate();
+            if (should) {
+                te.shouldSend();
+            }
 
-         if(te.dataGatheringProgress >= 0.9F) {
-             itemstackHandler.setStackInSlot(4, ItemStack.EMPTY);
-             System.out.println(itemStack.getItem().getDescriptionId() + 3);
-             itemstackHandler.setStackInSlot(5, itemStack);
-             te.notifyUpdate();
-         }
+            if (te.dataGatheringProgress >= 0.9F) {
+                itemstackHandler.setStackInSlot(4, ItemStack.EMPTY);
+                System.out.println(itemStack.getItem().getDescriptionId() + 3);
+                itemstackHandler.setStackInSlot(5, itemStack);
+                te.notifyUpdate();
+            }
 
-      });
+        });
         context.get().setPacketHandled(true);
     }
 }

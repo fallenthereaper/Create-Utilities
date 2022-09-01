@@ -15,10 +15,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class BellowDisplaySource extends NumericSingleLineDisplaySource {
     @Override
     protected MutableComponent provideLine(DisplayLinkContext context, DisplayTargetStats stats) {
-       if (!(context.getSourceTE() instanceof BellowBlockEntity te))
-        return EMPTY_LINE;
+        if (!(context.getSourceTE() instanceof BellowBlockEntity te))
+            return EMPTY_LINE;
 
-        if(!te.isValid || te.getSpeed() == 0 )
+        if (!te.isValid || te.getSpeed() == 0)
             return EMPTY_LINE;
 
 
@@ -31,7 +31,7 @@ public class BellowDisplaySource extends NumericSingleLineDisplaySource {
         super.initConfigurationWidgets(context, builder, isFirstLine);
         if (isFirstLine)
             return;
-       LangBuilder lang = Lang.builder(CreateUtilities.ID);
+        LangBuilder lang = Lang.builder(CreateUtilities.ID);
         builder.addSelectionScrollInput(0, 60, (si, l) -> {
             si.forOptions(lang.translate("display_source.bellow.item", "display_source.bellow.show_item_count", "display_source.show_item_name").component().getSiblings())
                     .titled(lang.translate("display_source_bellow_title").component());
@@ -42,6 +42,7 @@ public class BellowDisplaySource extends NumericSingleLineDisplaySource {
     protected boolean allowsLabeling(DisplayLinkContext context) {
         return true;
     }
+
     @Override
     protected String getTranslationKey() {
         return "time_duration";

@@ -1,8 +1,8 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
-import com.fallenreaper.createutilities.utils.ContainerUtil;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.utils.ContainerUtil;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.ITE;
 import net.minecraft.core.BlockPos;
@@ -37,6 +37,7 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
 
         ItemStack stack = player.getItemInHand(handIn);
         if (!worldIn.isClientSide && worldIn.getBlockEntity(pos) instanceof final PunchcardWriterBlockEntity be) {
+            be.addAccess();
             withTileEntityDo(worldIn, pos,
                     card -> NetworkHooks.openGui((ServerPlayer) player, card, card::sendToContainer));
         }
@@ -55,6 +56,7 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
     public BlockEntityType<? extends PunchcardWriterBlockEntity> getTileEntityType() {
         return CUBlockEntities.PUNCHCARD_WRITER.get();
     }
+
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity blockentity = pLevel.getBlockEntity(pPos);

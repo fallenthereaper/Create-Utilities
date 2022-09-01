@@ -1,9 +1,12 @@
 package com.fallenreaper.createutilities.content.blocks.bellow;
 
 
+import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.utils.IFurnaceBurnTimeAccessor;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
+import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -24,8 +27,8 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
     public int timer;
     public boolean isValid;
     public int remainingTime;
-    private ItemStack itemIn;
     public int maxTime;
+    private ItemStack itemIn;
 
     public BellowBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
@@ -40,8 +43,9 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
     public void tick() {
         super.tick();
 
-        if (timer <= 0)
+        if (timer<= 0)
             timer = 0;
+
 
         if (isValid && getSpeed() != 0) {
             timer++;
@@ -138,22 +142,23 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        LangBuilder lang = Lang.builder(CreateUtilities.ID);
 
         Component indent = new TextComponent(" ");
         Component indent1 = new TextComponent(spacing + " ");
         Component arrow = new TextComponent("->").withStyle(ChatFormatting.DARK_GRAY);
         Component time = new TextComponent(getTotalTime(getMaxBurnTime(itemIn))).withStyle(ChatFormatting.GOLD);
-        String item = itemIn.isEmpty() ? "None" : itemIn.getItem().getName(itemIn).getString();
+        String item = itemIn.isEmpty() ? lang.translate("bellow.content.inventory_empty").string() : itemIn.getItem().getName(itemIn).getString();
         Component in = new TextComponent(item + " " + (itemIn.isEmpty() ? "" : "x") + (itemIn.getCount() <= 0 ? "" : itemIn.getCount())).withStyle(itemIn.isEmpty() ? ChatFormatting.RED : ChatFormatting.GREEN).withStyle(ChatFormatting.UNDERLINE);
-        Component status = new TextComponent( isValid ? "RUNNING" : "PAUSED").withStyle(ChatFormatting.AQUA);
+        Component status = new TextComponent(isValid ? lang.translate("bellow.content.status.active").string() :  lang.translate("bellow.content.status.paused").string()).withStyle(ChatFormatting.AQUA);
         tooltip.add(indent1.plainCopy()
                 .append("Bellow Info:"));
         tooltip.add(arrow.plainCopy()
                 .append(indent)
-                .append("Time Elapsed:").withStyle(ChatFormatting.GRAY).append(indent).append(time));
+                .append(lang.translate("bellow.content.fuel").string() + ":").withStyle(ChatFormatting.GRAY).append(indent).append(time));
 
-        tooltip.add(arrow.plainCopy().append(indent).append("Fuel:").withStyle(ChatFormatting.GRAY).append(indent).append(in));
-        tooltip.add(arrow.plainCopy().append(indent).append("Status:").withStyle(ChatFormatting.GRAY).append(indent).append(status));
+        tooltip.add(arrow.plainCopy().append(indent).append(lang.translate("bellow.content.fuel").string() + ":").withStyle(ChatFormatting.GRAY).append(indent).append(in));
+        tooltip.add(arrow.plainCopy().append(indent).append(lang.translate("bellow.content.status").string() + ":").withStyle(ChatFormatting.GRAY).append(indent).append(status));
 
 
         return true;
@@ -211,7 +216,6 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
 
         //convert to seconds
         int modifier = getFurnaceBurnTime(itemStack);
-
 
         return seconds + (modifier * itemStack.getCount());
     }

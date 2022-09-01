@@ -8,15 +8,14 @@ import com.simibubi.create.foundation.ponder.PonderTag;
 
 public class CUPonder {
 
-        static final PonderRegistrationHelper HELPER = new PonderRegistrationHelper(CreateUtilities.ID);
+    static final PonderRegistrationHelper HELPER = new PonderRegistrationHelper(CreateUtilities.ID);
 
-        public static void register() {
+    public static void register() {
 
-            HELPER.addStoryBoard(CUBlocks.SPRINKLER, "sprinkler", CUPonderScenes::sprinkler, PonderTag.KINETIC_APPLIANCES, PonderTag.KINETIC_APPLIANCES);
+        HELPER.addStoryBoard(CUBlocks.SPRINKLER, "sprinkler", CUPonderScenes::sprinkler, PonderTag.KINETIC_APPLIANCES, PonderTag.KINETIC_APPLIANCES);
 
-            PonderRegistry.TAGS.forTag(PonderTag.KINETIC_APPLIANCES)
-                    .add(CUBlocks.SPRINKLER);
-
+        PonderRegistry.TAGS.forTag(PonderTag.KINETIC_APPLIANCES)
+                .add(CUBlocks.SPRINKLER);
 
 
     }

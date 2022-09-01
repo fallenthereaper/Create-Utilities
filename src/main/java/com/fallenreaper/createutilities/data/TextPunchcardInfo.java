@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.data;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 
-public class TextPunchcardInfo extends PunchcardInfo{
+public class TextPunchcardInfo extends PunchcardInfo {
 
     public TextPunchcardInfo() {
         super();

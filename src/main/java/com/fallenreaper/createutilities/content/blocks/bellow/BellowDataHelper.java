@@ -10,7 +10,7 @@ import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class BellowDataHelper {
-//copied from create I have no idea what's going on here
+    //copied from create I have no idea what's going on here
     public static MutableComponent barComponent(int level, int minValue, int maxValue) {
         return TextComponent.EMPTY.copy()
                 .append(bars(Math.max(0, minValue - 1), ChatFormatting.DARK_AQUA))
@@ -24,6 +24,7 @@ public class BellowDataHelper {
     private static MutableComponent bars(int level, ChatFormatting format) {
         return new TextComponent(Strings.repeat('|', level)).withStyle(format);
     }
+
     public static MutableComponent getFillComponent(boolean forGoggles, boolean useBlocksAsBars, ChatFormatting... styles) {
         return componentHelper("fillLevel", 5, forGoggles, useBlocksAsBars, styles);
     }
@@ -32,11 +33,11 @@ public class BellowDataHelper {
     public static MutableComponent getHeatLevelTextComponent(int level) {
         int boilerLevel = Math.min(level, 16);
         LangBuilder amount = Lang.builder(CreateUtilities.ID);
-        return  amount.translate("fillLevel.lvl", String.valueOf(boilerLevel)).component();
+        return amount.translate("fillLevel.lvl", String.valueOf(boilerLevel)).component();
     }
 
     public static MutableComponent componentHelper(String label, int level, boolean forGoggles, boolean useBlocksAsBars,
-                                             ChatFormatting... styles) {
+                                                   ChatFormatting... styles) {
         MutableComponent base = barComponent(level, 2, 10);
 
         if (!forGoggles)

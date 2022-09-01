@@ -10,12 +10,12 @@ import net.minecraftforge.items.ItemStackHandler;
 import java.util.Random;
 
 public class ContainerUtil {
-  static final Random RANDOM = new Random();
+    static final Random RANDOM = new Random();
 
     public static void dropContents(Level pLevel, BlockPos pPos, ItemStackHandler te) {
 
-        for(int i = 0; i < te.getSlots(); i++) {
-        ItemStack item = te.getStackInSlot(i);
+        for (int i = 0; i < te.getSlots(); i++) {
+            ItemStack item = te.getStackInSlot(i);
             dropItemStack(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), item);
         }
     }
@@ -28,10 +28,10 @@ public class ContainerUtil {
         double d4 = Math.floor(pY) + RANDOM.nextDouble() * d1;
         double d5 = Math.floor(pZ) + RANDOM.nextDouble() * d1 + d2;
 
-        while(!pStack.isEmpty()) {
+        while (!pStack.isEmpty()) {
             ItemEntity itementity = new ItemEntity(pLevel, d3, d4, d5, pStack.split(RANDOM.nextInt(25) + 10));
             float f = 0.05F;
-            itementity.setDeltaMovement(RANDOM.nextGaussian() * (double)f, RANDOM.nextGaussian() * (double)0.05F + (double)0.2F, RANDOM.nextGaussian() * (double)0.05F);
+            itementity.setDeltaMovement(RANDOM.nextGaussian() * (double) f, RANDOM.nextGaussian() * (double) 0.05F + (double) 0.2F, RANDOM.nextGaussian() * (double) 0.05F);
             pLevel.addFreshEntity(itementity);
         }
 

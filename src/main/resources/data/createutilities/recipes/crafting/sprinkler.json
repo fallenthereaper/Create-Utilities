@@ -1,23 +1,23 @@
 {
-    "type": "minecraft:crafting_shaped",
-    "pattern": [
-        " # ",
-        "cTc",
-        " c "
-    ],
-    "key": {
-        "#": {
-            "item": "create:shaft"
-        },
-        "c": {
-           "tag": "forge:ingots/copper"
-        },
-        "T": {
-            "item": "create:fluid_tank"
-        }
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "cTc",
+    " c "
+  ],
+  "key": {
+    "#": {
+      "item": "create:shaft"
     },
-    "result": {
-        "item": "createutilities:sprinkler",
-        "count": 1
+    "c": {
+      "tag": "forge:ingots/copper"
+    },
+    "T": {
+      "item": "create:fluid_tank"
     }
+  },
+  "result": {
+    "item": "createutilities:sprinkler",
+    "count": 1
+  }
 }

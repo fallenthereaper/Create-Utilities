@@ -11,14 +11,20 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public enum GuiTextures {
 
     TYPEWRITER("typewriter_screen", 184, 174),
-    ARROW_INDICATOR("typewriter_screen",216, 44, 8, 24),
-    PROGRESS_BAR("typewriter_screen",47, 162, 46, 12),
-    HIGHLIGHT("typewriter_screen",139, 196, 26, 26),
-    PUNCHCARD_WRITER_SCREEN("punchcard_writer_screen",201, 174),
-    BUTTON_FILLED("punchcard_writer_screen",240, 48, 16, 16),
-    BUTTON_EMPTY("punchcard_writer_screen",208, 48, 16, 16),
-    BUTTON_HOVER("punchcard_writer_screen",240, 64, 16, 16),
-    SINGLE_INVENTORY("punchcard_writer_screen",68, 179, 178, 72);
+    ARROW_INDICATOR("typewriter_screen", 216, 44, 8, 24),
+    PROGRESS_BAR("typewriter_screen", 47, 162, 46, 12),
+    HIGHLIGHT("typewriter_screen", 139, 196, 26, 26),
+    PUNCHCARD_WRITER_SCREEN("punchcard_writer_screen", 201, 174),
+    BUTTON_FILLED("punchcard_writer_screen", 240, 48, 16, 16),
+    BUTTON_EMPTY("punchcard_writer_screen", 208, 48, 16, 16),
+    BUTTON_HOVER("punchcard_writer_screen", 240, 64, 16, 16),
+    BUTTON_HOVER_EMPTY("punchcard_writer_screen", 208, 64, 16, 16),
+    SINGLE_INVENTORY("punchcard_writer_screen", 68, 179, 178, 72),
+
+    TYPEWRITER_BUTTON_FILLED("typewriter_screen", 207, 144, 18, 18),
+    TYPEWRITER_BUTTON_EMPTY("typewriter_screen", 225, 144, 18, 18),
+    TYPEWRITER_BUTTON_HOVER("typewriter_screen", 207, 162, 18, 18),
+    TYPEWRITER_BUTTON_HOVER_EMPTY("typewriter_screen", 225, 162, 18, 18);
 
     public final ResourceLocation location;
     public int width, height;
@@ -32,7 +38,7 @@ public enum GuiTextures {
         this(CreateUtilities.ID, location, startX, startY, width, height);
     }
 
-   GuiTextures(String namespace, String location, int startX, int startY, int width, int height) {
+    GuiTextures(String namespace, String location, int startX, int startY, int width, int height) {
         this.location = new ResourceLocation(namespace, "textures/gui/" + location + ".png");
         this.width = width;
         this.height = height;

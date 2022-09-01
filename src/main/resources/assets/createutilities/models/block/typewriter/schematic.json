@@ -1,120 +1,253 @@
 {
-	"credit": "Made with Blockbench",
-	"texture_size": [64, 64],
-	"textures": {
-		"1": "createutilities:block/typewriter/typewriter"
-	},
-	"elements": [
-		{
-			"from": [2, 3, 13.5],
-			"to": [14, 13, 13.5],
-			"rotation": {"angle": 0, "axis": "y", "origin": [0, 7, 5.5]},
-			"faces": {
-				"north": {"uv": [9, 5.75, 12, 8.25], "texture": "#1"},
-				"east": {"uv": [9, 5.75, 9, 8.25], "texture": "#1"},
-				"south": {"uv": [9, 5.75, 12, 8.25], "texture": "#1"},
-				"west": {"uv": [12, 5.75, 12, 8.25], "texture": "#1"},
-				"up": {"uv": [12, 5.75, 9, 5.75], "texture": "#1"},
-				"down": {"uv": [15, 5.75, 12, 5.75], "texture": "#1"}
-			}
-		}
-	],
-	"groups": [
-		{
-			"name": "reader",
-			"origin": [-6, 10, 6.5],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone2",
-			"origin": [-6, 3, -4],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone3",
-			"origin": [-3, 3, -4],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone4",
-			"origin": [0, 3, -4],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone5",
-			"origin": [3, 3, -4],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone6",
-			"origin": [6, 2, -4],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "pointer",
-			"origin": [0, 4.25, -1.2],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone7",
-			"origin": [1.5, 3, -2],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone8",
-			"origin": [-1.5, 3, -2],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "blueprint",
-			"origin": [0, 9, 5.5],
-			"color": 0,
-			"children": [0]
-		},
-		{
-			"name": "bone10",
-			"origin": [4.5, 3, -2],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone11",
-			"origin": [-4.5, 3, -2],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "tape",
-			"origin": [-2, 5, 2],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone13",
-			"origin": [0, 2, -6.1],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "transmitter",
-			"origin": [-15, -1.5, -6.5],
-			"color": 0,
-			"children": []
-		},
-		{
-			"name": "bone12",
-			"origin": [0, 8, 0.5],
-			"color": 0,
-			"children": []
-		}
-	]
+  "credit": "Made with Blockbench",
+  "texture_size": [
+    64,
+    64
+  ],
+  "textures": {
+    "1": "createutilities:block/typewriter/typewriter"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        3,
+        13.5
+      ],
+      "to": [
+        14,
+        13,
+        13.5
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          0,
+          7,
+          5.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            5.75,
+            12,
+            8.25
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            9,
+            5.75,
+            9,
+            8.25
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            9,
+            5.75,
+            12,
+            8.25
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            12,
+            5.75,
+            12,
+            8.25
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            12,
+            5.75,
+            9,
+            5.75
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            15,
+            5.75,
+            12,
+            5.75
+          ],
+          "texture": "#1"
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "reader",
+      "origin": [
+        -6,
+        10,
+        6.5
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone2",
+      "origin": [
+        -6,
+        3,
+        -4
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone3",
+      "origin": [
+        -3,
+        3,
+        -4
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone4",
+      "origin": [
+        0,
+        3,
+        -4
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone5",
+      "origin": [
+        3,
+        3,
+        -4
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone6",
+      "origin": [
+        6,
+        2,
+        -4
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "pointer",
+      "origin": [
+        0,
+        4.25,
+        -1.2
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone7",
+      "origin": [
+        1.5,
+        3,
+        -2
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone8",
+      "origin": [
+        -1.5,
+        3,
+        -2
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "blueprint",
+      "origin": [
+        0,
+        9,
+        5.5
+      ],
+      "color": 0,
+      "children": [
+        0
+      ]
+    },
+    {
+      "name": "bone10",
+      "origin": [
+        4.5,
+        3,
+        -2
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone11",
+      "origin": [
+        -4.5,
+        3,
+        -2
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "tape",
+      "origin": [
+        -2,
+        5,
+        2
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone13",
+      "origin": [
+        0,
+        2,
+        -6.1
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "transmitter",
+      "origin": [
+        -15,
+        -1.5,
+        -6.5
+      ],
+      "color": 0,
+      "children": []
+    },
+    {
+      "name": "bone12",
+      "origin": [
+        0,
+        8,
+        0.5
+      ],
+      "color": 0,
+      "children": []
+    }
+  ]
 }

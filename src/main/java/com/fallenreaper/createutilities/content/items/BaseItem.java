@@ -14,12 +14,14 @@ import net.minecraft.world.level.Level;
 
 
 public class BaseItem extends Item {
-  protected CompoundTag compoundTag  = new CompoundTag();
     private static final int BAR_COLOR = Mth.color(0.4F, 0.4F, 1.0F);
+    protected CompoundTag compoundTag = new CompoundTag();
+
     public BaseItem(Properties pProperties) {
         super(pProperties);
 
     }
+
     @Override
     public boolean isBarVisible(ItemStack pStack) {
         return pStack.hasTag() && pStack.getItem() instanceof NotesItem;
@@ -38,7 +40,7 @@ public class BaseItem extends Item {
     }
 
     public int getFromTag(String key) {
-        if(!compoundTag.contains(key))
+        if (!compoundTag.contains(key))
             return 0;
 
         return compoundTag.getInt(key);
@@ -53,13 +55,15 @@ public class BaseItem extends Item {
     @Override
     public int getBarWidth(ItemStack pStack) {
 
-        return Math.min( (13 * getFromTag("clicks") / getMaxClicks()), 13);
+        return Math.min((13 * getFromTag("clicks") / getMaxClicks()), 13);
     }
+
     @Override
     public int getBarColor(ItemStack pStack) {
-        float f = Math.max(0.0F,  (float)getFromTag("clicks")) / getMaxClicks();
-        return  Mth.hsvToRgb(f / 2.0F, 2.0F, 0.45F);
+        float f = Math.max(0.0F, (float) getFromTag("clicks")) / getMaxClicks();
+        return Mth.hsvToRgb(f / 2.0F, 2.0F, 0.45F);
     }
+
     public int getMaxClicks() {
         return 64;
     }
@@ -76,7 +80,7 @@ public class BaseItem extends Item {
                 .append(description.getKey()+ " " + "Info:").append(percentage));
 */
 
-    }
+}
 
 
 

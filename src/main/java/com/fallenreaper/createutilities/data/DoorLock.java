@@ -10,22 +10,14 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class DoorLock {
-   public BlockPos blockPos;
-   public UUID id;
-   public UUID ownerId;
+    public BlockPos blockPos;
+    public UUID id;
+    public UUID ownerId;
 
     public DoorLock(BlockPos pos, UUID id, UUID ownerId) {
         this.blockPos = pos;
         this.id = id;
         this.ownerId = ownerId;
-    }
-
-    public CompoundTag write() {
-        CompoundTag tag = new CompoundTag();
-        tag.putUUID("Id", id);
-        tag.putUUID("OwnerId", ownerId);
-        tag.put("DoorPos", NbtUtils.writeBlockPos(blockPos));
-        return tag;
     }
 
     public static DoorLock read(CompoundTag tag) {
@@ -36,6 +28,15 @@ public class DoorLock {
 
         return doorLock;
     }
+
+    public CompoundTag write() {
+        CompoundTag tag = new CompoundTag();
+        tag.putUUID("Id", id);
+        tag.putUUID("OwnerId", ownerId);
+        tag.put("DoorPos", NbtUtils.writeBlockPos(blockPos));
+        return tag;
+    }
+
     public BlockPos getBlockPos() {
 
         return blockPos;
