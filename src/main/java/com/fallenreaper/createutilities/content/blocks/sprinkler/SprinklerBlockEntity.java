@@ -547,6 +547,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     @Override
     protected boolean isFluidHandlerCap(Capability<?> cap) {
         return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY;
+
     }
 
 

@@ -9,7 +9,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
-
+@SuppressWarnings("ALL")
 public abstract class ContainerBlockEntity<K extends ItemStackHandler> extends SmartTileEntity {
     public K inventory;
     LazyOptional<K> inventoryProvider;

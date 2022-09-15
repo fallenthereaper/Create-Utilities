@@ -17,10 +17,7 @@ public class NotesItem extends BaseItem {
         super(pProperties);
     }
 
-    @Override
-    public int getMaxClicks() {
-        return super.getMaxClicks() / 2;
-    }
+
 
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {

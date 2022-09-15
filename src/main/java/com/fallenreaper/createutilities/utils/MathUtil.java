@@ -4,7 +4,7 @@ import com.simibubi.create.foundation.render.SuperByteBuffer;
 import com.simibubi.create.foundation.utility.Couple;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
-
+@SuppressWarnings("ALL")
 public class MathUtil {
     /**
      * https://en.wikipedia.org/wiki/B%C3%A9zier_curve

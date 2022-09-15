@@ -10,12 +10,12 @@ import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.ModPackets;
 import com.fallenreaper.createutilities.networking.TypewriterEditPacket;
 import com.fallenreaper.createutilities.utils.data.SwitchButton;
-import com.fallenreaper.createutilities.utils.data.SwitchIcons;
 import com.google.common.collect.ImmutableList;
 import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
+import com.simibubi.create.foundation.gui.ScreenOpener;
 import com.simibubi.create.foundation.gui.container.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.element.GuiGameElement;
 import com.simibubi.create.foundation.gui.widget.IconButton;
@@ -23,14 +23,14 @@ import com.simibubi.create.foundation.gui.widget.Indicator;
 import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
+import net.minecraft.Util;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
@@ -39,7 +39,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +55,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     private IconButton confirmButton;
     private List<Rect2i> extraAreas = Collections.emptyList();
     private SwitchButton switchButton;
+    private SwitchButton switchButtonAlt;
 
     public TypewriterScreen(TypewriterContainer container, Inventory inv, Component title) {
         super(container, inv, title);
@@ -148,7 +148,14 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     public void mouseMoved(double pMouseX, double pMouseY) {
         super.mouseMoved(pMouseX, pMouseY);
     }
-
+    private void linkTo(String url) {
+        ScreenOpener.open(new ConfirmLinkScreen((p_213069_2_) -> {
+            if (p_213069_2_)
+                Util.getPlatform()
+                        .openUri(url);
+            this.minecraft.setScreen(this);
+        }, url, true));
+    }
     @Override
     protected void init() {
         int x = leftPos;
@@ -162,43 +169,10 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         //   extraAreas = ImmutableList.of(new Rect2i(x + BG.width, y + BG.height + BG.height - 62 - 2, 84, 92 - 2));
         clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 97 - 14, new TextComponent("Off"));
 
-          switchButton = new SwitchButton(leftPos + 118 + BG.width - 175 , topPos + BG.height - 97,18, 18, SwitchIcons.TYPEWRITER_SWITCHBUTTON) {
-              @Override
-              protected SoundEvent getLeftClickSound() {
-                  return SoundEvents.UI_BUTTON_CLICK;
-              }
+        switchButton = new SwitchButton(leftPos + 118 + BG.width - 175 , topPos + BG.height - 97,18, 18, AllIcons.I_ADD);
+         switchButtonAlt  = new SwitchButton(leftPos + 118 + BG.width - 223 , topPos + BG.height - 56,18, 18, AllIcons.I_REPLACE_ANY).withCallback(() -> linkTo("https://github.com/LegendaryReaper670/Create-Utilities"));
 
-              @Override
-              protected SoundEvent getRightClickSound() {
-                  return SoundEvents.UI_BUTTON_CLICK;
-              }
-
-              @Override
-              protected void onLeftDrag(Point point, double pMouseX, double pMouseY, int pButton) {
-              }
-
-              @Override
-              protected void onRightDrag(Point point, double pMouseX, double pMouseY, int pButton) {
-              }
-
-              @Override
-              protected void onLeftClick(double pMouseX, double pMouseY, int pButton) {
-              }
-
-              @Override
-              protected void onRightClick(double pMouseX, double pMouseY, int pButton) {
-              }
-
-              @Override
-              protected boolean isValidLeftClickButton(int pButton) {
-                  return pButton == 0;
-              }
-
-              @Override
-              protected boolean isValidRightClickButton(int pButton) {
-                  return pButton == 0;
-              }
-          };
+        addRenderableWidget(switchButtonAlt);
         addRenderableWidget(switchButton);
         addRenderableWidget(closeButton);
         addRenderableWidget(confirmButton);

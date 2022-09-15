@@ -121,7 +121,7 @@ public class CommonEvents {
 
     }
 
-    //todo, redo this so it doesnt use block pos but uuid, there's a better way to do it by checking rope spool in aeronautics
+    //todo, redo this so it doesn't use block pos but uuid, there's a better way to do it by checking rope spool in aeronautics
     //TODO, move this to punchcard item class
     @SubscribeEvent
     public void onLivingEntityUseItem(PlayerInteractEvent.RightClickBlock event) {

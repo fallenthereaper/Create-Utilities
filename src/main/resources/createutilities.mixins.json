@@ -9,6 +9,7 @@
     "FurnaceBlockEntityMixin"
   ],
   "client": [
+    "HumanoidModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

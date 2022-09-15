@@ -12,6 +12,7 @@ import com.fallenreaper.createutilities.networking.PunchcardWriterEditPacket;
 import com.fallenreaper.createutilities.utils.data.PunchcardButton;
 import com.fallenreaper.createutilities.utils.data.PunchcardWriter;
 import com.fallenreaper.createutilities.utils.data.PunchcardWriterManager;
+import com.fallenreaper.createutilities.utils.data.SwitchButton;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.relays.advanced.sequencer.Instruction;
@@ -40,7 +41,8 @@ import net.minecraft.world.item.TooltipFlag;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-//todo add funnel insert functionality
+
+//todo: add funnel insert functionality
 public class PunchcardWriterScreen extends AbstractSmartContainerScreen<PunchcardWriterContainer> {
     protected static final GuiTextures BG = GuiTextures.PUNCHCARD_WRITER_SCREEN;
     protected static final AllGuiTextures PLAYER = AllGuiTextures.PLAYER_INVENTORY;
@@ -74,7 +76,6 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         return options;
     }
 
-
     @Override
     protected void renderBg(PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
         int x = leftPos + imageWidth - BG.width;
@@ -89,7 +90,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
                 if (getInventory().getStackInSlot(0).getTag().contains("WriterKey")) {
                     if (PunchcardWriterManager.hasWriter(getInventory().getStackInSlot(0).getTag().getUUID("WriterKey"))) {
                         List<Component> tooltipLines = getInventory().getStackInSlot(0).getTooltipLines(getMenu().player, TooltipFlag.Default.NORMAL);
-                        tooltipLines.remove(Math.min(writer.getTextWriter().getYsize() + 2, tooltipLines.size()));
+                //        tooltipLines.remove(Math.min(writer.getTextWriter().getYsize() + 2, tooltipLines.size()));
                         tooltipLines.remove(1);
                         tooltipLines.set(0, new TextComponent(" " + "Preview").withStyle(ChatFormatting.GOLD));
                         PoseStack poseStack = new PoseStack();
@@ -250,23 +251,38 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         //Will be expanded once I finish the writing system
         saveButton.withCallback(() -> {
             if (!getInventory().getStackInSlot(0).isEmpty()) {
-                ItemStack itemStack = getInventory().getStackInSlot(0);
-                List<InstructionEntry> list;
-                list = new ArrayList<>();
-                InstructionEntry instruction = new InstructionEntry();
-                instruction.instruction = new PunchcardInstruction();
-                list.add(instruction);
-
-                CompoundTag tag = itemStack.getOrCreateTag();
-                UUID key = tag.contains("WriterKey") ? tag.getUUID("WriterKey") : UUID.randomUUID();
-                tag.putUUID("WriterKey", key);
-                tag.putString("InstructionType", list.get(0).instruction.getLabeledText());
-                itemStack.setTag(tag);
-                PunchcardWriterManager.addWriter(writer, key);
-                ModPackets.channel.sendToServer(new PunchcardWriterEditPacket(getInventory(), itemStack));
-                getBlockEntity().notifyUpdate();
+                if(!getInventory().getStackInSlot(0).hasTag()) {
+                    saveWriter();
+                }
             }
         });
+    }
+    //todo maybe try to use replaceWriter();
+    protected void saveWriter() {
+        if (!getInventory().getStackInSlot(0).isEmpty()) {
+            ItemStack itemStack = getInventory().getStackInSlot(0);
+            List<InstructionEntry> list;
+            list = new ArrayList<>();
+            InstructionEntry instruction = new InstructionEntry();
+            instruction.instruction = new PunchcardInstruction();
+            list.add(instruction);
+
+            CompoundTag tag = itemStack.getOrCreateTag();
+            UUID key = tag.contains("WriterKey") ? tag.getUUID("WriterKey") : UUID.randomUUID();
+            tag.putUUID("WriterKey", key);
+            tag.putString("InstructionType", list.get(0).instruction.getLabeledText());
+            itemStack.setTag(tag);
+
+            if(PunchcardWriterManager.hasWriter(key)) {
+                PunchcardWriterManager.replaceWriter(writer, key);
+            }
+             else {
+                PunchcardWriterManager.addWriter(writer, key);
+            }
+            ModPackets.channel.sendToServer(new PunchcardWriterEditPacket(getInventory(), itemStack));
+            getBlockEntity().notifyUpdate();
+
+        }
     }
 
     @Override
@@ -326,6 +342,11 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
             lineLabel.visible = hasPunchcard;
             lineLabel.active = hasPunchcard;
         }
+        if (!getInventory().getStackInSlot(0).isEmpty()) {
+            if(getInventory().getStackInSlot(0).hasTag()) {
+                saveWriter();
+            }
+        }
 
         removeButton.active = hasPunchcard && getInventory().getStackInSlot(0).hasTag();
         resetButton.active = hasPunchcard;
@@ -340,23 +361,6 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     }
 
     @Override
-    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
-        super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-        if (this.writer != null) {
-            for (int i = 1; i < this.writer.getTextWriter().getYsize() + 1; i++) {
-                for (int j = 1; j < this.writer.getTextWriter().getXsize() + 1; j++) {
-                    PunchcardButton button = this.writer.getButton(new Point(j - 1, i - 1), null);
-                    if (button.isMouseOver(pMouseX, pMouseY)) {
-                        button.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-                        return true;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    @Override
     public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
         return super.mouseReleased(pMouseX, pMouseY, pButton);
     }
@@ -365,9 +369,9 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         ItemStack stack = getInventory().getStackInSlot(0);
         boolean hasPunchcard = !stack.isEmpty();
         readSavedWriter();
-//todo make Punchcard#create use int int and do the casting inside of it
+
         this.writer = PunchcardWriter.create(this, x, y, CUConfig.PUNCHCARDWRITER_WIDTH.get(), CUConfig.PUNCHCARDWRITER_HEIGHT.get()).write();
-        //TODO, try to check if this button Mode is the same as the one saved, update: didn't work at all
+
         if (!hasPunchcard) {
             writer.setDisabled();
         } else {
@@ -406,8 +410,11 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         if (savedWriter.allButtons != null) {
             for (int i = 1; i < this.writer.getTextWriter().getYsize() + 1; i++) {
                 for (int j = 1; j < this.writer.getTextWriter().getXsize() + 1; j++) {
-                    this.writer.getButton(new Point(j - 1, i - 1), null).setState(savedWriter.getButton(new Point(j - 1, i - 1), null).getState());
-                    savedWriter.getButton(new Point(j - 1, i - 1), null).setState(this.writer.getButton(new Point(j - 1, i - 1), null).getState());
+                    PunchcardButton button = this.writer.getButton(new Point(j - 1, i - 1), null);
+                    PunchcardButton savedButton = savedWriter.getButton(new Point(j - 1, i - 1), null);
+                    SwitchButton.Mode state = savedButton.getState();
+                    button.setState(state);
+                    //    savedWriter.getButton(new Point(j - 1, i - 1), null).setState(this.writer.getButton(new Point(j - 1, i - 1), null).getState());
                 }
             }
         }

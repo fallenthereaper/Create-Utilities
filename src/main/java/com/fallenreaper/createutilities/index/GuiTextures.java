@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
+@SuppressWarnings("ALL")
 public enum GuiTextures {
 
     TYPEWRITER("typewriter_screen", 184, 174),
@@ -21,10 +21,10 @@ public enum GuiTextures {
     BUTTON_HOVER_EMPTY("punchcard_writer_screen", 208, 64, 16, 16),
     SINGLE_INVENTORY("punchcard_writer_screen", 68, 179, 178, 72),
 
-    TYPEWRITER_BUTTON_FILLED("typewriter_screen", 207, 144, 18, 18),
-    TYPEWRITER_BUTTON_EMPTY("typewriter_screen", 225, 144, 18, 18),
-    TYPEWRITER_BUTTON_HOVER("typewriter_screen", 207, 162, 18, 18),
-    TYPEWRITER_BUTTON_HOVER_EMPTY("typewriter_screen", 225, 162, 18, 18);
+    DEFAULT_BUTTON_FILLED("typewriter_screen", 207, 144, 18, 18),
+    DEFAULT_BUTTON_EMPTY("typewriter_screen", 225, 144, 18, 18),
+    DEFAULT_BUTTON_HOVER("typewriter_screen", 207, 162, 18, 18),
+    DEFAULT_BUTTON_HOVER_EMPTY("typewriter_screen", 225, 162, 18, 18);
 
     public final ResourceLocation location;
     public int width, height;

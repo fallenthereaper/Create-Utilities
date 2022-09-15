@@ -6,6 +6,7 @@ import java.util.UUID;
 
 @SuppressWarnings("ALL")
 public class PunchcardWriterManager {
+    //add list
    private static Map<UUID, PunchcardWriter> savedWriters = new HashMap<>();
 
     public static void replaceWriter(PunchcardWriter type, UUID key) {

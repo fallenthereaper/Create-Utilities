@@ -1,14 +1,27 @@
 package com.fallenreaper.createutilities.utils.data;
 
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.AbstractSmartContainerScreen;
+import com.fallenreaper.createutilities.index.CUConfig;
+import com.fallenreaper.createutilities.utils.MathUtil;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.jozufozu.flywheel.repack.joml.Math;
+import com.jozufozu.flywheel.repack.joml.Vector2i;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,21 +31,17 @@ import java.util.function.Consumer;
 import static com.google.common.base.Strings.repeat;
 
 @SuppressWarnings("all")
-public class PunchcardWriter implements IClickable {
+public class PunchcardWriter implements IClickable, IDraggable {
     private final AbstractSmartContainerScreen<?> screen;
     public Map<Point, PunchcardButton> allButtons;
-    protected String defaultEmpty;
-    protected String defaultFull;
+    protected Map<Integer, Integer> yCoords, xCoords;
+    private String defaultEmpty, defaultFull;
     private PunchcardTextWriter textWriter;
-    private Map<Integer, Integer> yCoords;
-    private Map<Integer, Integer> xCoords;
     private PunchcardButton[][] coordinatesMap;
     private PunchcardButton button;
     private SwitchIcon switchIcon;
-    private int xPosition;
-    private int yPosition;
-    private byte width;
-    private byte height;
+    private Vector2i position;
+    private byte width, height;
 
     private PunchcardWriter(AbstractSmartContainerScreen<?> screen, int x, int y, byte width, byte height, SwitchIcon switchIcon) {
         this.defaultEmpty = "▒";
@@ -41,9 +50,8 @@ public class PunchcardWriter implements IClickable {
         this.width = width;
         this.textWriter = new PunchcardTextWriter(TextIcon.create(defaultFull, defaultEmpty)).writeText(width, height);
         this.screen = screen;
-        this.xPosition = x;
-        this.yPosition = y;
-       this.switchIcon = switchIcon;
+        this.position = new Vector2i(x, y);
+        this.switchIcon = switchIcon;
     }
 
     /**
@@ -64,7 +72,7 @@ public class PunchcardWriter implements IClickable {
      * Returns a copy of the specified {@link PunchcardWriter}
      */
     public static PunchcardWriter copy(PunchcardWriter copied$writer) {
-        PunchcardWriter copy = new PunchcardWriter(copied$writer.screen, copied$writer.xPosition, copied$writer.yPosition, copied$writer.width, copied$writer.height, copied$writer.switchIcon);
+        PunchcardWriter copy = new PunchcardWriter(copied$writer.screen, copied$writer.position.x(), copied$writer.position.y(), copied$writer.width, copied$writer.height, copied$writer.switchIcon);
         copy.textWriter = copied$writer.getTextWriter();
         copy.width = copied$writer.width;
         copy.height = copied$writer.height;
@@ -73,9 +81,55 @@ public class PunchcardWriter implements IClickable {
         copy.defaultFull = copied$writer.defaultFull;
         copy.xCoords = copied$writer.xCoords;
         copy.yCoords = copied$writer.yCoords;
-        copy.xPosition = copied$writer.xPosition;
-        copy.yPosition = copied$writer.yPosition;
+        copy.position = copied$writer.position;
         return copy;
+    }
+
+    public static void writeFile(String fileName, PunchcardWriter writer) {
+        ArrayList<PunchcardWriter> files;
+        File file = new File(fileName + ".json");
+        if (file.exists()) {
+            try {
+                FileReader reader = new FileReader(file);
+                Type type = new TypeToken<ArrayList<PunchcardWriter>>() {
+                }.getType();
+                Gson gson = new GsonBuilder().registerTypeAdapter(PunchcardWriter.class, new TypeAdapter<PunchcardWriter>() {
+
+                    @Override
+                    public void write(JsonWriter out, PunchcardWriter value) throws IOException {
+                        out.value(value.getTextWriter().getRawText());
+                    }
+
+                    @Override
+                    public PunchcardWriter read(JsonReader in) throws IOException {
+                        return null;
+                    }
+                }).create();
+                files = gson.fromJson(reader, type);
+                reader.close();
+                for (PunchcardWriter writerr : files) {
+                    System.out.println(writerr.getTextWriter());
+                }
+            } catch (FileNotFoundException e) {
+                System.err.println("Error in creating a FileReader object.");
+                ;
+            } catch (IOException e) {
+                System.err.println("Error in closing the file.");
+            }
+        } else {
+            files = new ArrayList<>();
+            files.add(writer);
+
+            try {
+                FileWriter fileWriter = new FileWriter(file);
+                Gson gson = new Gson();
+                gson.toJson(files, fileWriter);
+                fileWriter.close();
+            } catch (IOException e) {
+                System.err.println("Error in writing the File.");
+                ;
+            }
+        }
     }
 
     /**
@@ -96,6 +150,11 @@ public class PunchcardWriter implements IClickable {
             base += ChatFormatting.DARK_GRAY + repeat("|", Math.round(maxSize - modifier) / 2);
 
         return new TextComponent(base);
+    }
+
+    public float getPercentage() {
+        float val = (float) MathUtil.lerp(0, 100, getProgress());
+        return val;
     }
 
     /**
@@ -124,14 +183,14 @@ public class PunchcardWriter implements IClickable {
     /**
      * Sets a box and a button at the specified position.
      */
-    private void setBox(Point position) {
+    public void setBox(Point position) {
         this.textWriter.setPixel(position);
     }
 
     /**
      * Fill a box and a button at the specified position.
      */
-    private void fillBox(Point position) {
+    public void fillBox(Point position) {
         this.textWriter.fillPixel(position);
     }
 
@@ -156,10 +215,12 @@ public class PunchcardWriter implements IClickable {
                 this.button = coordinatesMap[y - 1][x - 1];
                 this.yCoords.put(button.y, y - 1);
                 this.xCoords.put(button.x, x - 1);
+                this.button.setCallBack(this::onDrag, this::onClick);
+                this.button.setClickButton(0, 1);
+                this.button.setClickSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundEvents.BOOK_PAGE_TURN);
             }
         }
     }
-
 
     /**
      * Instantly disables and sets all boxes.
@@ -172,7 +233,6 @@ public class PunchcardWriter implements IClickable {
                 PunchcardButton button = punchcardButtons[col];
                 button.state = SwitchButton.Mode.OFF;
                 this.textWriter.set();
-
             }
         }
         return this;
@@ -271,7 +331,11 @@ public class PunchcardWriter implements IClickable {
         this.allButtons = new HashMap<>(textWriter.getYsize() * textWriter.getXsize());
         for (int i = 1; i < textWriter.getYsize() + 1; i++) {
             for (int j = 1; j < textWriter.getXsize() + 1; j++) {
-                this.button = new PunchcardButton(16 * j + xPosition + (5 * 16) + 6, 16 * i + yPosition + 6, 16, 16, switchIcon, this);
+                int h = CUConfig.PUNCHCARDWRITER_HEIGHT.get();
+                int w = CUConfig.PUNCHCARDWRITER_WIDTH.get();
+                double valueH = h / 7F;
+                double valueW = w / 5F;
+                this.button = new PunchcardButton((int) (16 * j + position.x() + (5 * 16) + 6), (int) (16 * i + position.y() + 6), 16, 16, switchIcon);
                 this.addButton(new Point(j - 1, i - 1), button);
                 this.screen.addWidget(button);
             }
@@ -304,22 +368,17 @@ public class PunchcardWriter implements IClickable {
     }
 
     @Override
-    public void onDrag(int mouseX, int mouseY, Point coords, boolean rightClick, int buttonId) {
-        this.onClick(mouseX, mouseY, coords, rightClick, buttonId);
+    public void onDrag(int mouseX, int mouseY, Point coords, boolean rightClick) {
+        this.onClick(mouseX, mouseY, coords, rightClick);
     }
 
     @Override
-    public void onClick(int mouseX, int mouseY, Point coords, boolean rightClick, int buttonId) {
-        if (rightClick) {
+    public void onClick(int mouseX, int mouseY, Point coords, boolean rightClick) {
+        if (rightClick)
             this.fillBox(new Point(this.xCoords.get(coords.x), this.yCoords.get(coords.y)));
-        } else {
+        else
             this.setBox(new Point(this.xCoords.get(coords.x), this.yCoords.get(coords.y)));
-        }
-    }
 
-
-    @Override
-    public void onRelease(int mouseX, int mouseY, Point coords, boolean rightClick, int buttonId) {
     }
 
     /**
@@ -336,5 +395,26 @@ public class PunchcardWriter implements IClickable {
             }
         }
         return null;
+    }
+
+    public void toolTipFormat(List<Component> toolTip, ChatFormatting format, boolean showProgress, int spacing) {
+        String space = "";
+        for (int i = 0; i < spacing; i++)
+            space += " ";
+
+        for (int i = 1; i < this.textWriter.getYsize() + 1; i++) {
+            int max = i * this.textWriter.getXsize();
+            int min = Math.max(max - this.textWriter.getXsize(), 0);
+            toolTip.add(new TextComponent(space + this.textWriter.getRawText().substring(min, max)).withStyle(format));
+        }
+        if (showProgress)
+            toolTip.add(getProgressBar());
+    }
+
+    @Override
+    public String toString() {
+        return "PunchcardWriter[ " +
+                "textData = " + this.getTextWriter();
+
     }
 }

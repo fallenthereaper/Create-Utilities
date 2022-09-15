@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.utils.data;
 
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.mojang.datafixers.util.Pair;
-
+@SuppressWarnings("ALL")
 public class SwitchIcon {
     protected Pair<? extends GuiTextures, ? extends GuiTextures> offTexture;
     protected Pair<? extends GuiTextures, ? extends GuiTextures> onTexture;
@@ -12,7 +12,7 @@ public class SwitchIcon {
         this.onTexture = onTexture;
     }
 
-    public GuiTextures getFilled() {
+    public GuiTextures getFull() {
         return onTexture.getFirst();
     }
 
@@ -26,5 +26,10 @@ public class SwitchIcon {
 
     public GuiTextures getHoveredEmpty() {
         return offTexture.getSecond();
+    }
+
+    public SwitchIcon switchTextures() {
+        this.offTexture = onTexture;
+        return this;
     }
 }

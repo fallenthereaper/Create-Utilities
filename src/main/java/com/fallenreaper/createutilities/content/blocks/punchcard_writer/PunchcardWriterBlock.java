@@ -33,8 +33,6 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn,
                                  BlockHitResult hit) {
-
-
         ItemStack stack = player.getItemInHand(handIn);
         if (!worldIn.isClientSide && worldIn.getBlockEntity(pos) instanceof final PunchcardWriterBlockEntity be) {
             be.addAccess();

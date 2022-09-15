@@ -2,16 +2,16 @@ package com.fallenreaper.createutilities.content.items;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterBlockEntity;
-import com.fallenreaper.createutilities.utils.IHaveHiddenToolTip;
-import com.fallenreaper.createutilities.utils.data.PunchcardWriterManager;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoorBlockEntity;
 import com.fallenreaper.createutilities.data.DoorLock;
 import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
 import com.fallenreaper.createutilities.networking.ModPackets;
 import com.fallenreaper.createutilities.networking.PunchcardWriterEditPacket;
-import com.fallenreaper.createutilities.utils.data.PunchcardTextWriter;
+import com.fallenreaper.createutilities.utils.IHaveHiddenToolTip;
 import com.fallenreaper.createutilities.utils.data.PunchcardWriter;
+import com.fallenreaper.createutilities.utils.data.PunchcardWriterManager;
+import com.jozufozu.flywheel.repack.joml.Math;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.goggles.GogglesItem;
@@ -21,6 +21,7 @@ import com.simibubi.create.foundation.utility.LangBuilder;
 import com.simibubi.create.foundation.utility.NBTHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -33,6 +34,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -71,7 +74,8 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
 
         return InstructionManager.fromTag(pStack.getTagElement("SavedData"));
     }
-//todo add holdShift function
+
+    //todo add holdShift function
     public static void addToolTip(List<Component> toolTips, ItemStack itemStack) {
         if (!(itemStack.getItem() instanceof PunchcardItem))
             return;
@@ -83,20 +87,7 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
                 if (PunchcardWriterManager.hasWriter(itemStack.getTag().getUUID("WriterKey"))) {
                     UUID key = itemStack.getTag().getUUID("WriterKey");
                     PunchcardWriter writer = PunchcardWriterManager.getWriter(key);
-                    toolTips.add(writer.getTextWriter().getYsize() + 2, writer.getProgressBar());
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onDestroyed(@NotNull ItemEntity pItemEntity) {
-        super.onDestroyed(pItemEntity);
-        ItemStack itemStack = pItemEntity.getItem();
-        if(itemStack.hasTag()) {
-            if (itemStack.getTag().contains("WriterKey")) {
-                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getUUID("WriterKey"))) {
-                    PunchcardWriterManager.removeWriter(itemStack.getTag().getUUID("WriterKey"));
+                   // toolTips.add(writer.getTextWriter().getYsize() + 2, writer.getProgressBar());
                 }
             }
         }
@@ -177,7 +168,7 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
         //   BlockState block = player.getLevel().getBlockState(pos);
 
         if (be.inventory.getStackInSlot(0).isEmpty()) {
-            if(itemStack.isEmpty()) {
+            if (itemStack.isEmpty()) {
                 event.setUseBlock(Event.Result.DENY);
             }
             be.inventory.insertItem(0, itemStack, false);
@@ -188,6 +179,35 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
         }
 
 
+    }
+
+    public static void removeAfterDespawn(ItemExpireEvent itemExpireEvent) {
+        ItemStack itemStack = itemExpireEvent.getEntityItem().getItem();
+
+        if (!(itemStack.getItem() instanceof PunchcardItem))
+            return;
+
+        if (itemStack.hasTag()) {
+            if (itemStack.getTag().contains("WriterKey")) {
+                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getUUID("WriterKey"))) {
+                    PunchcardWriterManager.removeWriter(itemStack.getTag().getUUID("WriterKey"));
+                    itemExpireEvent.setResult(Event.Result.ALLOW);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyed(@NotNull ItemEntity pItemEntity) {
+        super.onDestroyed(pItemEntity);
+        ItemStack itemStack = pItemEntity.getItem();
+        if (itemStack.hasTag()) {
+            if (itemStack.getTag().contains("WriterKey")) {
+                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getUUID("WriterKey"))) {
+                    PunchcardWriterManager.removeWriter(itemStack.getTag().getUUID("WriterKey"));
+                }
+            }
+        }
     }
 
     public void registerKey(CompoundTag tag, Player player, BlockPos clickedPos, @Nullable List<InstructionEntry> list) {
@@ -221,7 +241,7 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
             if (pStack.getTag().contains("WriterKey")) {
                 if (PunchcardWriterManager.hasWriter(pStack.getTag().getUUID("WriterKey"))) {
                     return false;
-                            //PunchcardWriterManager.getWriter(pStack.getTag().getUUID("WriterKey")).getTextWriter().getCount() > 0;
+                    //PunchcardWriterManager.getWriter(pStack.getTag().getUUID("WriterKey")).getTextWriter().getCount() > 0;
                 }
             }
         }
@@ -249,21 +269,6 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
         player.getLevel().playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.55f, 1f);
 
     }
-    public static void removeAfterDespawn(ItemExpireEvent itemExpireEvent) {
-            ItemStack itemStack = itemExpireEvent.getEntityItem().getItem();
-
-        if(!(itemStack.getItem() instanceof PunchcardItem))
-            return;
-
-        if(itemStack.hasTag()) {
-            if (itemStack.getTag().contains("WriterKey")) {
-                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getUUID("WriterKey"))) {
-                    PunchcardWriterManager.removeWriter(itemStack.getTag().getUUID("WriterKey"));
-                    itemExpireEvent.setResult(Event.Result.ALLOW);
-                }
-            }
-        }
-    }
 
     @Override
     public int getBarColor(ItemStack pStack) {
@@ -271,10 +276,6 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
         return Color.WHITE.getRGB();
     }
 
-    @Override
-    public int getMaxClicks() {
-        return super.getMaxClicks() / 4;
-    }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
@@ -351,23 +352,17 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
         MutableComponent caret = new TextComponent("> ").withStyle(ChatFormatting.GRAY);
-        MutableComponent arrow = new TextComponent("->").withStyle(ChatFormatting.GOLD);
+        MutableComponent arrow = new TextComponent("-> ").withStyle(ChatFormatting.GOLD);
 
         ChatFormatting format = ChatFormatting.GOLD;
         if (pStack.hasTag() && pStack.getTag().contains("WriterKey") && pStack.getTag().contains("InstructionType") && PunchcardWriterManager.hasWriter(pStack.getTag().getUUID("WriterKey"))) {
 
-            PunchcardTextWriter writer = PunchcardWriterManager.getWriter(pStack.getTag().getUUID("WriterKey")).getTextWriter();
+            PunchcardWriter writer = PunchcardWriterManager.getWriter(pStack.getTag().getUUID("WriterKey"));
             tooltip.add(arrow.append("").append(new TextComponent(pStack.getTag().getString("InstructionType"))).withStyle(format));
 
             //  tooltip.add(arrow.withStyle(format).copy()
             //    .append(new TextComponent(pStack.getTag().getString("Description")).withStyle(format)));
-
-
-            for (int i = 1; i < writer.getYsize() + 1; i++) {
-                int max = i * writer.getXsize();
-                int min = Math.max(max - writer.getXsize(), 0);
-                tooltip.add(new TextComponent("" + writer.getRawText().substring(min, max)).withStyle(ChatFormatting.YELLOW));
-            }
+            writer.toolTipFormat(tooltip, ChatFormatting.YELLOW, true, 0);
             //   tooltip.add(new TextComponent("     " + writer.drawBox().substring(3, 7)).withStyle(ChatFormatting.YELLOW));
             //  tooltip.add(new TextComponent("     " + writer.drawBox().substring(6, 10)).withStyle(ChatFormatting.YELLOW));
             //  tooltip.add(new TextComponent("     " + writer.drawBox().substring(9, 13)).withStyle(ChatFormatting.YELLOW));
@@ -379,5 +374,25 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
     @Override
     public TextComponent getKey() {
         return new TextComponent(this.getDescriptionId());
+    }
+
+    @Override
+    public <T extends LivingEntity> boolean poseArm(ItemStack itemStack, HumanoidArm arm, HumanoidModel<T> model, T entity, boolean rightHand) {
+        if (itemStack.getItem() instanceof PunchcardItem && itemStack.hasTag()) {
+            if (itemStack.getTag().contains("WriterKey")) {
+                if (rightHand) {
+                    //ADD static methods to automatically change arm animations
+
+                    return true;
+                } else {
+
+
+                    return true;
+                }
+
+            }
+
+        }
+        return super.poseArm(itemStack, arm, model, entity, rightHand);
     }
 }

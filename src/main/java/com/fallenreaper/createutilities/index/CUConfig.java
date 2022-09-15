@@ -20,13 +20,12 @@ public class CUConfig {
                 .comment("Chance of occurring a random tick inside the radius")
                 .defineInRange("hydrationChance", 5, 0, 25);
 
-
         PUNCHCARDWRITER_WIDTH = builder
-                .comment("DEV-DEBUG")
+                .comment("DEBUG")
                 .defineInRange("devDebug_punchcardwriter_width", 5, 2, 16);
 
         PUNCHCARDWRITER_HEIGHT = builder
-                .comment("DEV-DEBUG")
+                .comment("DEBUG")
                 .defineInRange("devDebug_punchcardwriter_height", 7, 2, 16);
 
         builder.pop();

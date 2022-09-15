@@ -178,7 +178,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         return be;
     }
 
-    //Credits: Create Aeronautics, I had no idea I could use "+=" on strings
+    //Credits: Create Aeronautics, I had no idea I could use "+=" on strings.
     protected String getTotalTime(int ticks) {
         String base = "";
         int seconds = ticks / 20;
@@ -203,7 +203,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         if (minutes > 0)
             base += minutes + "m ";
 
-        base += seconds + "s ";
+        base += seconds + "s";
         return base;
 
     }

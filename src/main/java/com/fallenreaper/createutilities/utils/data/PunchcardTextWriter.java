@@ -11,9 +11,9 @@ import java.util.List;
 public class PunchcardTextWriter {
 
     private int count;
-    private String empty;
-    private String full;
+    private String empty, full;
     private String[][] pixels;
+    private byte color;
 
     public PunchcardTextWriter(TextIcon icon) {
         this.empty = icon.getEmptyIcon();
@@ -37,6 +37,14 @@ public class PunchcardTextWriter {
         this.count -= Math.max(value, 0);
     }
 
+    public byte getColor() {
+        return color;
+    }
+
+    public void setColor(byte newColor) {
+        this.color = newColor;
+    }
+
     public String getRawText() {
         String base = "";
         for (String[] map : pixels) {
@@ -50,16 +58,17 @@ public class PunchcardTextWriter {
     /**
      * Gets the size on the X axis.
      */
-    public int getXsize() {
-        return pixels[1].length;
+    public byte getXsize() {
+        return (byte) pixels[1].length;
     }
 
     /**
      * Gets the size on the Y axis.
      */
-    public int getYsize() {
-        return pixels.length;
+    public byte getYsize() {
+        return (byte) pixels.length;
     }
+
     public int getCount() {
         return Math.max(0, Math.min(this.count, getXsize() * getYsize()));
     }

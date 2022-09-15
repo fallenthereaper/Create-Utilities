@@ -22,7 +22,7 @@ import java.util.UUID;
 public class PunchcardWriterBlockEntity extends ContainerBlockEntity<PunchcardWriterItemHandler> implements MenuProvider {
 
     public boolean hasPunchcard;
-  public   ContainerLevelAccess levelAccess;
+    public ContainerLevelAccess levelAccess;
 
     public PunchcardWriterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 
@@ -54,7 +54,7 @@ public class PunchcardWriterBlockEntity extends ContainerBlockEntity<PunchcardWr
         return hasPunchcard;
     }
 
-  public void addAccess() {
+    public void addAccess() {
         this.levelAccess = ContainerLevelAccess.create(this.level, this.getBlockPos());
     }
 
