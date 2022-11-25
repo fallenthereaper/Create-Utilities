@@ -1,0 +1,29 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "createutilities:block/mechanical_propeller/block",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up": {
+      "model": "createutilities:block/mechanical_propeller/block",
+      "x": 90
+    },
+    "facing=north": {
+      "model": "createutilities:block/mechanical_propeller/block",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "createutilities:block/mechanical_propeller/block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "createutilities:block/mechanical_propeller/block",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "createutilities:block/mechanical_propeller/block",
+      "y": 90
+    }
+  }
+}

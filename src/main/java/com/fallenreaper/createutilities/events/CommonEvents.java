@@ -52,12 +52,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber
 public class CommonEvents {
-    public static Set<Block> blockList = CreateUtilities.BLOCKLIST;
+    public static List<Block> BLOCK_LIST = CreateUtilities.BLOCKLIST;
 
     @SubscribeEvent
     public static void registerMenuScreens(FMLClientSetupEvent event) {
@@ -70,12 +69,14 @@ public class CommonEvents {
         }
 
     }
+
     public static void keyboardInput(InputEvent.KeyInputEvent keyInputEvent) {
 
 
     }
+
     public static void itemExpire(ItemExpireEvent itemExpireEvent) {
-      PunchcardItem.removeAfterDespawn(itemExpireEvent);
+        PunchcardItem.removeAfterDespawn(itemExpireEvent);
 
     }
 
@@ -92,6 +93,9 @@ public class CommonEvents {
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
         }
+
+        Level level = Minecraft.getInstance().level;
+
 
     }
 
@@ -116,8 +120,6 @@ public class CommonEvents {
         //   return;
 
 
-        Level world = Minecraft.getInstance().level;
-
 
     }
 
@@ -136,7 +138,7 @@ public class CommonEvents {
             return;
         if (!(itemStack.getItem() instanceof PunchcardItem item))
             return;
-        if(!(player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor))
+        if (!(player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor))
             return;
 
         DoorLockManager doorManager = CreateUtilities.DOORLOCK_MANAGER;
@@ -180,7 +182,7 @@ public class CommonEvents {
         UUID id;
         id = tag.contains("Key") ? tag.getUUID("Key") : UUID.randomUUID();
         tag.putUUID("Key", id);
-        if(player.getLevel().getBlockEntity(clickedPos) instanceof LockSlidingDoorBlockEntity te) {
+        if (player.getLevel().getBlockEntity(clickedPos) instanceof LockSlidingDoorBlockEntity te) {
             DoorLock doorLock = new DoorLock(clickedPos, id, player.getUUID());
             CreateUtilities.DOORLOCK_MANAGER.add(doorLock);
             te.createLock(doorLock);
@@ -210,6 +212,8 @@ public class CommonEvents {
         // do something when the server starts
 
     }
+
+
 
     @SubscribeEvent
     public void onLivingEntityDeath(LivingDeathEvent event) {
@@ -241,7 +245,7 @@ public class CommonEvents {
         boolean isPlayer = event.getEntity() instanceof Player;
     }
 
-//todo move this to BellowBlock
+    //todo move this to BellowBlock
     @SubscribeEvent
     public void rightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         ItemStack item = event.getItemStack();
@@ -254,11 +258,12 @@ public class CommonEvents {
 
         BlockState state = event.getWorld().getBlockState(event.getPos());
 
-        for (Block blocks : blockList) {
+        for (Block blocks : BLOCK_LIST) {
             if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks))
                 event.setUseBlock(Event.Result.DENY);
         }
     }
+
     @SubscribeEvent
     public void rightClick(PlayerInteractEvent.RightClickBlock event) {
         PunchcardItem.rightClick(event);

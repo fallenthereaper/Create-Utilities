@@ -5,14 +5,21 @@ import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowDisplaySource;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowInstance;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowRenderer;
+import com.fallenreaper.createutilities.content.blocks.mechanical_propeller.MechanicalPropellerBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.mechanical_propeller.MechanicalPropellerRenderer;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterRenderer;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoorBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInstance;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerRenderer;
+import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceRenderer;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterRenderer;
+import com.fallenreaper.createutilities.utils.data.blocks.LiquidTankBlockEntity;
+import com.fallenreaper.createutilities.utils.data.blocks.LiquidTankRenderer;
+import com.simibubi.create.Create;
 import com.simibubi.create.content.curiosities.deco.SlidingDoorRenderer;
 import com.simibubi.create.repack.registrate.util.entry.BlockEntityEntry;
 
@@ -30,6 +37,12 @@ public class CUBlockEntities {
             .validBlock(CUBlocks.TYPEWRITER)
             .renderer(() -> TypewriterRenderer::new)
             .register();
+    public static final BlockEntityEntry<MechanicalPropellerBlockEntity> MECHANICAL_PROPELLER = Create.registrate()
+            .tileEntity("mechanical_propeller", MechanicalPropellerBlockEntity::new)
+            .validBlocks(CUBlocks.MECHANICAL_PROPELLER)
+            .renderer(() -> MechanicalPropellerRenderer::new)
+            .register();
+
     public static final BlockEntityEntry<BellowBlockEntity> BELLOW = CreateUtilities.registrate()
             .tileEntity("bellow", BellowBlockEntity::new)
             .instance(() -> BellowInstance::new)
@@ -46,6 +59,18 @@ public class CUBlockEntities {
             .tileEntity("punchcard_writer", PunchcardWriterBlockEntity::new)
             .validBlock(CUBlocks.PUNCHCARD_WRITER)
             .renderer(() -> PunchcardWriterRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<LiquidTankBlockEntity> LIQUID_TANK = CreateUtilities.registrate()
+            .tileEntity("liquid_tank", LiquidTankBlockEntity::new)
+            .validBlock(CUBlocks.LIQUID_TANK)
+            .renderer(() -> LiquidTankRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<SteamFurnaceBlockEntity> STEAM_FURNACE = CreateUtilities.registrate()
+            .tileEntity("steam_furnace", SteamFurnaceBlockEntity::new)
+            .validBlocks(CUBlocks.STEAM_FURNACE)
+            .renderer(()-> SteamFurnaceRenderer::new)
             .register();
 
     public static void register() {

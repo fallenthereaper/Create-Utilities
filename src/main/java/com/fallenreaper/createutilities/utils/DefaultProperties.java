@@ -17,4 +17,8 @@ public class DefaultProperties extends SharedProperties {
         return Blocks.AMETHYST_BLOCK;
     }
 
+    public static Block glass() {
+        return Blocks.GLASS;
+    }
+
 }

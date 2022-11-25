@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import com.fallenreaper.createutilities.networking.ModPackets;
-import com.fallenreaper.createutilities.networking.PunchcardWriterEditPacket;
+import com.fallenreaper.createutilities.networking.InventoryEditPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
@@ -38,7 +38,7 @@ public class PunchcardWriterSlot extends SlotItemHandler {
 
                 pPlayer.getInventory().placeItemBackInInventory(pStack);
                 handler.setStackInSlot(getContainerSlot(), ItemStack.EMPTY);
-                ModPackets.channel.sendToServer(new PunchcardWriterEditPacket(handler, ItemStack.EMPTY));
+                ModPackets.channel.sendToServer(new InventoryEditPacket(handler, ItemStack.EMPTY));
 
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 

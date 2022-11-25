@@ -2,7 +2,6 @@ package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
-import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.content.contraptions.processing.EmptyingByBasin;
 import com.simibubi.create.content.contraptions.wrench.WrenchItem;
 import com.simibubi.create.foundation.block.ITE;
@@ -21,7 +20,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
@@ -30,9 +28,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
@@ -42,15 +37,12 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-public class SprinklerBlock extends HorizontalKineticBlock implements ITE<SprinklerBlockEntity> {
-
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final Property<Direction> HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+public class SprinklerBlock extends HorizontalAxisBlock implements ITE<SprinklerBlockEntity> {
+  // public static EnumProperty<HydrationState> HYDRATION_STATE = EnumProperty.create("hydration_state", HydrationState.class);
 
     public SprinklerBlock(Properties properties) {
         super(properties);
-        registerDefaultState(super.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false));
+        registerDefaultState(defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false));
     }
 
     @Override
@@ -92,6 +84,8 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
 
         FluidStack fluidFromItem = emptyItem.getFirst();
 
+
+
         te.fluidTankBehaviour.getPrimaryHandler()
                 .fill(fluidFromItem, IFluidHandler.FluidAction.EXECUTE);
         te.notifyUpdate();
@@ -113,29 +107,15 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
     }
 
     @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.SPRINKLER.get(pState.getValue(HORIZONTAL_FACING));
-    }
-
-    @Override
     public boolean useShapeForLightOcclusion(BlockState pState) {
         return super.useShapeForLightOcclusion(pState);
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.SPRINKLER.get(Direction.NORTH);
+        return pState.getValue(CEILING) ? CUBlockShapes.SPRINKLER_CEILING.get(pState.getValue(HORIZONTAL_FACING)) : CUBlockShapes.SPRINKLER.get(pState.getValue(HORIZONTAL_FACING));
     }
 
-
-    @Override
-    public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
-        if (pState.getValue(BlockStateProperties.WATERLOGGED)) {
-            pLevel.getFluidTicks().willTickThisTick(pCurrentPos, Fluids.WATER);
-
-        }
-        return pState;
-    }
 
     @Override
     public int getAnalogOutputSignal(BlockState pBlockState, Level world, BlockPos pos) {
@@ -172,22 +152,12 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.WATERLOGGED);
-        super.createBlockStateDefinition(builder);
+        super.createBlockStateDefinition(builder.add(BlockStateProperties.WATERLOGGED));
+
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        FluidState fluidstate = context.getLevel()
-                .getFluidState(context.getClickedPos());
-        if (context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER) {
-            return super.getStateForPlacement(context).setValue(BlockStateProperties.WATERLOGGED,
-                    fluidstate.getType() == Fluids.WATER);
-        }
-
-        Direction prefferedSide = getPreferredHorizontalFacing(context);
-        if (prefferedSide != null)
-            return defaultBlockState().setValue(HORIZONTAL_FACING, prefferedSide);
         return super.getStateForPlacement(context);
     }
 
@@ -200,7 +170,7 @@ public class SprinklerBlock extends HorizontalKineticBlock implements ITE<Sprink
 
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        return face.getAxis() == state.getValue(HORIZONTAL_FACING)
+    return face.getAxis() == state.getValue(HORIZONTAL_FACING)
                 .getAxis();
     }
 

@@ -20,7 +20,9 @@ public class DataEvents {
     public static List<String> writerTranslations = new ArrayList<>();
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void gatherData(GatherDataEvent event) {
-
+        var generator = event.getGenerator();
+        var helper = event.getExistingFileHelper();
+        //generator.addProvider(new BlockStateProviderGen(generator, helper));
         //Instructions
         add("Instruction", "textcard_info", "Text");
         add("Instruction", "door_info", "Door Lock");
@@ -58,6 +60,11 @@ public class DataEvents {
         generateLang("sprinkler.content", "range","Range");
         generateLang("sprinkler.content", "units","blocks");
 
+        //item descriptions
+        generateLang("punchcard", "description","Used for storing data");
+        generateLang("wax", "description","Used for typing");
+        generateLang("notes", "description","Used for copying key combinations");
+        generateLang("dev_item", "description","Dev Use Only");
         //Ponder
         generateLang("ponder.sprinkler", "description_intro","Hydrating Farmland areas using a sprinkler");
         generateLang("ponder.sprinkler", "description_1","Sprinkler can be used to hydrate farmland and speed up crops growth");
@@ -82,6 +89,7 @@ public class DataEvents {
             case "Instruction" -> translations.put(name, translation);
         }
     }
+
 
     public static void generateLang(String type, String loc, String translation) {
         CreateUtilities.registrate().addRawLang(CreateUtilities.ID + "." + type + "." + loc, translation);

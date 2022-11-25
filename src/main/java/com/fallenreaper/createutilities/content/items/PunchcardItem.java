@@ -6,8 +6,8 @@ import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingD
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoorBlockEntity;
 import com.fallenreaper.createutilities.data.DoorLock;
 import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.networking.InventoryEditPacket;
 import com.fallenreaper.createutilities.networking.ModPackets;
-import com.fallenreaper.createutilities.networking.PunchcardWriterEditPacket;
 import com.fallenreaper.createutilities.utils.IHaveHiddenToolTip;
 import com.fallenreaper.createutilities.utils.data.PunchcardWriter;
 import com.fallenreaper.createutilities.utils.data.PunchcardWriterManager;
@@ -45,7 +45,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
@@ -57,7 +56,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
+public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip, IEncrypted {
     private static BlockPos lastShownPos = null;
     private static AABB lastShownAABB = null;
 
@@ -84,9 +83,9 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
 
         if (itemStack.hasTag()) {
             if (itemStack.getTag().contains("WriterKey")) {
-                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getUUID("WriterKey"))) {
-                    UUID key = itemStack.getTag().getUUID("WriterKey");
-                    PunchcardWriter writer = PunchcardWriterManager.getWriter(key);
+                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getString("WriterKey"))) {
+                    var key = itemStack.getTag().getString("WriterKey");
+                    var writer = PunchcardWriterManager.getWriter(key);
                    // toolTips.add(writer.getTextWriter().getYsize() + 2, writer.getProgressBar());
                 }
             }
@@ -94,7 +93,7 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
     }
 
     public static AABB getMultiblockBounds(LevelAccessor level, BlockPos pos) {
-        VoxelShape shape = level.getBlockState(pos)
+        var shape = level.getBlockState(pos)
                 .getShape(level, pos);
         if (shape.isEmpty())
             return new AABB(pos);
@@ -105,16 +104,16 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
     @OnlyIn(Dist.CLIENT)
 
     public static void clientTick() {
-        Player player = Minecraft.getInstance().player;
+        var player = Minecraft.getInstance().player;
 
         if (player == null)
             return;
-        ItemStack heldItemMainhand = player.getMainHandItem();
+        var heldItemMainhand = player.getMainHandItem();
         if (!(heldItemMainhand.getItem() instanceof PunchcardItem))
             return;
         if (!heldItemMainhand.hasTag())
             return;
-        CompoundTag stackTag = heldItemMainhand.getOrCreateTag();
+        var stackTag = heldItemMainhand.getOrCreateTag();
         if (!stackTag.contains("Key"))
             return;
 
@@ -172,7 +171,7 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
                 event.setUseBlock(Event.Result.DENY);
             }
             be.inventory.insertItem(0, itemStack, false);
-            ModPackets.channel.sendToServer(new PunchcardWriterEditPacket(be.inventory, itemStack));
+            ModPackets.channel.sendToServer(new InventoryEditPacket(be.inventory, itemStack));
             player.getInventory().removeItem(itemStack);
 
             event.setUseBlock(Event.Result.ALLOW);
@@ -189,8 +188,8 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
 
         if (itemStack.hasTag()) {
             if (itemStack.getTag().contains("WriterKey")) {
-                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getUUID("WriterKey"))) {
-                    PunchcardWriterManager.removeWriter(itemStack.getTag().getUUID("WriterKey"));
+                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getString("WriterKey"))) {
+                    PunchcardWriterManager.removeWriter(itemStack.getTag().getString("WriterKey"));
                     itemExpireEvent.setResult(Event.Result.ALLOW);
                 }
             }
@@ -203,8 +202,9 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
         ItemStack itemStack = pItemEntity.getItem();
         if (itemStack.hasTag()) {
             if (itemStack.getTag().contains("WriterKey")) {
-                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getUUID("WriterKey"))) {
-                    PunchcardWriterManager.removeWriter(itemStack.getTag().getUUID("WriterKey"));
+                if (PunchcardWriterManager.hasWriter(itemStack.getTag().getString("WriterKey"))) {
+                    PunchcardWriterManager.removeWriter(itemStack.getTag().getString("WriterKey"));
+                    //todo fix this
                 }
             }
         }
@@ -215,7 +215,7 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
         id = tag.contains("Key") ? tag.getUUID("Key") : UUID.randomUUID();
         tag.putUUID("Key", id);
         if (player.getLevel().getBlockEntity(clickedPos) instanceof LockSlidingDoorBlockEntity te) {
-            DoorLock doorLock = new DoorLock(clickedPos, id, player.getUUID());
+            var doorLock = new DoorLock(clickedPos, id, player.getUUID());
 
             te.createLock(doorLock);
 
@@ -239,7 +239,7 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
     public boolean isBarVisible(ItemStack pStack) {
         if (pStack.hasTag() && pStack.getItem() instanceof PunchcardItem) {
             if (pStack.getTag().contains("WriterKey")) {
-                if (PunchcardWriterManager.hasWriter(pStack.getTag().getUUID("WriterKey"))) {
+                if (PunchcardWriterManager.hasWriter(pStack.getTag().getString("WriterKey"))) {
                     return false;
                     //PunchcardWriterManager.getWriter(pStack.getTag().getUUID("WriterKey")).getTextWriter().getCount() > 0;
                 }
@@ -252,8 +252,8 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
     public int getBarWidth(ItemStack pStack) {
         if (pStack.hasTag() && pStack.getItem() instanceof PunchcardItem) {
             if (pStack.getTag().contains("WriterKey")) {
-                if (PunchcardWriterManager.hasWriter(pStack.getTag().getUUID("WriterKey"))) {
-                    PunchcardWriter writer = PunchcardWriterManager.getWriter(pStack.getTag().getUUID("WriterKey"));
+                if (PunchcardWriterManager.hasWriter(pStack.getTag().getString("WriterKey"))) {
+                    PunchcardWriter writer = PunchcardWriterManager.getWriter(pStack.getTag().getString("WriterKey"));
                     return Math.round(Math.min((13.0F * writer.getProgress()), 13.0F));
                 }
             }
@@ -289,7 +289,7 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
             LangBuilder lang = Lang.builder(CreateUtilities.ID);
 
             if (itemStack.getTag().contains("WriterKey")) {
-                PunchcardWriterManager.removeWriter(itemStack.getTag().getUUID("WriterKey"));
+                PunchcardWriterManager.removeWriter(itemStack.getTag().getString("WriterKey"));
                 pPlayer.displayClientMessage(lang.translate("punchcard_info.clear").component().withStyle(ChatFormatting.YELLOW), true);
                 itemStack.setTag(null);
             } else if (itemStack.getTag().contains("Key")) {
@@ -350,24 +350,26 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> tooltip, @NotNull TooltipFlag pIsAdvanced) {
         MutableComponent caret = new TextComponent("> ").withStyle(ChatFormatting.GRAY);
         MutableComponent arrow = new TextComponent("-> ").withStyle(ChatFormatting.GOLD);
 
-        ChatFormatting format = ChatFormatting.GOLD;
-        if (pStack.hasTag() && pStack.getTag().contains("WriterKey") && pStack.getTag().contains("InstructionType") && PunchcardWriterManager.hasWriter(pStack.getTag().getUUID("WriterKey"))) {
 
-            PunchcardWriter writer = PunchcardWriterManager.getWriter(pStack.getTag().getUUID("WriterKey"));
-            tooltip.add(arrow.append("").append(new TextComponent(pStack.getTag().getString("InstructionType"))).withStyle(format));
+        ChatFormatting format = ChatFormatting.GOLD;
+        if (pStack.hasTag() && pStack.getTag().contains("WriterKey") && PunchcardWriterManager.hasWriter(pStack.getTag().getString("WriterKey"))) {
+
+            PunchcardWriter writer = PunchcardWriterManager.getWriter(pStack.getTag().getString("WriterKey"));
+         //   tooltip.add(arrow.append("").append(new TextComponent(pStack.getTag().getString("InstructionType"))).withStyle(format));
 
             //  tooltip.add(arrow.withStyle(format).copy()
             //    .append(new TextComponent(pStack.getTag().getString("Description")).withStyle(format)));
-            writer.toolTipFormat(tooltip, ChatFormatting.YELLOW, true, 0);
+            writer.toolTipFormat(tooltip, false, 0,  ChatFormatting.YELLOW);
             //   tooltip.add(new TextComponent("     " + writer.drawBox().substring(3, 7)).withStyle(ChatFormatting.YELLOW));
             //  tooltip.add(new TextComponent("     " + writer.drawBox().substring(6, 10)).withStyle(ChatFormatting.YELLOW));
             //  tooltip.add(new TextComponent("     " + writer.drawBox().substring(9, 13)).withStyle(ChatFormatting.YELLOW));
             // tooltip.add(new TextComponent("     " + writer.drawBox().substring(12, 16)).withStyle(ChatFormatting.YELLOW));
         }
+        super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
     }
 
 
@@ -394,5 +396,10 @@ public class PunchcardItem extends BaseItem implements IHaveHiddenToolTip {
 
         }
         return super.poseArm(itemStack, arm, model, entity, rightHand);
+    }
+
+    @Override
+    public String getCode() {
+        return null;
     }
 }

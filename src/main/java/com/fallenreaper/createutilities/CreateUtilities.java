@@ -4,6 +4,7 @@ import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
 import com.fallenreaper.createutilities.events.CommonEvents;
 import com.fallenreaper.createutilities.index.*;
 import com.fallenreaper.createutilities.networking.ModPackets;
+import com.fallenreaper.createutilities.utils.data.Interactable;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
@@ -35,11 +36,11 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Supplier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-@Mod("createutilities")
+@Mod(CreateUtilities.ID)
 public class CreateUtilities {
 
 
@@ -47,21 +48,26 @@ public class CreateUtilities {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String ID = "createutilities";
-    public static final String MOD_VERSION = "1.0";
+    public static final String MOD_VERSION = "0.1";
     public static final LangBuilder ModLangBuilder = Lang.builder(ID);
     public static final CreativeModeTab TAB = new CreativeModeTab(ID) {
         @Override
         public @NotNull ItemStack makeIcon() {
+
             return CUBlocks.TYPEWRITER.asStack().copy();
         }
 
+
         @Override
-        public Component getDisplayName() {
+        public @NotNull Component getDisplayName() {
             return new TextComponent("Create Utilities");
         }
     };
+    public static final Interactable.IDraggable test = (mouseX, mouseY, coords, rightClick) -> System.out.println(mouseX);
+
+
     private static final NonNullSupplier<CreateRegistrate> registrate = CreateRegistrate.lazy(ID);
-    public static Set<Block> BLOCKLIST = new HashSet<>();
+    public static List<Block> BLOCKLIST = new ArrayList<>();
     public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
 
 
@@ -103,10 +109,11 @@ public class CreateUtilities {
         CUBlockPartials.register();
         CUBlockEntities.register();
         CUContainerTypes.register();
+        //
         addToBlockList(() -> Blocks.FURNACE);
-        //  addToBlockList(() -> Blocks.CRAFTING_TABLE);
+        addToBlockList(() -> Blocks.CRAFTING_TABLE);
     }
-
+  //Call this if your furnace doesn't extend AbstractFurnace
     public static void addToBlockList(Supplier<Block> sup) {
         if (!(sup.get() == null))
             BLOCKLIST.add(sup.get());

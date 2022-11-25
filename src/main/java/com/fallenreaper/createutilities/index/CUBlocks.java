@@ -2,14 +2,18 @@ package com.fallenreaper.createutilities.index;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlock;
+import com.fallenreaper.createutilities.content.blocks.mechanical_propeller.MechanicalPropellerBlock;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterBlock;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
+import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlock;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlock;
 import com.fallenreaper.createutilities.utils.DefaultProperties;
+import com.fallenreaper.createutilities.utils.data.blocks.LiquidTankBlock;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.AllSections;
+import com.simibubi.create.foundation.block.BlockStressDefaults;
 import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.BuilderTransformers;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -22,7 +26,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.phys.shapes.Shapes;
 
+import static com.simibubi.create.AllTags.axeOrPickaxe;
 import static com.simibubi.create.AllTags.pickaxeOnly;
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
 
@@ -32,8 +38,8 @@ public class CUBlocks {
     public static final BlockEntry<SprinklerBlock> SPRINKLER = REGISTRATE.block("sprinkler", SprinklerBlock::new)
             .initialProperties(SharedProperties::copperMetal)
             .transform(pickaxeOnly())
-            .blockstate(BlockStateGen.horizontalBlockProvider(true))
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
             .item()
             .transform(customItemModel())
             .addLayer(() -> RenderType::cutoutMipped)
@@ -53,6 +59,16 @@ public class CUBlocks {
             .transform(customItemModel())
             .addLayer(() -> RenderType::cutoutMipped)
             .defaultLoot()
+            .register();
+    public static final BlockEntry<MechanicalPropellerBlock> MECHANICAL_PROPELLER = REGISTRATE.block("mechanical_propeller", MechanicalPropellerBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.color(MaterialColor.PODZOL))
+            .blockstate(BlockStateGen.directionalBlockProvider(true))
+            .addLayer(() -> RenderType::cutoutMipped)
+            .transform(axeOrPickaxe())
+            .transform(BlockStressDefaults.setImpact(4.0D))
+            .item()
+            .transform(customItemModel())
             .register();
     public static final BlockEntry<BellowBlock> BELLOWS = REGISTRATE.block("bellow", BellowBlock::new)
             .initialProperties(DefaultProperties::brassMetal)
@@ -74,6 +90,24 @@ public class CUBlocks {
             .defaultLoot()
             .register();
 
+    public static final BlockEntry<? extends Block> LIQUID_TANK = REGISTRATE.block("liquid_tank", (block) -> new LiquidTankBlock(block).setBaseShape(Shapes.block()))
+            .initialProperties(DefaultProperties::glass)
+            .properties(p -> p.color(MaterialColor.METAL))
+            .addLayer(() -> RenderType::cutout)
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<SteamFurnaceBlock> STEAM_FURNACE = REGISTRATE.block("steam_furnace", SteamFurnaceBlock::new)
+            .initialProperties(SharedProperties::copperMetal)
+            .transform(pickaxeOnly())
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .item()
+            .transform(customItemModel())
+            .addLayer(() -> RenderType::cutoutMipped)
+            .defaultLoot()
+            .register();
     public static void register() {
         Create.registrate().addToSection(BELLOWS, AllSections.KINETICS);
         Create.registrate().addToSection(SPRINKLER, AllSections.KINETICS);

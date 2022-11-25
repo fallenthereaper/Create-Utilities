@@ -21,7 +21,7 @@ public class TextIcon<F extends String, E extends String> {
         DataEvents.writerTranslations.add(fillIcon);
     }
 
-    public static TextIcon<String, String> create(String icon1, String icon2) {
+    public static TextIcon<String, String> of(String icon1, String icon2) {
         return new TextIcon(icon1, icon2);
     }
 

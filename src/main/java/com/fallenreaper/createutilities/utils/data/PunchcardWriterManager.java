@@ -1,46 +1,54 @@
 package com.fallenreaper.createutilities.utils.data;
 
+import com.jozufozu.flywheel.core.source.parse.Variable;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @SuppressWarnings("ALL")
 public class PunchcardWriterManager {
-    //add list
-   private static Map<UUID, PunchcardWriter> savedWriters = new HashMap<>();
 
-    public static void replaceWriter(PunchcardWriter type, UUID key) {
-        savedWriters.replace(key, type);
+    private static Map<String, PunchcardWriter> SAVED_WRITERS = new HashMap<>();
+    private static List<PunchcardWriter> TRACKED_WRITERS = new ArrayList<>();
+
+    public static void replaceWriter(PunchcardWriter type, String key) {
+        SAVED_WRITERS.replace(key, type);
     }
 
-    public static void addWriter(PunchcardWriter type, UUID key) {
-        savedWriters.put(key, type);
+    public static void addWriter(PunchcardWriter type, String key) {
+        SAVED_WRITERS.put(key, type);
+        TRACKED_WRITERS.add(type);
+        Variable  a;
     }
 
     public static void clearWriters() {
-        savedWriters.clear();
+        SAVED_WRITERS.clear();
+        TRACKED_WRITERS.removeAll(TRACKED_WRITERS);
     }
 
-    public static void removeWriter(UUID key) {
+    public static void removeWriter(String key) {
         if(isEmpty())
             return;
 
-        savedWriters.remove(key);
+        SAVED_WRITERS.remove(key);
+
     }
 
     public static boolean isEmpty() {
-        return savedWriters.isEmpty();
+        return SAVED_WRITERS.isEmpty();
     }
 
-    public static boolean hasWriter(UUID key) {
-        return savedWriters.containsKey(key);
+    public static boolean hasWriter(String key) {
+        return SAVED_WRITERS.containsKey(key);
     }
 
-    public static PunchcardWriter getWriter(UUID key) {
-        return savedWriters.get(key);
+    public static PunchcardWriter getWriter(String key) {
+        return SAVED_WRITERS.get(key);
     }
 
     protected void init() {
-        savedWriters = new HashMap<>();
+        SAVED_WRITERS = new HashMap<>();
     }
 }

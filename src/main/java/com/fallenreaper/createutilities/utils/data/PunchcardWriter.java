@@ -14,11 +14,12 @@ import com.jozufozu.flywheel.repack.joml.Vector2i;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Type;
@@ -27,28 +28,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import static com.fallenreaper.createutilities.utils.data.Interactable.IDraggable;
+import static com.fallenreaper.createutilities.utils.data.Interactable.IClickable;
 import static com.google.common.base.Strings.repeat;
 
 @SuppressWarnings("all")
 public class PunchcardWriter implements IClickable, IDraggable {
-    private final AbstractSmartContainerScreen<?> screen;
+    private AbstractSmartContainerScreen<?> screen;
+    private final SwitchIcon switchIcon;
     public Map<Point, PunchcardButton> allButtons;
     protected Map<Integer, Integer> yCoords, xCoords;
     private String defaultEmpty, defaultFull;
     private PunchcardTextWriter textWriter;
     private PunchcardButton[][] coordinatesMap;
     private PunchcardButton button;
-    private SwitchIcon switchIcon;
     private Vector2i position;
     private byte width, height;
 
-    private PunchcardWriter(AbstractSmartContainerScreen<?> screen, int x, int y, byte width, byte height, SwitchIcon switchIcon) {
-        this.defaultEmpty = "▒";
-        this.defaultFull = "█";
+    private PunchcardWriter(AbstractSmartContainerScreen<?> screen, int x, int y, byte width, byte height, SwitchIcon switchIcon, TextIcon icon) {
+        this.defaultEmpty = icon.getEmptyIcon();
+        this.defaultFull = icon.getFullIcon();
         this.height = height;
         this.width = width;
-        this.textWriter = new PunchcardTextWriter(TextIcon.create(defaultFull, defaultEmpty)).writeText(width, height);
+        this.textWriter = new PunchcardTextWriter(TextIcon.of(defaultFull, defaultEmpty), width, height).writeText();
         this.screen = screen;
         this.position = new Vector2i(x, y);
         this.switchIcon = switchIcon;
@@ -57,22 +63,22 @@ public class PunchcardWriter implements IClickable, IDraggable {
     /**
      * Make sure to call {@link #write()} right after.
      */
-    public static PunchcardWriter create(AbstractSmartContainerScreen<?> screen, int x, int y, int width, int height, SwitchIcon icon) {
-        return new PunchcardWriter(screen, x, y, (byte) width, (byte) height, icon);
+    public static PunchcardWriter create(AbstractSmartContainerScreen<?> screen, int x, int y, int width, int height, SwitchIcon icon, TextIcon textIcon) {
+        return new PunchcardWriter(screen, x, y, (byte) width, (byte) height, icon, textIcon);
     }
 
     /**
      * Make sure to call {@link #write()} right after.
      */
     public static PunchcardWriter create(AbstractSmartContainerScreen<?> screen, int x, int y, int width, int height) {
-        return new PunchcardWriter(screen, x, y, (byte) width, (byte) height, SwitchIcons.PUNCHCARD_SWITCHBUTTON);
+        return new PunchcardWriter(screen, x, y, (byte) width, (byte) height, SwitchIcons.PUNCHCARD_SWITCHBUTTON, TextIcon.of("█", "▒" ));
     }
 
     /**
      * Returns a copy of the specified {@link PunchcardWriter}
      */
     public static PunchcardWriter copy(PunchcardWriter copied$writer) {
-        PunchcardWriter copy = new PunchcardWriter(copied$writer.screen, copied$writer.position.x(), copied$writer.position.y(), copied$writer.width, copied$writer.height, copied$writer.switchIcon);
+        PunchcardWriter copy = new PunchcardWriter(copied$writer.screen, copied$writer.position.x(), copied$writer.position.y(), copied$writer.width, copied$writer.height, copied$writer.switchIcon, TextIcon.of(copied$writer.defaultEmpty, copied$writer.defaultFull));
         copy.textWriter = copied$writer.getTextWriter();
         copy.width = copied$writer.width;
         copy.height = copied$writer.height;
@@ -83,6 +89,20 @@ public class PunchcardWriter implements IClickable, IDraggable {
         copy.yCoords = copied$writer.yCoords;
         copy.position = copied$writer.position;
         return copy;
+    }
+
+    public static PunchcardWriter read(CompoundTag compoundTag) {
+        return null;
+    }
+
+    public static void write(CompoundTag compoundTag) {
+
+    }
+    public void setScreen(AbstractSmartContainerScreen<?> screen) {
+        this.screen = screen;
+    }
+    public AbstractSmartContainerScreen<?> getScreen() {
+        return screen;
     }
 
     public static void writeFile(String fileName, PunchcardWriter writer) {
@@ -132,6 +152,45 @@ public class PunchcardWriter implements IClickable, IDraggable {
         }
     }
 
+    public byte getWidth() {
+        return this.textWriter.getXsize();
+    }
+
+    public void setWidth(int width) {
+        this.width = (byte) width;
+        this.textWriter.setWidth(width);
+    }
+
+    /**
+     * Returns the current height.
+     */
+    public byte getHeight() {
+        return this.textWriter.getYsize();
+    }
+
+    /**
+     * Sets the height to a new one.
+     */
+    public void setHeight(int height) {
+        this.height = (byte) height;
+        this.textWriter.setHeight(height);
+    }
+
+    /**
+     * Updates every button state.
+     */
+    public void updateButtonState(PunchcardWriter target$writer) {
+        for (int height = 1; height < this.getHeight() + 1; height++) {
+            for (int width = 1; width < this.getWidth() + 1; width++) {
+                var saved = target$writer.getButton(new Point(width - 1, height - 1), null);
+                this.getButton(new Point(width - 1, height - 1),
+                        button ->
+                                button.setState(saved.getState())
+                );
+            }
+        }
+    }
+
     /**
      * Returns the fill progress.
      */
@@ -140,21 +199,23 @@ public class PunchcardWriter implements IClickable, IDraggable {
         return Math.min((float) this.textWriter.getCount() / total, 1);
     }
 
-    public Component getProgressBar() {
+    protected Component getProgressBar() {
         int maxSize = this.textWriter.getXsize() * this.textWriter.getYsize();
-        String base = "";
+        var base = "";
         float modifier = getProgress() * maxSize;
+        float fullValue = (modifier / maxSize) * 16;
+        float remaining = ((maxSize * (1 - getProgress())) / maxSize) * 16;
 
-        base += ChatFormatting.GRAY + repeat("|", Math.round(modifier) / 2);
+        base += ChatFormatting.GRAY + repeat("|", Math.round(fullValue));
+
         if (getProgress() < 1)
-            base += ChatFormatting.DARK_GRAY + repeat("|", Math.round(maxSize - modifier) / 2);
+            base += ChatFormatting.DARK_GRAY + repeat("|", Math.round(remaining));
 
         return new TextComponent(base);
     }
 
-    public float getPercentage() {
-        float val = (float) MathUtil.lerp(0, 100, getProgress());
-        return val;
+    protected float getPercentage() {
+        return (float) MathUtil.lerp(0, 100, getProgress());
     }
 
     /**
@@ -175,16 +236,55 @@ public class PunchcardWriter implements IClickable, IDraggable {
      * Adds a box and a button at the specified position.
      */
     private void addButton(Point position, PunchcardButton button) {
-        if (coordinatesMap[1].length <= 0 || coordinatesMap[0].length <= 0) return;
+        if (coordinatesMap[1].length == 0 || coordinatesMap[0].length == 0) return;
         this.coordinatesMap[position.y][position.x] = button;
         this.allButtons.put(position, button);
+    }
+
+    private void removeButton(Point position, PunchcardButton button) {
+        if (coordinatesMap[1].length == 0 || coordinatesMap[0].length == 0) return;
+        List<PunchcardButton[]> arrayList = Stream.of(coordinatesMap).toList();
+
+
+        allButtons.remove(position);
+        this.allButtons.remove(position, button);
+    }
+    public static int[] removeTheElement(int[] arr, int index)
+    {
+
+        // If the array is empty
+        // or the index is not in array range
+        // return the original array
+        if (arr == null
+                || index < 0
+                || index >= arr.length) {
+
+            return arr;
+        }
+
+        // Create ArrayList from the array
+        List<Integer> arrayList = IntStream.of(arr)
+                .boxed()
+                .collect(Collectors.toList());
+
+        // Remove the specified element
+        arrayList.remove(index);
+
+        // return the resultant array
+        return arrayList.stream()
+                .mapToInt(Integer::intValue)
+                .toArray();
     }
 
     /**
      * Sets a box and a button at the specified position.
      */
-    public void setBox(Point position) {
-        this.textWriter.setPixel(position);
+    public void setBox(Point position, boolean rightClick) {
+        if(rightClick)
+            this.textWriter.fillPixel(position);
+        else
+            this.textWriter.setPixel(position);
+
     }
 
     /**
@@ -197,7 +297,7 @@ public class PunchcardWriter implements IClickable, IDraggable {
     /**
      * Changes the text icon.
      */
-    public PunchcardWriter setIcon(TextIcon icon) {
+    public PunchcardWriter setIcon(TextIcon<String, String> icon) {
         this.defaultFull = icon.getFullIcon();
         this.defaultEmpty = icon.getEmptyIcon();
         this.textWriter.setIcon(icon);
@@ -244,11 +344,11 @@ public class PunchcardWriter implements IClickable, IDraggable {
     public PunchcardWriter fill() {
         int value = getTextWriter().getXsize() * getTextWriter().getYsize();
         this.textWriter.subtract(textWriter.getCount());
+        this.textWriter.fill();
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
                 PunchcardButton button = punchcardButtons[col];
                 button.state = SwitchButton.Mode.ON;
-                this.textWriter.fill();
             }
         }
         return this;
@@ -279,7 +379,6 @@ public class PunchcardWriter implements IClickable, IDraggable {
     public void renderProgressBar(float x, float y, PoseStack poseStack) {
         if (screen == null)
             return;
-
         final List<Component> progressBar = new ArrayList<>(1);
         progressBar.add(getProgressBar());
         this.screen.renderComponentTooltip(poseStack, progressBar, Math.round(x), Math.round(y));
@@ -291,10 +390,11 @@ public class PunchcardWriter implements IClickable, IDraggable {
     public void renderFillPercentage(Font font, float x, float y, int rgb) {
         PoseStack poseStack = new PoseStack();
         poseStack.pushPose();
-        poseStack.translate(x, y, 0);
-
+        poseStack.translate(0, 0, 0);
+        int per = (int) Math.floor(getPercentage());
         if (getTextWriter() != null)
             font.draw(poseStack, this.getTextWriter().getCount() + "/" + getTextWriter().getXsize() * getTextWriter().getYsize(), x, y, rgb);
+        font.draw(poseStack, per + "%", x + 20, y + 20, rgb);
     }
 
     /**
@@ -333,8 +433,6 @@ public class PunchcardWriter implements IClickable, IDraggable {
             for (int j = 1; j < textWriter.getXsize() + 1; j++) {
                 int h = CUConfig.PUNCHCARDWRITER_HEIGHT.get();
                 int w = CUConfig.PUNCHCARDWRITER_WIDTH.get();
-                double valueH = h / 7F;
-                double valueW = w / 5F;
                 this.button = new PunchcardButton((int) (16 * j + position.x() + (5 * 16) + 6), (int) (16 * i + position.y() + 6), 16, 16, switchIcon);
                 this.addButton(new Point(j - 1, i - 1), button);
                 this.screen.addWidget(button);
@@ -344,7 +442,18 @@ public class PunchcardWriter implements IClickable, IDraggable {
         return this;
     }
 
-    public void tick() {
+    public PunchcardWriter clear() {
+        for (int height = 1; height < this.getHeight() + 1; height++) {
+            for (int width = 1; width < this.getWidth() + 1; width++) {
+                PunchcardButton buttons = this.getButton(new Point(width - 1, height - 1), null);
+                screen.removeWidget(buttons);
+                removeButton(new Point(width - 1, height - 1), buttons);
+            }
+        }
+        return this;
+    }
+
+    public void sync() {
 
     }
 
@@ -358,7 +467,7 @@ public class PunchcardWriter implements IClickable, IDraggable {
     public PunchcardWriter addCallBacks(Runnable action) {
         for (PunchcardButton[] punchcardButtons : coordinatesMap) {
             for (int col = 0; col < coordinatesMap[1].length; col++) {
-                PunchcardButton button = punchcardButtons[col];
+                var button = punchcardButtons[col];
                 button.withCallback(() -> {
                     action.run();
                 });
@@ -374,22 +483,18 @@ public class PunchcardWriter implements IClickable, IDraggable {
 
     @Override
     public void onClick(int mouseX, int mouseY, Point coords, boolean rightClick) {
-        if (rightClick)
-            this.fillBox(new Point(this.xCoords.get(coords.x), this.yCoords.get(coords.y)));
-        else
-            this.setBox(new Point(this.xCoords.get(coords.x), this.yCoords.get(coords.y)));
-
+            this.setBox(new Point(this.xCoords.get(coords.x), this.yCoords.get(coords.y)), rightClick);
     }
 
     /**
-     * Returns a {@link PunchcardButton} at the specified position, Additionally it can also perform an action if the {@link Consumer} is not null.
+     * Returns a {@link PunchcardButton} at the specified position, Additionally it can also perform an action if specified a {@link Consumer}.
      */
-    public PunchcardButton getButton(Point position, @Nullable Consumer<PunchcardButton> action) {
+    public final PunchcardButton getButton(Point position, @Nullable Consumer<PunchcardButton> actions) {
         if (coordinatesMap != null && allButtons != null) {
             PunchcardButton button = coordinatesMap[Math.min(position.y, this.height)][Math.min(position.x, this.width)];
             if (button != null) {
-                if (action != null) {
-                    action.accept(button);
+                if (actions != null) {
+                    actions.accept(button);
                 }
                 return button;
             }
@@ -397,14 +502,14 @@ public class PunchcardWriter implements IClickable, IDraggable {
         return null;
     }
 
-    public void toolTipFormat(List<Component> toolTip, ChatFormatting format, boolean showProgress, int spacing) {
-        String space = "";
+    public void toolTipFormat(List<Component> toolTip, boolean showProgress, int spacing, ChatFormatting... format) {
+        var space = "";
         for (int i = 0; i < spacing; i++)
             space += " ";
 
         for (int i = 1; i < this.textWriter.getYsize() + 1; i++) {
-            int max = i * this.textWriter.getXsize();
-            int min = Math.max(max - this.textWriter.getXsize(), 0);
+            var max = i * this.textWriter.getXsize();
+            var min = Math.max(max - this.textWriter.getXsize(), 0);
             toolTip.add(new TextComponent(space + this.textWriter.getRawText().substring(min, max)).withStyle(format));
         }
         if (showProgress)
@@ -413,8 +518,12 @@ public class PunchcardWriter implements IClickable, IDraggable {
 
     @Override
     public String toString() {
-        return "PunchcardWriter[ " +
-                "textData = " + this.getTextWriter();
-
+        return "PunchcardWriter[" +
+                "textData = " + this.getTextWriter().getRawText() +
+                " x = " + position.x() +
+                " y = " + position.y() +
+                " fillPercentage = " + (int) getPercentage() +
+                " boxAmount = " + getWidth() * getHeight() +
+                "]";
     }
 }
