@@ -16,8 +16,11 @@ public abstract class AbstractSmartContainerScreen<T extends ContainerBase<? ext
         super(container, inv, title);
     }
 
-    public void addWidget(AbstractWidget widget) {
-        addRenderableWidget(widget);
+    public void addWidget(AbstractWidget ...widget) {
+        addRenderableWidgets(widget);
+    }
+    public void removeWidget(AbstractWidget ...widget) {
+        removeWidgets(widget);
     }
 
     public ItemStackHandler getInventory() {
@@ -31,11 +34,12 @@ public abstract class AbstractSmartContainerScreen<T extends ContainerBase<? ext
     @Override
     public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
         super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-        for (Widget widget : renderables) {
-            if(widget instanceof SwitchButton switchButton)
-            if (switchButton.isMouseOver(pMouseX, pMouseY)) {
-                switchButton.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-                return true;
+       for (Widget widget : renderables) {
+         if(widget instanceof SwitchButton switchButton) {
+              if (switchButton.isMouseOver(pMouseX, pMouseY)) {
+                  switchButton.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+                    return true;
+                }
             }
         }
         return true;

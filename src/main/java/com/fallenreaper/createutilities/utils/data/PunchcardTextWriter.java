@@ -14,10 +14,14 @@ public class PunchcardTextWriter {
     private String empty, full;
     private String[][] pixels;
     private byte color;
+    private int width;
+    private int height;
 
-    public PunchcardTextWriter(TextIcon icon) {
+    public PunchcardTextWriter(TextIcon icon, int width, int height) {
         this.empty = icon.getEmptyIcon();
         this.full = icon.getFullIcon();
+        this.width = width;
+        this.height = height;
     }
 
     /**
@@ -46,7 +50,7 @@ public class PunchcardTextWriter {
     }
 
     public String getRawText() {
-        String base = "";
+        var base = "";
         for (String[] map : pixels) {
             for (int col = 0; col < this.pixels[1].length; col++) {
                 base += map[col];
@@ -66,7 +70,7 @@ public class PunchcardTextWriter {
      * Gets the size on the Y axis.
      */
     public byte getYsize() {
-        return (byte) pixels.length;
+        return (byte) this.pixels.length;
     }
 
     public int getCount() {
@@ -104,10 +108,10 @@ public class PunchcardTextWriter {
      * @param x size
      * @param y size
      */
-    public PunchcardTextWriter writeText(int width, int height) {
+    public PunchcardTextWriter writeText() {
         int safeX = Math.min(16, width);
         int safeY = Math.min(16, height);
-        pixels = new String[safeY][safeX];
+        this.pixels = new String[safeY][safeX];
 
         for (int xx = 0; xx < safeY; xx++)
             for (int yy = 0; yy < safeX; yy++)
@@ -116,6 +120,16 @@ public class PunchcardTextWriter {
         return this;
     }
 
+    public PunchcardTextWriter setWidth(int width) {
+        this.width = width;
+        writeText();
+        return this;
+    }
+    public PunchcardTextWriter setHeight(int height) {
+        this.height = height;
+        writeText();
+        return this;
+    }
 
     /**
      * Instantly sets all boxes inside the square.

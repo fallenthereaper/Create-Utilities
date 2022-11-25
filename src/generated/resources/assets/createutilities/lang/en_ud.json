@@ -1,6 +1,7 @@
 {
   "block.createutilities.bellow": "\u028Do\u05DF\u05DF\u01DD\u15FA",
   "block.createutilities.brass_door": "\u0279oo\u15E1 ss\u0250\u0279\u15FA",
+  "block.createutilities.mechanical_propeller": "\u0279\u01DD\u05DF\u05DF\u01DDdo\u0279\u0500 \u05DF\u0250\u0254\u0131u\u0250\u0265\u0254\u01DDW",
   "block.createutilities.punchcard_writer": "\u0279\u01DD\u0287\u0131\u0279M p\u0279\u0250\u0254\u0265\u0254un\u0500",
   "block.createutilities.sprinkler": "\u0279\u01DD\u05DF\u029Eu\u0131\u0279dS",
   "block.createutilities.typewriter": "\u0279\u01DD\u0287\u0131\u0279\u028D\u01DDd\u028E\u27D8",
@@ -30,16 +31,23 @@
   "createutilities.instruction.redstone_signal": "\u05DF\u0250ub\u0131S \u01DDuo\u0287sp\u01DD\u1D1A",
   "createutilities.instruction.textcard_info": "\u0287x\u01DD\u27D8",
   "createutilities.instruction.train_ticket": "\u0287\u01DD\u029E\u0254\u0131\u27D8 u\u0131\u0250\u0279\u27D8",
+  "createutilities.notes.description": "\u02D9suo\u0131\u0287\u0250u\u0131q\u026Fo\u0254 \u028E\u01DD\u029E bu\u0131\u028Edo\u0254 \u0279o\u025F p\u01DDs\u2229",
   "createutilities.ponder.sprinkler.description_1": "\u0265\u0287\u028Do\u0279b sdo\u0279\u0254 dn p\u01DD\u01DDds pu\u0250 pu\u0250\u05DF\u026F\u0279\u0250\u025F \u01DD\u0287\u0250\u0279p\u028E\u0265 o\u0287 p\u01DDsn \u01DDq u\u0250\u0254 \u0279\u01DD\u05DF\u029Eu\u0131\u0279dS",
   "createutilities.ponder.sprinkler.description_intro": "\u0279\u01DD\u05DF\u029Eu\u0131\u0279ds \u0250 bu\u0131sn s\u0250\u01DD\u0279\u0250 pu\u0250\u05DF\u026F\u0279\u0250\u2132 bu\u0131\u0287\u0250\u0279p\u028EH",
   "createutilities.ponder.sprinkler.header": "\u0196\u203Euo\u0131\u0287d\u0131\u0279\u0254s\u01DDp\u02D9\u0279\u01DDpuod\u02D9\u0279\u01DD\u05DF\u029Eu\u0131\u0279ds\u02D9s\u01DD\u0131\u0287\u0131\u05DF\u0131\u0287n\u01DD\u0287\u0250\u01DD\u0279\u0254",
+  "createutilities.punchcard.description": "\u02D9\u0250\u0287\u0250p bu\u0131\u0279o\u0287s \u0279o\u025F p\u01DDs\u2229",
   "createutilities.punchcard_info.clear": "\u0250\u0287\u0250\u15E1 p\u0279\u0250\u0254\u0265\u0254un\u0500 p\u01DD\u0279\u0250\u01DD\u05DF\u0186",
   "createutilities.punchcard_writer.text_icon.empty": "\u2592",
   "createutilities.punchcard_writer.text_icon.full": "\u2588",
   "createutilities.sprinkler.content.range": "\u01DDbu\u0250\u1D1A",
   "createutilities.sprinkler.content.units": "s\u029E\u0254o\u05DFq",
+  "createutilities.wax.description": "\u02D9bu\u0131d\u028E\u0287 \u0279o\u025F p\u01DDs\u2229",
   "item.createutilities.brass_jetpack": "\u029E\u0254\u0250d\u0287\u01DD\u017F ss\u0250\u0279\u15FA",
   "item.createutilities.note_item": "s\u01DD\u0287oN",
   "item.createutilities.punchcard": "p\u0279\u0250\u0254\u0265\u0254un\u0500",
-  "item.createutilities.red_wax": "x\u0250M"
+  "item.createutilities.red_wax": "x\u0250M",
+  "item.createutilities.watering_can": "u\u0250\u0186 bu\u0131\u0279\u01DD\u0287\u0250M",
+  "block.createutilities.liquid_tank": "Liquid Tank",
+  "item.createutilities.dev_item": "Dev Tool",
+  "createutilities.dev_item.description": "Dev Use Only"
 }

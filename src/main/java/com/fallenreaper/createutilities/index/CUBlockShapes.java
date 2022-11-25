@@ -16,6 +16,14 @@ public class CUBlockShapes {
             .add(1, 3, 1, 15, 13, 15)
             .add(4, 13, 4, 12, 15, 12)
             .forDirectional(Direction.NORTH),
+            MECHANICAL_PROPELLER = shape(0, 0, 2, 16, 3, 15)
+                    .add(1, 3, 2, 13, 12, 12)
+                    .add(0, 13, 2, 16, 16, 15)
+                    .forDirectional(),
+            SPRINKLER_CEILING = shape(4, 13, 4, 12, 15, 12)
+                    .add(1, 3, 1, 15, 13, 15)
+                    .add(2, 0, 2, 14, 3, 14)
+                    .forDirectional(Direction.NORTH),
             TYPEWRITER = shape(0, 0, 0, 16, 3, 16)
                     .add(0, 3, 7, 16, 9, 16)
                     .forDirectional(Direction.NORTH),
@@ -24,6 +32,10 @@ public class CUBlockShapes {
                     .forDirectional(Direction.NORTH),
             PUNCHCARD_WRITER = shape(0, 0, 0, 16, 4, 16)
                     .add(1, 4, 1, 15, 12, 15)
+                    .forDirectional(Direction.NORTH),
+           STEAM_FURNACE = shape(0, 0, 0, 16, 6, 16)
+                    .add(1, 6, 1, 15, 11, 15)
+                   .add(0, 11, 0, 16, 16, 16)
                     .forDirectional(Direction.NORTH);
 
 

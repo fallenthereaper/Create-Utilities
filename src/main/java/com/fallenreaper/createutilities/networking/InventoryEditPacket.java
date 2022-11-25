@@ -11,18 +11,18 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PunchcardWriterEditPacket extends SimplePacketBase {
+public class InventoryEditPacket extends SimplePacketBase {
 
     ItemStackHandler inventory;
     ItemStack itemStack;
 
-    public PunchcardWriterEditPacket(ItemStackHandler inv, ItemStack itemStack) {
+    public InventoryEditPacket(ItemStackHandler inv, ItemStack itemStack) {
         this.itemStack = itemStack;
         this.inventory = inv;
 
     }
 
-    public PunchcardWriterEditPacket(FriendlyByteBuf buffer) {
+    public InventoryEditPacket(FriendlyByteBuf buffer) {
         this.itemStack = buffer.readItem();
         readAdditional(buffer);
 

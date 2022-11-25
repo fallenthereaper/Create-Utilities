@@ -6,7 +6,9 @@
   "refmap": "createutilities.refmap.json",
   "mixins": [
     "FarmBlockMixin",
-    "FurnaceBlockEntityMixin"
+    "FurnaceBlockEntityMixin",
+    "ItemMixin"
+
   ],
   "client": [
     "HumanoidModelMixin"

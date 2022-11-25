@@ -20,23 +20,17 @@ import com.simibubi.create.foundation.gui.container.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.element.GuiGameElement;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Indicator;
-import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.Util;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
@@ -80,12 +74,11 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         clickIndicator.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
 
         if (!getMainBlockEntity().inventory.getStackInSlot(1).isEmpty() && getMainBlockEntity().inventory.getStackInSlot(1).hasTag()) {
-            for (int b : Iterate.positiveAndNegative) {
-                if (b == 1) {
+
                     renderHighlight(pPoseStack, x, y);
-                }
+
             }
-        }
+
         renderPlayerInventory(pPoseStack, invX, invY);
         renderProgressBar(pPoseStack, x, y, getMainBlockEntity().dataGatheringProgress);
         renderModel(pPoseStack, x + BG.width + 50, y + BG.height + 10, pPartialTick);
@@ -95,13 +88,13 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
 
     protected void renderProgressBar(PoseStack matrixStack, int x, int y, float amount) {
         float progress = Math.min(amount, 1);
-        GuiTextures sprite = GuiTextures.ARROW_INDICATOR;
+        var sprite = GuiTextures.ARROW_INDICATOR;
         sprite.bind();
         blit(matrixStack, x + 147, y + 52, sprite.startX, sprite.startY, sprite.width, (int) (sprite.height * progress));
     }
 
     protected void renderFuelProgressBar(PoseStack matrixStack, int x, int y, float progress) {
-        GuiTextures sprite = GuiTextures.PROGRESS_BAR;
+        var sprite = GuiTextures.PROGRESS_BAR;
         sprite.bind();
         blit(matrixStack, x + 37, y + 22, sprite.startX, sprite.startY, (int) (sprite.width * progress), sprite.height);
     }
@@ -123,8 +116,8 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         GuiGameElement.of(CUBlocks.TYPEWRITER.getDefaultState())
                 .render(ms);
 
-        Slot slot = menu.slots.get(4);
-        ItemStack itemstack = slot.getItem();
+        var slot = menu.slots.get(4);
+
         GuiGameElement.of(CUItems.PUNCHCARD.get())
                 .render(ms);
         if (getMainBlockEntity().hasBlueprintIn()) {
@@ -177,7 +170,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         addRenderableWidget(closeButton);
         addRenderableWidget(confirmButton);
         addRenderableWidget(clickIndicator);
-        boolean hasBlueprint = getMainBlockEntity().hasBlueprintIn();
+        var hasBlueprint = getMainBlockEntity().hasBlueprintIn();
 
 
         extraAreas = ImmutableList.of(
@@ -229,9 +222,9 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
     }
 
     protected void loadData() {
-        //TODO, figure out why tf is it not deleting itemstack from the slot, UPDATE: FIXED 7/29/2022, i neeed to use packets
-        Item item = menu.slots.get(4).getItem().getItem();
-        ItemStack punchcard = getMainBlockEntity().inventory.getStackInSlot(1);
+        //TODO, figure out why tf is it not deleting itemstack from the slot, UPDATE: FIXED 7/29/2022, i needed to use packets
+        var item = menu.slots.get(4).getItem().getItem();
+        var punchcard = getMainBlockEntity().inventory.getStackInSlot(1);
         List<CompoundTag> list;
         boolean loaded;
         //getInventory().getStackInSlot(4).getItem();
@@ -240,14 +233,14 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
             if (getMainBlockEntity().hasFuel) {
                 if (punchcard.hasTag() && punchcard.getTag().contains("Key")) {
 
-                    CompoundTag tag = punchcard.getTag();
+                    var tag = punchcard.getTag();
                     list = new ArrayList<>();
-                    BlockPos doorPosition = CreateUtilities.DOORLOCK_MANAGER.dataStored.get(tag.getUUID("Key")).blockPos;
-                    Block block = getMainBlockEntity().getLevel().getBlockState(doorPosition).getBlock();
-                    BlockState blockState = getMainBlockEntity().getLevel().getBlockState(doorPosition);
-                    String textInfo = tag.getString("Description");
-                    ItemStack note = getMainBlockEntity().inventory.getStackInSlot(4);
-                    CompoundTag noteTag = note.getOrCreateTag();
+                    var doorPosition = CreateUtilities.DOORLOCK_MANAGER.dataStored.get(tag.getUUID("Key")).blockPos;
+                    var block = getMainBlockEntity().getLevel().getBlockState(doorPosition).getBlock();
+                    var blockState = getMainBlockEntity().getLevel().getBlockState(doorPosition);
+                    var textInfo = tag.getString("Description");
+                    var note = getMainBlockEntity().inventory.getStackInSlot(4);
+                    var noteTag = note.getOrCreateTag();
 
 
                     list.add(NbtUtils.writeBlockPos(doorPosition));

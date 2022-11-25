@@ -20,7 +20,7 @@ public enum ModPackets {
 
     //  CONFIGURE_PUNCHCARD(PunchcardAccessPacket.class, PunchcardAccessPacket::new, PLAY_TO_SERVER),
     TYPEWRITER_EDIT(TypewriterEditPacket.class, TypewriterEditPacket::new, PLAY_TO_SERVER),
-    PUNCHWRITER_EDIT(PunchcardWriterEditPacket.class, PunchcardWriterEditPacket::new, PLAY_TO_SERVER);
+    PUNCHWRITER_EDIT(InventoryEditPacket.class, InventoryEditPacket::new, PLAY_TO_SERVER);
 
 
     public static final ResourceLocation CHANNEL_NAME = CreateUtilities.defaultResourceLocation("main");

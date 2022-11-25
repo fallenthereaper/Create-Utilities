@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.util.Random;
 
+import static com.fallenreaper.createutilities.utils.data.Interactable.IClickable;
+import static com.fallenreaper.createutilities.utils.data.Interactable.IDraggable;
 @SuppressWarnings("ALL")
 public class SwitchButton extends AbstractSimiWidget {
     protected Mode state;
@@ -38,7 +40,8 @@ public class SwitchButton extends AbstractSimiWidget {
     public SwitchButton(int x, int y, int width, int height, SwitchIcon switchIcon, ScreenElement icon) {
         this(x, y, width, height, switchIcon);
         this.icon = icon;
-        hasIcon = true;
+        this.hasIcon = true;
+
     }
 
     public SwitchButton(int x, int y, int width, int height, ScreenElement icon) {
@@ -109,9 +112,9 @@ public class SwitchButton extends AbstractSimiWidget {
         return false;
     }
 
-    public void setCallBack(IDraggable _$_, IClickable $$_) {
+    public void setCallBack(IDraggable _$_, IClickable $_$) {
         this.runDrag = _$_;
-        this.runClick = $$_;
+        this.runClick = $_$;
     }
 
     @Override

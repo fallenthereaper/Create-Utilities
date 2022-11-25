@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 import com.fallenreaper.createutilities.utils.InteractionHandler;
-import com.jozufozu.flywheel.repack.joml.Vector3d;
+import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -11,9 +11,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.FarmlandWaterManager;
 
-
+//TODO: move all hydrate stuff to here
 public class SprinklerInteractionHandler extends InteractionHandler {
 
+
+    public SprinklerInteractionHandler(SmartTileEntity te, BlockPos pos) {
+        super(te, pos);
+    }
 
     public static boolean hasFarmlandBlock(BlockPos pos, Level level) {
         BlockState stateAtPos = level.getBlockState(pos);
@@ -34,15 +38,6 @@ public class SprinklerInteractionHandler extends InteractionHandler {
 
         }
 
-
-    }
-
-    public static boolean isInsideCircle(double radius, BlockPos blockPos, BlockPos target) {
-        Vector3d centerPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        Vector3d targetPos = new Vector3d(target.getX(), target.getY(), target.getZ());
-        double distance = (int) centerPos.distance(targetPos);
-
-        return distance <= radius;
 
     }
 

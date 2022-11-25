@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.BlockState;
 
 
 public class TypewriterRenderer extends SmartTileEntityRenderer<TypewriterBlockEntity> {
@@ -22,8 +21,8 @@ public class TypewriterRenderer extends SmartTileEntityRenderer<TypewriterBlockE
 
     @Override
     protected void renderSafe(TypewriterBlockEntity tileEntityIn, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
-        BlockState blockState = tileEntityIn.getBlockState();
-        Direction facing = blockState.getValue(TypewriterBlock.HORIZONTAL_FACING);
+        var blockState = tileEntityIn.getBlockState();
+        var facing = blockState.getValue(TypewriterBlock.HORIZONTAL_FACING);
         if (tileEntityIn.hasBlueprintIn() || !tileEntityIn.inventory.getStackInSlot(4).isEmpty()) {
             SuperByteBuffer blueprint = CachedBufferer.partial(CUBlockPartials.SCHEMATIC_MODEL, blockState);
             rotateCenteredInDirection(blueprint, Direction.UP, facing);
@@ -32,12 +31,11 @@ public class TypewriterRenderer extends SmartTileEntityRenderer<TypewriterBlockE
         VertexConsumer builder = buffer.getBuffer(RenderType.cutoutMipped());
     }
 
-    protected double getAngleForFacing(Direction facing) {
-        double angle = 90 * (facing.equals(Direction.NORTH) ? 4 : facing.equals(Direction.SOUTH) ? 2 : facing.equals(Direction.EAST) ? 3 : 1);
-        return angle;
+    public static double getAngleForFacing(Direction facing) {
+        return 90 * (facing.equals(Direction.NORTH) ? 4 : facing.equals(Direction.SOUTH) ? 2 : facing.equals(Direction.EAST) ? 3 : 1);
     }
 
-    protected void rotateCenteredInDirection(SuperByteBuffer model, Direction direction, Direction facing) {
+    public static void rotateCenteredInDirection(SuperByteBuffer model, Direction direction, Direction facing) {
         model.rotateCentered(direction, (float) Math.toRadians(getAngleForFacing(facing)));
     }
 }

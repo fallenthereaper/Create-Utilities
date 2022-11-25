@@ -3,14 +3,12 @@ package com.fallenreaper.createutilities.content.blocks.typewriter;
 import com.fallenreaper.createutilities.index.CUContainerTypes;
 import com.simibubi.create.foundation.gui.container.ContainerBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
@@ -29,8 +27,8 @@ public class TypewriterContainer extends ContainerBase<TypewriterBlockEntity> {
 
     @Override
     protected TypewriterBlockEntity createOnClient(FriendlyByteBuf extraData) {
-        ClientLevel world = Minecraft.getInstance().level;
-        BlockEntity tileEntity = world.getBlockEntity(extraData.readBlockPos());
+        var world = Minecraft.getInstance().level;
+        var tileEntity = world.getBlockEntity(extraData.readBlockPos());
         if (tileEntity instanceof TypewriterBlockEntity typewriter) {
             typewriter.readClient(extraData.readNbt());
             return typewriter;

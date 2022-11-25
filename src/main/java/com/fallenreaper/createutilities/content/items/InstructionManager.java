@@ -25,7 +25,7 @@ public class InstructionManager {
         addInstruction("door_info", PunchcardDoorInfo::new);
         addInstruction("text_info", TextPunchcardInfo::new);
         addInstruction("train_ticket_info", PunchcardTrainTicket::new);
-        addInstruction("instruction", PunchcardInstruction::new);
+
 
     }
 
