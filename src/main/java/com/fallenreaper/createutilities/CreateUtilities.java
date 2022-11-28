@@ -112,6 +112,7 @@ public class CreateUtilities {
         //
         addToBlockList(() -> Blocks.FURNACE);
         addToBlockList(() -> Blocks.CRAFTING_TABLE);
+       // addToBlockList(CUBlocks.STEAM_FURNACE::get);
     }
   //Call this if your furnace doesn't extend AbstractFurnace
     public static void addToBlockList(Supplier<Block> sup) {

@@ -29,7 +29,6 @@ public class CUItems {
 
     public static final ItemEntry<? extends Item> PUNCHCARD = registerItem("punchcard", "Punchcard", (p) -> new PunchcardItem(p.tab(CreateUtilities.TAB))
             , (p) -> p.stacksTo(1));
-
     public static final ItemEntry<? extends Item> WAX =
             registerItem("red_wax", "Wax", (p) -> new BaseItem(p.tab(CreateUtilities.TAB))
                   , (p) -> p.stacksTo(64));

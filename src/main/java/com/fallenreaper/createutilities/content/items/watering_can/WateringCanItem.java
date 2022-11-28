@@ -35,6 +35,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Random;
+
+import static com.fallenreaper.createutilities.utils.MathUtil.isInsideCircle;
+
 //todo: actually work on this, ex: use capabilities also add a specialized tool tip for item tanks, also look at how supplementaries do jars
 public class WateringCanItem extends BaseItem {
     public WateringCanFluidTank tank;
@@ -97,7 +100,7 @@ public class WateringCanItem extends BaseItem {
                                             level.addParticle(data, pos.getX(), pos.getY(), pos.getZ(), m.x, m.y, m.z);
                                             level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 2, 2);
                                         }
-                                        tank.fill(new FluidStack(Fluids.WATER, 250 / 4), IFluidHandler.FluidAction.EXECUTE);
+                                        tank.fill(tank.getFluid(), IFluidHandler.FluidAction.EXECUTE);
 
                                         te.getTank(0).drain(250 / 4, IFluidHandler.FluidAction.EXECUTE);
                                         return InteractionResult.CONSUME;
@@ -141,7 +144,7 @@ public class WateringCanItem extends BaseItem {
             var blockState = level.getBlockState(blockPositions);
 
             if (SprinklerInteractionHandler.checkForPlants(blockState.getBlock())) {
-                if (SprinklerInteractionHandler.isInsideCircle(radius,pos , blockPositions)) {
+                if (isInsideCircle(radius,pos , blockPositions)) {
                     if (random.nextInt(100) < 50)
                         blockState.getBlock().randomTick(blockState, (ServerLevel) level, blockPositions, random);
                 }

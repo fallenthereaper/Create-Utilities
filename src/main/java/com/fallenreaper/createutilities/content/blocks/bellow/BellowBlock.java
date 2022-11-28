@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.bellow;
 
 import com.fallenreaper.createutilities.CreateUtilities;
+import com.fallenreaper.createutilities.content.blocks.steam_furnace.ISteamProvider;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -69,10 +71,11 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
     protected boolean isValidPosition(BlockGetter world, BlockPos pos) {
         BlockPos baseBlockPos = getBaseBlockPos(pos);
         BlockState getState = world.getBlockState(baseBlockPos);
+        BlockEntity be = world.getBlockEntity(baseBlockPos);
         Minecraft mc = Minecraft.getInstance();
         for (Block blocks : CreateUtilities.BLOCKLIST) {
 
-            if ((getState.getBlock() instanceof AbstractFurnaceBlock) || getState.getBlock().equals(blocks)) {
+            if ((getState.getBlock() instanceof AbstractFurnaceBlock) || getState.getBlock().equals(blocks) || be instanceof ISteamProvider) {
                 return true;
             }
         }

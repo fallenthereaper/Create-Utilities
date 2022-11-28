@@ -112,36 +112,35 @@ public class FluidNode {
 
     protected void updateFlow(IFluidTransferProvider source, IFluidTransferProvider target, FlowType flowType) {
         BiConsumer<LiquidTankBlockEntity, LiquidTankBlockEntity> fluidFlow = this::handleFluidFlow;
-        switch (flowType) {
-            case DOWN -> {
+        switch (flowType.getValue()) {
+            case -1 -> {
                 //determine the real source after checking
                 LiquidTankBlockEntity propagateSource = (LiquidTankBlockEntity) source;
                 LiquidTankBlockEntity propagateTarget = (LiquidTankBlockEntity) target;
-                fluidFlow.accept(propagateSource, propagateTarget);
+                handleFluidFlow(propagateSource, propagateTarget);
             }
-            case UP -> {
+            case 1 -> {
                 LiquidTankBlockEntity propagateSource = (LiquidTankBlockEntity) target;
                 LiquidTankBlockEntity propagateTarget = (LiquidTankBlockEntity) source;
-                fluidFlow.accept(propagateSource, propagateTarget);
+                handleFluidFlow(propagateSource, propagateTarget);
             }
-            case EQUAL -> { //determine the real source after checking
+            case 0 -> { //determine the real source after checking
                 //todo fix this, determine which to move depending on which is full
                 boolean isTankFull = source.getTank().getFluid().getAmount() >= source.getTankCapacity();
 
                 if (source.getBlockPosition().distManhattan(target.getBlockPosition()) <= 1) {
+                    LiquidTankBlockEntity propagateTarget;
+                    LiquidTankBlockEntity propagateSource;
                     if (isTankFull) {
-                        LiquidTankBlockEntity propagateTarget = (LiquidTankBlockEntity) source;
-                        LiquidTankBlockEntity propagateSource = (LiquidTankBlockEntity) target;
-
-                        fluidFlow.accept(propagateSource, propagateTarget);
+                        propagateTarget = (LiquidTankBlockEntity) source;
+                        propagateSource = (LiquidTankBlockEntity) target;
 
                     } else {
-                        LiquidTankBlockEntity propagateTarget = (LiquidTankBlockEntity) target;
-                        LiquidTankBlockEntity propagateSource = (LiquidTankBlockEntity) source;
-
-                        fluidFlow.accept(propagateSource, propagateTarget);
+                        propagateTarget = (LiquidTankBlockEntity) target;
+                        propagateSource = (LiquidTankBlockEntity) source;
 
                     }
+                    handleFluidFlow(propagateSource, propagateTarget);
                 }
             }
         }

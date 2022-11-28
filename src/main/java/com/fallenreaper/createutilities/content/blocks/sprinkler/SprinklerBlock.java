@@ -62,7 +62,7 @@ public class SprinklerBlock extends HorizontalAxisBlock implements ITE<Sprinkler
         //TODO, CHECK FOR POTIONS
         if (heldItem.getItem() == Items.BUCKET) {
             if (te.isLava() || te.isWater()) {
-                if (!te.fluidTankBehaviour.getPrimaryHandler().isEmpty()) {
+                if (!te.tankBehaviour.getPrimaryHandler().isEmpty()) {
                     if (!player.isCreative())
                         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET, 1));
 
@@ -86,7 +86,7 @@ public class SprinklerBlock extends HorizontalAxisBlock implements ITE<Sprinkler
 
 
 
-        te.fluidTankBehaviour.getPrimaryHandler()
+        te.tankBehaviour.getPrimaryHandler()
                 .fill(fluidFromItem, IFluidHandler.FluidAction.EXECUTE);
         te.notifyUpdate();
         if (!heldItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent())

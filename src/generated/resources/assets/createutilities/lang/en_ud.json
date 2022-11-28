@@ -49,5 +49,6 @@
   "item.createutilities.watering_can": "u\u0250\u0186 bu\u0131\u0279\u01DD\u0287\u0250M",
   "block.createutilities.liquid_tank": "Liquid Tank",
   "item.createutilities.dev_item": "Dev Tool",
-  "createutilities.dev_item.description": "Dev Use Only"
+  "createutilities.dev_item.description": "Dev Use Only",
+  "block.createutilities.steam_furnace": "Steam Furnace"
 }

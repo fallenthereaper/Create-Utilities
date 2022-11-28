@@ -1,7 +1,9 @@
 package com.fallenreaper.createutilities.utils;
 
+import com.jozufozu.flywheel.repack.joml.Vector3d;
 import com.simibubi.create.foundation.render.SuperByteBuffer;
 import com.simibubi.create.foundation.utility.Couple;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 @SuppressWarnings("ALL")
@@ -54,5 +56,18 @@ public class MathUtil {
     public Vec3 getPositions(double t) {
 
         return lerpVector(starts.getFirst(), starts.getSecond(), (float) t);
+    }
+
+    public static boolean isInsideCircle(double radius, BlockPos blockPos, BlockPos target) {
+        Vector3d centerPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        Vector3d targetPos = new Vector3d(target.getX(), target.getY(), target.getZ());
+        double distance = (int) centerPos.distance(targetPos);
+
+        return distance <= radius;
+
+    }
+    public static boolean isInsideCircle(double radius, Vector3d center, Vector3d target) {
+        double distance = center.distance(target);
+        return distance <= radius;
     }
 }

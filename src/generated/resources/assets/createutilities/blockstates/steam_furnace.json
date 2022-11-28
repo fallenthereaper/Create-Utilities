@@ -1,19 +1,35 @@
+
 {
   "variants": {
-    "facing=north": {
+    "facing=east,lit=false": {
+      "model": "createutilities:block/steam_furnace/block",
+      "y": 90
+    },
+    "facing=east,lit=true": {
+      "model": "createutilities:block/steam_furnace/block_lit",
+      "y": 90
+    },
+    "facing=north,lit=false": {
       "model": "createutilities:block/steam_furnace/block"
     },
-    "facing=south": {
+    "facing=north,lit=true": {
+      "model": "createutilities:block/steam_furnace/block_lit"
+    },
+    "facing=south,lit=false": {
       "model": "createutilities:block/steam_furnace/block",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,lit=true": {
+      "model": "createutilities:block/steam_furnace/block_lit",
+      "y": 180
+    },
+    "facing=west,lit=false": {
       "model": "createutilities:block/steam_furnace/block",
       "y": 270
     },
-    "facing=east": {
-      "model": "createutilities:block/steam_furnace/block",
-      "y": 90
+    "facing=west,lit=true": {
+      "model": "createutilities:block/steam_furnace/block_lit",
+      "y": 270
     }
   }
 }

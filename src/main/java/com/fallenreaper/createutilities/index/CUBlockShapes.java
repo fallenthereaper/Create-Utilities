@@ -31,7 +31,8 @@ public class CUBlockShapes {
                     .add(0, 2, 2, 16, 13, 14)
                     .forDirectional(Direction.NORTH),
             PUNCHCARD_WRITER = shape(0, 0, 0, 16, 4, 16)
-                    .add(1, 4, 1, 15, 12, 15)
+                    .add(3, 4, 3, 14, 12, 13)
+                    .add(0, 4, 11, 16, 14, 16)
                     .forDirectional(Direction.NORTH),
            STEAM_FURNACE = shape(0, 0, 0, 16, 6, 16)
                     .add(1, 6, 1, 15, 11, 15)

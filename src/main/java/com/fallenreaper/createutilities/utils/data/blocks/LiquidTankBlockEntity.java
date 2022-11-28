@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.utils.data.blocks;
 
+import com.fallenreaper.createutilities.utils.InteractionHandler;
 import com.fallenreaper.createutilities.utils.data.IDevInfo;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.contraptions.processing.EmptyingByBasin;
@@ -276,6 +277,13 @@ public class LiquidTankBlockEntity extends InteractableBlockEntity implements IF
         // .startWithValue(getFillState());
 
     }
+
+    public void addInteractionHandler(List< InteractionHandler> interactions) {
+
+    }
+
+
+
 
     public float getFillState() {
         return (float) getTank().getFluidAmount() / getTank().getCapacity();

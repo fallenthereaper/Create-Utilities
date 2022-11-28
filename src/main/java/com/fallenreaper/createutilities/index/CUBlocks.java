@@ -86,7 +86,7 @@ public class CUBlocks {
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .item()
             .transform(customItemModel())
-            .addLayer(() -> RenderType::translucent)
+            .addLayer(() -> RenderType::cutoutMipped)
             .defaultLoot()
             .register();
 
@@ -100,6 +100,7 @@ public class CUBlocks {
 
     public static final BlockEntry<SteamFurnaceBlock> STEAM_FURNACE = REGISTRATE.block("steam_furnace", SteamFurnaceBlock::new)
             .initialProperties(SharedProperties::copperMetal)
+            .properties(p -> p.lightLevel(SteamFurnaceBlock::getLightPower).strength(3.6F))
             .transform(pickaxeOnly())
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .blockstate(BlockStateGen.horizontalBlockProvider(true))

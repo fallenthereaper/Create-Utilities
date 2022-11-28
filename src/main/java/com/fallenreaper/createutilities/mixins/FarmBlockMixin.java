@@ -1,7 +1,6 @@
 package com.fallenreaper.createutilities.mixins;
 
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
-import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.LevelReader;
@@ -10,6 +9,9 @@ import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+
+import static com.fallenreaper.createutilities.utils.MathUtil.isInsideCircle;
+import static net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket;
 
 @Mixin(FarmBlock.class)
 public class FarmBlockMixin extends Block {
@@ -38,7 +40,7 @@ public class FarmBlockMixin extends Block {
                 BlockPos posBe = be.getBlockPos();
                 if (be.isHydrating() && be.isWater()) {
                     for (BlockPos pos : BlockPos.betweenClosed(posBe.offset(-be.getRadius(), 1, -be.getRadius()), posBe.offset(be.getRadius(), 1, be.getRadius()))) {
-                        if (SprinklerInteractionHandler.isInsideCircle(be.getRadius(), posBe, pPos)) {
+                        if (isInsideCircle(be.getRadius(), posBe, pPos)) {
                             return true;
                         }
                     }
@@ -46,7 +48,7 @@ public class FarmBlockMixin extends Block {
             }
         }
 
-        return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(pLevel, pPos);
+        return hasBlockWaterTicket(pLevel, pPos);
     }
 }
 
