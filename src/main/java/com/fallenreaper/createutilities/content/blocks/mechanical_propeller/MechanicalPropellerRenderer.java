@@ -31,7 +31,7 @@ public class MechanicalPropellerRenderer extends SmartTileEntityRenderer<Mechani
                 .getValue(FACING);
         VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
 
-        int lightBehind = LevelRenderer.getLightColor(te.getLevel(), te.getBlockPos().relative(direction.getOpposite()));
+        int lightBehind = LevelRenderer.getLightColor(te.getLevel(), te.getBlockPos().relative(direction));
         int lightInFront = LevelRenderer.getLightColor(te.getLevel(), te.getBlockPos().relative(direction));
 
 
@@ -44,7 +44,7 @@ public class MechanicalPropellerRenderer extends SmartTileEntityRenderer<Mechani
             speed = Mth.clamp(speed, 80, 64 * 12);
         if (speed < 0)
             speed = Mth.clamp(speed, -64 * 12, -80);
-        float angle = (time * speed * 3 / 10f) % 360;
+        float angle = (time * speed * 2 / 10f) % 360;
         angle = angle / 180f * (float) Math.PI;
 
       //  standardKineticRotationTransform(shaftHalf, te, lightBehind).renderInto(ms, vb);
