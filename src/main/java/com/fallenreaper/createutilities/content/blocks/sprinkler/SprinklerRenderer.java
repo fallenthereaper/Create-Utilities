@@ -54,7 +54,7 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
 
             Direction direction = Direction.UP;
             VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
-            int lightInFront = LevelRenderer.getLightColor(te.getLevel(), te.getBlockPos().relative(direction));
+            int lightInFront = LevelRenderer.getLightColor(te.getLevel(), te.getBlockPos());
             SuperByteBuffer model =
                     CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
             if (ceiling)

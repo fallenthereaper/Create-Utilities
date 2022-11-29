@@ -268,7 +268,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         super.lazyTick();
 
 
-
     }
 
     public int getComparatorOutput() {
@@ -278,20 +277,19 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     protected void refill() {
         FluidNode.Flow flow;
         if (!isHydrating())
-           return;
+            return;
 
-         flow = new FluidNode.Flow(true, getContainedFluid());
+        flow = new FluidNode.Flow(true, getContainedFluid());
         flow.progress.tickChaser();
         float multiplier = (getRadius() * getSpeed()) / 256f;
         float ratio = multiplier / 8;
 
 
-
-        float flowSpeed = (float) (1 / 16f + Mth.clamp((float) ratio, 0, 1));
+        float flowSpeed = 1 / 16f + Mth.clamp(ratio, 0, 1);
         flow.progress.setValue(java.lang.Math.min(flow.progress.getValue(), 1));
 
 
-        if( flow.progress.getValue() >= 1)
+        if (flow.progress.getValue() >= 1)
             getTank().drain(1, IFluidHandler.FluidAction.EXECUTE);
 
     }
@@ -307,7 +305,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     }
 
     protected Random getRandom() {
-        if(getLevel() != null) {
+        if (getLevel() != null) {
             return getLevel().getRandom();
         }
 
@@ -525,28 +523,28 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         double x = this.getBlockPos().getX() + 0.5f;
         double y = this.getBlockPos().getY() + 1.0f;
         double z = this.getBlockPos().getZ() + 0.5f;
+        Vec3 pos = new Vec3(x, y, z);
         float time = AnimationTickHolder.getRenderTime(getLevel());
         float speed = getSpeed();
         float angle;
 
-        angle = (time * speed / 5F) % 360F;
-
-        for (int i = 1; i < 5; i++) {
-            float alpha = (-((angle * 3) + 90 * i) * ((float) Math.PI) / 180);
+        angle = (time * speed / 3F) % 360F;
+        float random = getLevel().getRandom().nextFloat();
+        for (int i = 0; i < 4; i++) {
+            float alpha = (((angle*random * -3) + 90 * i) * ((float) Math.PI) / 180);
             float cosA = Math.cos(alpha);
             float sinA = Math.sin(alpha);
-            double xOffset = cosA/3f ;
-            double zOffset = sinA/3f;
 
-            float acceleration = Math.min(Math.abs(getSpeed()) / 100f, 0.7f);
+            float acceleration = Math.min(Math.abs(getSpeed()) / 128f, 0.525f);
             ParticleOptions particle = FluidFX.getFluidParticle(getContainedFluid());
             boolean isCeiling = getBlockState().getValue(CEILING);
 
-            for (int k = 0; k <= 4; k++) {
-                float beta = k * ((float) Math.PI) / (45.0F);
+            for (int k = 0; k <= 2; k++) {
+                float beta = k * ((float) Math.PI) / (180F);
+
 
                 this.getWorld().addParticle(particle,
-                        x +  xOffset, y - (isCeiling ? 15/16f : 0), z + zOffset,
+                        pos.x + (double) cosA * random * 2.0F, pos.y - (isCeiling ? 15 / 16f : 0), pos.z + (double) sinA * random * 2.0F,
                         (acceleration * cosA), acceleration * (isCeiling ? Math.sin(-beta) : Math.cos(beta)), (acceleration * sinA));
             }
         }
