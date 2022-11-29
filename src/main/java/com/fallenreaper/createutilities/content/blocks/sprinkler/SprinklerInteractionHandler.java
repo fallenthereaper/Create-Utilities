@@ -34,6 +34,7 @@ public class SprinklerInteractionHandler extends InteractionHandler {
         if (getMoistureLevel < 7) {
 
             worldIn.setBlock(blockPos, state.setValue(FarmBlock.MOISTURE, 7), 2);
+
             FarmlandWaterManager.addAABBTicket(worldIn, aabb);
 
         }

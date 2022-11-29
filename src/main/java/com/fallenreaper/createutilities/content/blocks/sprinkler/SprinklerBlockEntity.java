@@ -9,7 +9,6 @@ import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.fluids.FluidFX;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
-import com.simibubi.create.content.contraptions.particle.CubeParticleData;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 import com.simibubi.create.foundation.tileEntity.ComparatorUtil;
 import com.simibubi.create.foundation.tileEntity.TileEntityBehaviour;
@@ -41,6 +40,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+import static com.fallenreaper.createutilities.content.blocks.sprinkler.HorizontalAxisBlock.CEILING;
 import static com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler.*;
 import static com.fallenreaper.createutilities.utils.MathUtil.isInsideCircle;
 import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlock.HORIZONTAL_FACING;
@@ -286,14 +287,13 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
 
 
-        float flowSpeed = (float) (1 / 32f + Mth.clamp((float) ratio, 0, 1));
-        flow.progress.setValue(java.lang.Math.min(flow.progress.getValue() + flowSpeed, 1));
+        float flowSpeed = (float) (1 / 16f + Mth.clamp((float) ratio, 0, 1));
+        flow.progress.setValue(java.lang.Math.min(flow.progress.getValue(), 1));
 
 
-        flow.complete = flow.progress.getValue() >= 1;
+        if( flow.progress.getValue() >= 1)
+            getTank().drain(1, IFluidHandler.FluidAction.EXECUTE);
 
-        if(flow.complete)
-            getTank().getFluid().shrink(1);
     }
 
     private SmartFluidTank getTank() {
@@ -316,7 +316,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
     private void findFarmland() {
         int CHANCE = CUConfig.FARMLAND_HYDRATE_CHANCE.get();
-        AABB aabb = new AABB(worldPosition).inflate(getRadius(), getBlockState().getValue(SprinklerBlock.CEILING) ? aabb().getYsize() : 0, getRadius());
+        AABB aabb = new AABB(worldPosition).inflate(getRadius(), getBlockState().getValue(CEILING) ? aabb().getYsize() : 0, getRadius());
 
         // MutableBoundingBox boundingBox = new MutableBoundingBox(worldPosition.offset(-getRadius(), -1, -getRadius()), worldPosition.offset(getRadius(), -1, getRadius()));
         // Farmland hydration & plants growth logic
@@ -522,7 +522,6 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         if (this.getWorld() == null) {
             return;
         }
-
         double x = this.getBlockPos().getX() + 0.5f;
         double y = this.getBlockPos().getY() + 1.0f;
         double z = this.getBlockPos().getZ() + 0.5f;
@@ -530,26 +529,25 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         float speed = getSpeed();
         float angle;
 
-        angle = (time * speed * 2 / 10f) % 360F;
+        angle = (time * speed / 5F) % 360F;
 
-        for (int i = 0; i < 4; i++) {
-            float alpha = (-((angle) + 90 * i) * ((float) Math.PI) / 180);
+        for (int i = 1; i < 5; i++) {
+            float alpha = (-((angle * 3) + 90 * i) * ((float) Math.PI) / 180);
             float cosA = Math.cos(alpha);
             float sinA = Math.sin(alpha);
-            double xOffset = cosA / 2;
-            double zOffset = sinA / 2;
+            double xOffset = cosA/3f ;
+            double zOffset = sinA/3f;
 
-            float acceleration = Math.min(Math.abs(getSpeed()) / 128f, 0.5f);
+            float acceleration = Math.min(Math.abs(getSpeed()) / 100f, 0.7f);
             ParticleOptions particle = FluidFX.getFluidParticle(getContainedFluid());
-            CubeParticleData data =
-                    new CubeParticleData(0, 0.25F, .95f, .01f + (new Random().nextFloat() - .5f) * .25f, 4, false);
-            boolean ceiling = getBlockState().getValue(SprinklerBlock.CEILING);
+            boolean isCeiling = getBlockState().getValue(CEILING);
 
             for (int k = 0; k <= 4; k++) {
                 float beta = k * ((float) Math.PI) / (45.0F);
 
-                this.getWorld().addParticle(particle, x + xOffset, y, z + zOffset,
-                        (acceleration * cosA), acceleration * cosA, (acceleration * sinA));
+                this.getWorld().addParticle(particle,
+                        x +  xOffset, y - (isCeiling ? 15/16f : 0), z + zOffset,
+                        (acceleration * cosA), acceleration * (isCeiling ? Math.sin(-beta) : Math.cos(beta)), (acceleration * sinA));
             }
         }
     }
@@ -568,7 +566,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         var state = getBlockState();
-        var ceiling = state.getValue(SprinklerBlock.CEILING);
+        var ceiling = state.getValue(CEILING);
         if (this.isFluidHandlerCap(cap))
             if (ceiling) {
                 if (side == Direction.UP)

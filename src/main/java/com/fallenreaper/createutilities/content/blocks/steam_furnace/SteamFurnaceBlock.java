@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -32,9 +33,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 
 public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<SteamFurnaceBlockEntity>, IWrenchable {
+    public static final BooleanProperty CREATIVE_LIT = BooleanProperty.create("creative_lit");
     public SteamFurnaceBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.defaultBlockState().setValue(LIT, false));
+        this.registerDefaultState(this.defaultBlockState().setValue(CREATIVE_LIT, false));
     }
 
     @Override
@@ -51,9 +54,10 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(LIT);
+        builder.add(CREATIVE_LIT);
     }
     public static int getLightPower(BlockState state) {
-        return state.getValue(LIT) ? 10 : 0;
+        return state.getValue(LIT) ? 7 : state.getValue(CREATIVE_LIT) ? 12 : 0;
     }
 
 

@@ -4,10 +4,7 @@ package com.fallenreaper.createutilities.index;
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.armor.BrassJetPackItem;
 import com.fallenreaper.createutilities.content.armor.BrassSuitArmorItem;
-import com.fallenreaper.createutilities.content.items.BaseItem;
-import com.fallenreaper.createutilities.content.items.DevItem;
-import com.fallenreaper.createutilities.content.items.NotesItem;
-import com.fallenreaper.createutilities.content.items.PunchcardItem;
+import com.fallenreaper.createutilities.content.items.*;
 import com.fallenreaper.createutilities.content.items.watering_can.WateringCanItem;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.repack.registrate.util.entry.ItemEntry;
@@ -44,6 +41,7 @@ public class CUItems {
     public static final ItemEntry<? extends Item> DEV_ITEM =
             registerItem("dev_item", "Dev Tool", (p) -> new DevItem(p.tab(CreateUtilities.TAB)).addDescription((ChatFormatting.ITALIC), ChatFormatting.DARK_PURPLE),
                     (p) -> p.stacksTo(1));
+
 
     public static final ItemEntry<? extends BrassSuitArmorItem> BRASS_JETPACK =
             REGISTRATE.item("brass_jetpack", BrassJetPackItem::new)

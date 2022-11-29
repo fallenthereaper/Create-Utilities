@@ -7,7 +7,8 @@ public class InstructionEntry {
 
     public PunchcardInfo instruction;
 
-    public static InstructionEntry fromTag(CompoundTag tag) {
+    public static InstructionEntry
+    fromTag(CompoundTag tag) {
         InstructionEntry entry = new InstructionEntry();
         entry.instruction = InstructionManager.getAllEntries(tag.getCompound("InstructionValue"));
 

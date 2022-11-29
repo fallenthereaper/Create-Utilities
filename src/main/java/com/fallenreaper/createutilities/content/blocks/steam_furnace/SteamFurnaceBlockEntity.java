@@ -5,7 +5,6 @@ import com.fallenreaper.createutilities.utils.data.IDevInfo;
 import com.fallenreaper.createutilities.utils.data.blocks.InteractableBlockEntity;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.Create;
-import com.simibubi.create.content.contraptions.fluids.tank.BoilerData;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.contraptions.processing.EmptyingByBasin;
 import com.simibubi.create.foundation.fluid.FluidHelper;
@@ -18,12 +17,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -34,11 +36,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -49,11 +53,13 @@ import java.util.Objects;
 
 import static com.fallenreaper.createutilities.content.blocks.steam_furnace.FurnaceState.LOADED;
 import static com.fallenreaper.createutilities.content.blocks.steam_furnace.FurnaceState.PRODUCING;
+import static com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlock.CREATIVE_LIT;
+import static com.fallenreaper.createutilities.utils.MathUtil.formatTime;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 import static net.minecraftforge.items.ItemHandlerHelper.canItemStacksStack;
 
 public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements IHaveGoggleInformation, ISteamProvider, IDevInfo {
-    public BoilerData boiler;
+ //   public SteamFurnaceBoilerData boiler;
     public float indicatorProgress;
     protected boolean hasFluidIn;
     protected FurnaceState furnaceState;
@@ -89,34 +95,6 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         return ForgeHooks.getBurnTime(pFuel, null);
     }
 
-    public static String formatTime(int ticks) {
-        String base = "";
-        int seconds = ticks / 20;
-        int minutes = seconds / 60;
-        int hours = minutes / 60;
-        int days = hours / 24;
-        int weeks = days / 7;
-
-        seconds = seconds % 60;
-        minutes = minutes % 60;
-        hours = hours % 60;
-
-        if (weeks > 0)
-            base += weeks + "w ";
-
-        if (days > 0)
-            base += days + "d ";
-
-        if (hours > 0)
-            base += hours + "h ";
-
-        if (minutes > 0)
-            base += minutes + "m ";
-
-        base += seconds + "s";
-        return base;
-
-    }
 
     @Override
     public void addBehaviours(List<TileEntityBehaviour> behaviours) {
@@ -147,13 +125,25 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         if (level.getBlockEntity(pPos) instanceof SteamFurnaceBlockEntity) {
             ItemStack stackInSlot = getFuelStack().copy();
             //FLUIDS
+
+            SoundEvent soundevent = null;
+            BlockState fluidState = null;
+
             boolean present = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
                     .isPresent();
             if (pPlayer.getItemInHand(pHand).is(Items.BUCKET) && !isFuel(itemStack)) {
                 if (hasFluid()) {
+                    Fluid fluid = getTank().getFluid().getFluid();
+
+                    FluidAttributes attributes = fluid.getAttributes();
+                    soundevent = attributes.getFillSound();
+                    if (soundevent == null)
+                        soundevent =
+                                FluidHelper.isTag(fluid, FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
+
                     this.getTank().drain(Math.min(getTankCapacity(), getTank().getFluidAmount()), IFluidHandler.FluidAction.EXECUTE);
                     if (pLevel.isClientSide())
-                        pLevel.playSound(pPlayer, pPos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1f);
+                        pLevel.playSound(pPlayer, pPos, soundevent, SoundSource.BLOCKS, 1.0f, 1f);
 
                 }
                 return InteractionResult.SUCCESS;
@@ -164,14 +154,21 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 if (getTank() != null) {
                     if (!pPlayer.getItemInHand(pHand).is(Items.BUCKET)) {
                         Pair<FluidStack, ItemStack> emptyItem = EmptyingByBasin.emptyItem(pLevel, itemStack, true);
-
+                        Fluid fluid = getTank().getFluid().getFluid();
+                        fluidState = fluid.defaultFluidState()
+                                .createLegacyBlock();
+                        FluidAttributes attributes = fluid.getAttributes();
+                        soundevent = attributes.getEmptySound();
+                        if (soundevent == null)
+                            soundevent =
+                                    FluidHelper.isTag(fluid, FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
                         FluidStack fluidFromItem = emptyItem.getFirst();
 
                         this.getTank().fill(fluidFromItem, IFluidHandler.FluidAction.EXECUTE);
 
 
                         if (pLevel.isClientSide())
-                            pLevel.playSound(pPlayer, pPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1f);
+                            pLevel.playSound(pPlayer, pPos, soundevent, SoundSource.BLOCKS, 1.0f, 1f);
 
                     }
                 }
@@ -192,21 +189,21 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                     if (getBurnTime() > 0)
                         setBurnTime(getFuelBurnTime(getFuelStack()));
                     if (pLevel.isClientSide())
-                        pLevel.playSound(pPlayer, pPos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.75F - pLevel.getRandom().nextFloat() * 0.23f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+                        pLevel.playSound(pPlayer, pPos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.70F - pLevel.getRandom().nextFloat() * 0.28f, 0.95F - pLevel.getRandom().nextFloat() * 0.8f);
 
                 }
             }
             else if (!itemStack.isEmpty()) {
                 if (canItemStacksStack(itemStack, stackInSlot)) {
                     //todo: fix this to not take any item  if the furnace has already a stack
-                    int total = stackInSlot.getCount() + itemStack.getCount();
-                    int drainedAmount = total - stackInSlot.getCount();
-                    if (!(stackInSlot.getCount() >= stackInSlot.getMaxStackSize())) {
-                        stackInSlot.grow(Math.min(itemStack.getCount(), drainedAmount));
+                    int desiredAmount = Math.max(stackInSlot.getMaxStackSize() - stackInSlot.getCount(), 0);
+                        stackInSlot.grow(Math.min(desiredAmount, itemStack.getCount()));
                         setItemStack(stackInSlot);
-                        itemStack.shrink(drainedAmount);
+                        itemStack.shrink(desiredAmount);
                         pPlayer.setItemInHand(pHand, itemStack);
-                    }
+                    if (pLevel.isClientSide())
+                        pLevel.playSound(pPlayer, pPos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.75F - pLevel.getRandom().nextFloat() * 0.28f, 0.95F - pLevel.getRandom().nextFloat() * 0.8f);
+
                 }
             }
             else {
@@ -215,7 +212,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 if (getBurnTime() > 0)
                     setBurnTime(getFuelBurnTime(getFuelStack()));
                 if (pLevel.isClientSide())
-                    pLevel.playSound(pPlayer, pPos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 0.75F, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+                    pLevel.playSound(pPlayer, pPos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 0.75F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
 
             }
             notifyUpdate();
@@ -225,7 +222,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         return super.onInteract(pState, pLevel, pPos, pPlayer, pHand, pHitResult);
     }
 
-    public boolean isCreativeFuel(ItemStack stack) {
+    public boolean isCreativeFuel() {
         return isCreative;
     }
 
@@ -239,14 +236,14 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         boolean isClientSide = this.getLevel().isClientSide;
         this.hasFluidIn = !getTank().getFluid().isEmpty();
         this.hasFuel = !getFuelStack().isEmpty() && !getFuelStack().is(Items.AIR);
-        this.isCreative = AllItems.CREATIVE_BLAZE_CAKE.isIn(getFuelStack()) || getFuelBurnTime(getFuelStack()) >= 100000000;
+        this.isCreative = AllItems.CREATIVE_BLAZE_CAKE.isIn(getFuelStack()) || getFuelBurnTime(getFuelStack()) >= 2200000 ;
 
-        if (litTime > 0 && !isCreativeFuel(getFuelStack()))
+        if (litTime > 0 && !isCreativeFuel())
             litTime--;
 
         if (litTime <= 0 && hasFuel()) {
             setBurnTime(getFuelBurnTime(getFuelStack()));
-            if (!isCreativeFuel(getFuelStack()))
+            if (!isCreativeFuel())
                 getFuelStack().shrink(1);
         }
 
@@ -278,7 +275,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             return;
         if (!getLevel().isClientSide())
             return;
-
+        SimpleParticleType particleType;
         Vec3 pos = VecHelper.getCenterOf(this.worldPosition);
         Direction direction = getBlockState()
                 .getValue(BlockStateProperties.HORIZONTAL_FACING);
@@ -286,13 +283,15 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         Vec3 N2 = new Vec3(N.getX(), N.getY(), N.getZ());
         pos = pos.add(-N.getX() * 0.53, -0.1, -N.getZ() * 0.53);
         if (isProducing()) {
-            if (Create.RANDOM.nextFloat() < 0.25F / 16F) {
+                particleType = isCreativeFuel() ? ParticleTypes.ELECTRIC_SPARK : ParticleTypes.LAVA;
+            if (getLevel().getRandom().nextFloat() < 0.5F / 16F) {
                 Vec3 random = VecHelper.offsetRandomly(Vec3.ZERO, Create.RANDOM, 0.1f);
                 random = random.subtract(N2.scale(random.dot(N2)));
                 pos = pos.add(random);
-                getLevel().addParticle(ParticleTypes.LAVA, pos.x, pos.y, pos.z, 0, 0, 0);
+                getLevel().addParticle(particleType, pos.x, pos.y, pos.z, 0, 0, 0);
             }
         }
+
         double d0 = (double) getBlockPos().getX() + 0.5D;
         double d1 = getBlockPos().getY();
         double d2 = (double) getBlockPos().getZ() + 0.5D;
@@ -328,7 +327,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         assert level != null;
         level.playSound(null, worldPosition, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS,
                 .625f + level.random.nextFloat() * .325f, .75f - level.random.nextFloat() * .25f);
-
+        SimpleParticleType particleType;
         Vec3 pos = VecHelper.getCenterOf(this.worldPosition);
 
         Direction direction = getBlockState()
@@ -341,20 +340,33 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             Vec3 random = VecHelper.offsetRandomly(Vec3.ZERO, Create.RANDOM, 0.1f);
             random = random.subtract(N2.scale(random.dot(N2)));
             pos = pos.add(random);
-            level.addParticle(ParticleTypes.FLAME, pos.x, pos.y, pos.z, speed.x, speed.y, speed.z);
+            level.addParticle(isCreativeFuel() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.FLAME, pos.x, pos.y, pos.z, speed.x, speed.y, speed.z);
         }
     }
 
     public void syncBlockState() {
         if (getLevel() != null) {
-            if (isBurning() && !this.getBlockState().getValue(LIT)) {
+            if (isBurning() && !this.getBlockState().getValue(LIT) && !isCreativeFuel()) {
                 getLevel().setBlock(getBlockPos(), this.getBlockState().setValue(LIT, true), 3);
                 if (getLevel().isClientSide())
                     initParticles();
                 sendData();
             }
-            if (!isBurning() && this.getBlockState().getValue(LIT)) {
+            if (!isBurning() && this.getBlockState().getValue(LIT) && !isCreativeFuel()) {
                 getLevel().setBlock(getBlockPos(), this.getBlockState().setValue(LIT, false), 3);
+                sendData();
+            }
+           else
+               if (isBurning() && !this.getBlockState().getValue(CREATIVE_LIT) && isCreativeFuel()) {
+                getLevel().setBlock(getBlockPos(), this.getBlockState().setValue(CREATIVE_LIT, true), 3);
+                if (getLevel().isClientSide())
+                    initParticles();
+                sendData();
+            }
+          else
+              if (!isBurning() && this.getBlockState().getValue(CREATIVE_LIT) && !isCreativeFuel()) {
+
+                getLevel().setBlock(getBlockPos(), this.getBlockState().setValue(CREATIVE_LIT, false), 3);
                 sendData();
             }
         }
@@ -389,7 +401,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 .append("Steam Furnace Info:"));
         tooltip.add(arrow.plainCopy()
                 .append(indent)
-                .append("Burn Time" + ":").withStyle(ChatFormatting.GRAY).append(indent).append(isCreativeFuel(getFuelStack()) ? new TextComponent("Unlimited").withStyle(ChatFormatting.LIGHT_PURPLE) : time));
+                .append("Burn Time" + ":").withStyle(ChatFormatting.GRAY).append(indent).append(isCreativeFuel() ? new TextComponent("Unlimited").withStyle(ChatFormatting.LIGHT_PURPLE) : time));
         tooltip.add(arrow.plainCopy().append(indent).append("Fuel" + ":").withStyle(ChatFormatting.GRAY).append(indent).append(in));
 
         if (hasFluid()) {
@@ -440,7 +452,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     @Override
     public float getProducedSteam() {
-        return boiler.waterSupply;
+        return 0;
     }
 
     @Override
