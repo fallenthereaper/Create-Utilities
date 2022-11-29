@@ -38,6 +38,7 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
         BlockState blockState = te.getBlockState();
         Block block = blockState.getBlock();
         boolean ceiling = blockState.getValue(SprinklerBlock.CEILING);
+
         float time = AnimationTickHolder.getRenderTime(te.getLevel());
         float speed = te.getSpeed();
         if (speed > 0)
@@ -56,6 +57,11 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
             int lightInFront = LevelRenderer.getLightColor(te.getLevel(), te.getBlockPos().relative(direction));
             SuperByteBuffer model =
                     CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
+            if (ceiling)
+                model.rotateCentered(Direction.NORTH, (float) (Math.PI));
+            kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
+
+
             KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, vb, light);
             Font f = Minecraft.getInstance().font;
             //  renderText(f,292, 234, String.valueOf(angle));
@@ -66,10 +72,6 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
             kineticRotationTransform(fanInner, te, direction.getAxis(), (float) (angle * Math.PI), lightInFront).renderInto(ms, vb);
 
              */
-            if(ceiling)
-                model.rotateX(180).translate(0, -0.99F, -1);
-            kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
-
         }
 
 

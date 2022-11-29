@@ -70,4 +70,33 @@ public class MathUtil {
         double distance = center.distance(target);
         return distance <= radius;
     }
+
+    public static String formatTime(int ticks) {
+        String base = "";
+        int seconds = ticks / 20;
+        int minutes = seconds / 60;
+        int hours = minutes / 60;
+        int days = hours / 24;
+        int weeks = days / 7;
+
+        seconds = seconds % 60;
+        minutes = minutes % 60;
+        hours = hours % 60;
+
+        if (weeks > 0)
+            base += weeks + "w ";
+
+        if (days > 0)
+            base += days + "d ";
+
+        if (hours > 0)
+            base += hours + "h ";
+
+        if (minutes > 0)
+            base += minutes + "m ";
+
+        base += seconds + "s";
+        return base;
+
+    }
 }
