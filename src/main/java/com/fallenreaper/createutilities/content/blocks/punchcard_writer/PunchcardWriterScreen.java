@@ -3,6 +3,7 @@ package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.items.InstructionEntry;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
+import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.InventoryEditPacket;
@@ -36,7 +37,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 
 //todo: add funnel insert functionality
 public class PunchcardWriterScreen extends AbstractSmartContainerScreen<PunchcardWriterContainer> {
@@ -142,6 +146,12 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
                 .<GuiGameElement.GuiRenderBuilder>at(x - 50, y - 100 + 28, -100)
                 .scale(4.5f)
                 .render(ms);
+
+        if(menu.contentHolder.hasPunchcard())
+            GuiGameElement.of(CUBlockPartials.PUNCHCARD)
+                    .render(ms);
+
+        ms.popPose();
     }
 
     @Override

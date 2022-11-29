@@ -3,6 +3,7 @@ package com.fallenreaper.createutilities.content.blocks.mechanical_propeller;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
 import com.simibubi.create.content.contraptions.base.DirectionalKineticBlock;
+import com.simibubi.create.content.contraptions.wrench.IWrenchable;
 import com.simibubi.create.content.logistics.block.chute.AbstractChuteBlock;
 import com.simibubi.create.foundation.block.ITE;
 import com.simibubi.create.foundation.utility.worldWrappers.WrappedWorld;
@@ -21,7 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class MechanicalPropellerBlock extends DirectionalKineticBlock implements ITE<MechanicalPropellerBlockEntity> {
+public class MechanicalPropellerBlock extends DirectionalKineticBlock implements ITE<MechanicalPropellerBlockEntity>, IWrenchable {
     public MechanicalPropellerBlock(Properties properties) {
         super(properties);
     }
@@ -45,6 +46,7 @@ public class MechanicalPropellerBlock extends DirectionalKineticBlock implements
             world.removeBlockEntity(pos);
         }
     }
+
 
     @Override
     public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,

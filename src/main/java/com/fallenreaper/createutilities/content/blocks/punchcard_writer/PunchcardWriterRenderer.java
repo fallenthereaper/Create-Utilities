@@ -1,19 +1,17 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
 import com.fallenreaper.createutilities.index.CUBlockPartials;
-import com.fallenreaper.createutilities.index.CUItems;
-import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.render.CachedBufferer;
 import com.simibubi.create.foundation.tileEntity.renderer.SmartTileEntityRenderer;
-import com.simibubi.create.foundation.utility.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
+
+import static com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterRenderer.rotateCenteredInDirection;
 
 public class PunchcardWriterRenderer extends SmartTileEntityRenderer<PunchcardWriterBlockEntity> {
     public PunchcardWriterRenderer(BlockEntityRendererProvider.Context context) {
@@ -24,11 +22,12 @@ public class PunchcardWriterRenderer extends SmartTileEntityRenderer<PunchcardWr
     protected void renderSafe(PunchcardWriterBlockEntity tileEntityIn, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         var blockState = tileEntityIn.getBlockState();
         if (!tileEntityIn.inventory.getStackInSlot(0).isEmpty()) {
-            var blueprint = CachedBufferer.partial(CUBlockPartials.PUNCHCARD, blockState);
+            var indicator = CachedBufferer.partial(CUBlockPartials.PUNCHCARD, blockState);
             ItemRenderer itemRenderer = Minecraft.getInstance()
                     .getItemRenderer();
 
             var facing = blockState.getValue(PunchcardWriterBlock.HORIZONTAL_FACING);
+            /*
             ms.pushPose();
             TransformStack.cast(ms)
                     .centre()
@@ -38,11 +37,14 @@ public class PunchcardWriterRenderer extends SmartTileEntityRenderer<PunchcardWr
                             Mth.PI / 2)
                     .translate(0, 4.5 / 16f, 0)
                     .scale(.75f);
-            itemRenderer.renderStatic(tileEntityIn.inventory.getStackInSlot(0), ItemTransforms.TransformType.FIXED, light, overlay, ms, buffer, 0);
-            itemRenderer.renderStatic(CUItems.WATERING_CAN.asStack(), ItemTransforms.TransformType.FIXED, light, overlay, ms, buffer, 0);
 
-            //  blueprint.renderInto(ms, buffer.getBuffer(RenderType.solid()));
-            ms.popPose();
+             */
+            rotateCenteredInDirection(indicator, Direction.UP, facing);
+            indicator.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+           // itemRenderer.renderStatic(tileEntityIn.inventory.getStackInSlot(0), ItemTransforms.TransformType.FIXED, light, overlay, ms, buffer, 0);
+            //itemRenderer.renderStatic(CUItems.WATERING_CAN.asStack(), ItemTransforms.TransformType.FIXED, light, overlay, ms, buffer, 0);
+
+          //  ms.popPose();
         }
     }
 }

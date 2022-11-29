@@ -27,8 +27,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     public boolean hasBluePrint;
     public boolean hasFuel;
     public float dataGatheringProgress;
-    LazyOptional<IItemHandler> inventoryProvider;
-    int ticks;
+    public LazyOptional<IItemHandler> inventoryProvider;
     boolean shouldSendData;
 
     public TypewriterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -46,7 +45,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
         if (inventory.getStackInSlot(0).isEmpty())
             return;
         //TODO, redo this sometime
-        if (1 - fuelLevel + 1f / 128f < getFuelAddedByEach())
+        if (1 - (fuelLevel + 1f / 128f) < getFuelAddedByEach())
             return;
 
         inventory.getStackInSlot(0)

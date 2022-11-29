@@ -4,6 +4,7 @@ import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterScreen;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoor;
 import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingDoorBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.steam_furnace.ISteamProvider;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterScreen;
 import com.fallenreaper.createutilities.content.items.InstructionEntry;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
@@ -259,7 +260,7 @@ public class CommonEvents {
         BlockState state = event.getWorld().getBlockState(event.getPos());
 
         for (Block blocks : BLOCK_LIST) {
-            if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks))
+            if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks) || state.getBlock() instanceof ISteamProvider)
                 event.setUseBlock(Event.Result.DENY);
         }
     }

@@ -6,6 +6,7 @@ import com.fallenreaper.createutilities.content.items.DevItem;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import com.fallenreaper.createutilities.utils.IHaveHiddenToolTip;
 import com.fallenreaper.createutilities.utils.ToolTipHandler;
+import com.fallenreaper.createutilities.utils.data.IDevInfo;
 import com.fallenreaper.createutilities.utils.data.blocks.LiquidTankBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -77,6 +78,13 @@ public class ClientEvents {
 
 
                 }
+                 if(blockEntity instanceof IDevInfo devInfo && !(blockEntity instanceof LiquidTankBlockEntity) ) {
+
+                     event.getLeft().add("[DEBUG]");
+                    // event.getLeft().add(devInfo.getProvidedInfo().substring(0, 13));
+                     event.getLeft().add(devInfo.getProvidedInfo());
+
+                }
             }
         }
 
@@ -130,10 +138,7 @@ public class ClientEvents {
             }
         PunchcardItem.clientTick();
 
-        if (player.getMainHandItem().isStackable()) {
-            float mass = (float) player.getMainHandItem().getCount();
-            player.getDeltaMovement().scale(1f / mass);
-        }
+
 
     }
 

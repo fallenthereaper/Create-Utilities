@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.content.blocks.typewriter;
+package com.fallenreaper.createutilities.utils.data.blocks;
 
 import com.fallenreaper.createutilities.utils.InteractionHandler;
 import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
@@ -9,10 +9,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class TypewriterInteractionHandler extends InteractionHandler {
-
-    public TypewriterInteractionHandler(SmartTileEntity te) {
+public class FluidFlowInteraction extends InteractionHandler {
+    protected FluidNode fluidNode;
+    public FluidFlowInteraction(SmartTileEntity te, FluidNode fluidNode) {
         super(te);
+        this.fluidNode = fluidNode;
     }
 
     @Override
@@ -24,4 +25,10 @@ public class TypewriterInteractionHandler extends InteractionHandler {
     public void init() {
 
     }
+
+    @Override
+    public void tick() {
+        fluidNode.tick();
+    }
+
 }

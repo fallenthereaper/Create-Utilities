@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -148,9 +149,9 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         Component indent1 = new TextComponent(spacing + " ");
         Component arrow = new TextComponent("->").withStyle(ChatFormatting.DARK_GRAY);
         Component time = new TextComponent(getTotalTime(getMaxBurnTime(itemIn))).withStyle(ChatFormatting.GOLD);
-        String item = itemIn.isEmpty() ? lang.translate("bellow.content.inventory_empty").string() : itemIn.getItem().getName(itemIn).getString();
+        String item = itemIn.isEmpty() ? new TranslatableComponent("createutilities.bellow.content.inventory_empty").getString() : itemIn.getItem().getName(itemIn).getString();
         Component in = new TextComponent(item + " " + (itemIn.isEmpty() ? "" : "x") + (itemIn.getCount() <= 0 ? "" : itemIn.getCount())).withStyle(itemIn.isEmpty() ? ChatFormatting.RED : ChatFormatting.GREEN).withStyle(ChatFormatting.UNDERLINE);
-        Component status = new TextComponent(isValid ? lang.translate("bellow.content.status.active").string() :  lang.translate("bellow.content.status.paused").string()).withStyle(ChatFormatting.AQUA);
+        Component status = new TextComponent(isValid ? new TranslatableComponent("createutilities.bellow.content.status.active").toString() :  lang.translate("bellow.content.status.paused").string()).withStyle(ChatFormatting.AQUA);
         tooltip.add(indent1.plainCopy()
                 .append("Bellow Info:"));
         tooltip.add(arrow.plainCopy()

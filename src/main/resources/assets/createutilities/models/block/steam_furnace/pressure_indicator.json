@@ -7,23 +7,22 @@
 	},
 	"elements": [
 		{
-			"from": [7.5, 11, 0.7],
-			"to": [8.5, 13, 0.7],
-			"rotation": {"angle": 0, "axis": "y", "origin": [0, 11, -7.3]},
+			"from": [-0.5, -0.5, 0.95],
+			"to": [0.5, 2.5, 0.95],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 11, 0.7]},
 			"faces": {
-				"north": {"uv": [6.25, 12.25, 6.5, 12.75], "texture": "#2"},
+				"north": {"uv": [5, 14.25, 5.25, 15], "texture": "#2"},
 				"east": {"uv": [0, 0, 0, 0.5], "texture": "#2"},
-				"south": {"uv": [6.5, 12.25, 6.75, 12.75], "texture": "#2"},
+				"south": {"uv": [5, 14.25, 5.25, 15], "texture": "#2"},
 				"west": {"uv": [0, 0, 0, 0.5], "texture": "#2"},
 				"up": {"uv": [0.25, 0, 0, 0], "texture": "#2"},
 				"down": {"uv": [0.25, 0, 0, 0], "texture": "#2"}
 			}
 		}
 	],
-	"display": {},
 	"groups": [
 		{
-			"name": "indicator",
+			"name": "dial",
 			"origin": [0, 11, -7.3],
 			"color": 0,
 			"children": [0]

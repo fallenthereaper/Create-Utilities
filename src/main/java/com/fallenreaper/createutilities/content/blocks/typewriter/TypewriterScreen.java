@@ -162,11 +162,11 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         //   extraAreas = ImmutableList.of(new Rect2i(x + BG.width, y + BG.height + BG.height - 62 - 2, 84, 92 - 2));
         clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 97 - 14, new TextComponent("Off"));
 
-        switchButton = new SwitchButton(leftPos + 118 + BG.width - 175 , topPos + BG.height - 97,18, 18, AllIcons.I_ADD);
-         switchButtonAlt  = new SwitchButton(leftPos + 118 + BG.width - 223 , topPos + BG.height - 56,18, 18, AllIcons.I_REPLACE_ANY).withCallback(() -> linkTo("https://github.com/LegendaryReaper670/Create-Utilities"));
+     //   switchButton = new SwitchButton(leftPos + 118 + BG.width - 175 , topPos + BG.height - 97,18, 18, AllIcons.I_ADD);
+     //    switchButtonAlt  = new SwitchButton(leftPos + 118 + BG.width - 223 , topPos + BG.height - 56,18, 18, AllIcons.I_REPLACE_ANY).withCallback(() -> linkTo("https://github.com/LegendaryReaper670/Create-Utilities"));
 
-        addRenderableWidget(switchButtonAlt);
-        addRenderableWidget(switchButton);
+     //   addRenderableWidget(switchButtonAlt);
+     //   addRenderableWidget(switchButton);
         addRenderableWidget(closeButton);
         addRenderableWidget(confirmButton);
         addRenderableWidget(clickIndicator);
