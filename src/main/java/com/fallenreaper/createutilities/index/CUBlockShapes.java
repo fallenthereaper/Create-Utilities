@@ -23,7 +23,7 @@ public class CUBlockShapes {
             SPRINKLER_CEILING = shape(4, 13, 4, 12, 15, 12)
                     .add(1, 3, 1, 15, 13, 15)
                     .add(2, 0, 2, 14, 3, 14)
-                    .forDirectional(Direction.NORTH),
+                    .forDirectional(),
             TYPEWRITER = shape(0, 0, 0, 16, 3, 16)
                     .add(0, 3, 7, 16, 9, 16)
                     .forDirectional(Direction.NORTH),

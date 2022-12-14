@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.sliding_door;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.data.DoorLock;
+import com.fallenreaper.createutilities.core.data.DoorLock;
 import com.simibubi.create.content.curiosities.deco.SlidingDoorTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public class LockSlidingDoorBlockEntity extends SlidingDoorTileEntity {
     private DoorLock doorLock;
     boolean hasBound = false;
-//todo change addTotool tip so it has the punchcard item instead of googles and it will show stuff related to it
+//todo change addTotool tip, so it has the punchcard item instead of googles and it will show stuff related to it
     public LockSlidingDoorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }

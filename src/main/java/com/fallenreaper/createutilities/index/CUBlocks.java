@@ -8,8 +8,8 @@ import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingD
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlock;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlock;
-import com.fallenreaper.createutilities.utils.DefaultProperties;
-import com.fallenreaper.createutilities.utils.data.blocks.LiquidTankBlock;
+import com.fallenreaper.createutilities.core.utils.DefaultProperties;
+import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBlock;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.AllSections;
@@ -86,7 +86,7 @@ public class CUBlocks {
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .item()
             .transform(customItemModel())
-            .addLayer(() -> RenderType::cutoutMipped)
+            .addLayer(() -> RenderType::translucent)
             .defaultLoot()
             .register();
 
@@ -100,7 +100,7 @@ public class CUBlocks {
 
     public static final BlockEntry<SteamFurnaceBlock> STEAM_FURNACE = REGISTRATE.block("steam_furnace", SteamFurnaceBlock::new)
             .initialProperties(SharedProperties::copperMetal)
-            .properties(p -> p.lightLevel(SteamFurnaceBlock::getLightPower).strength(3.6F))
+            .properties(p -> p.lightLevel(SteamFurnaceBlock::getLightPower).strength(3.6F).sound(SoundType.NETHERITE_BLOCK))
             .transform(pickaxeOnly())
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .blockstate(BlockStateGen.horizontalBlockProvider(true))

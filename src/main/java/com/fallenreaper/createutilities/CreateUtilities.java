@@ -1,10 +1,10 @@
 package com.fallenreaper.createutilities;
 
-import com.fallenreaper.createutilities.data.doorlock.DoorLockManager;
-import com.fallenreaper.createutilities.events.CommonEvents;
+import com.fallenreaper.createutilities.core.data.Interactable;
+import com.fallenreaper.createutilities.core.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.core.events.CommonEvents;
 import com.fallenreaper.createutilities.index.*;
 import com.fallenreaper.createutilities.networking.ModPackets;
-import com.fallenreaper.createutilities.utils.data.Interactable;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
@@ -109,6 +109,7 @@ public class CreateUtilities {
         CUBlockPartials.register();
         CUBlockEntities.register();
         CUContainerTypes.register();
+        CUFluids.register();
         //
         addToBlockList(() -> Blocks.FURNACE);
         addToBlockList(() -> Blocks.CRAFTING_TABLE);

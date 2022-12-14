@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ccc",
+    "TBT",
+    "ccc"
+  ],
+  "key": {
+    "c": {
+      "item": "create:brass_ingot"
+    },
+    "B": {
+      "item": "minecraft:blast_furnace"
+    },
+    "T": {
+      "item": "create:fluid_tank"
+    }
+  },
+  "result": {
+    "item": "createutilities:steam_furnace",
+    "count": 1
+  }
+}

@@ -6,6 +6,7 @@ import com.fallenreaper.createutilities.content.armor.BrassJetPackItem;
 import com.fallenreaper.createutilities.content.armor.BrassSuitArmorItem;
 import com.fallenreaper.createutilities.content.items.*;
 import com.fallenreaper.createutilities.content.items.watering_can.WateringCanItem;
+import com.fallenreaper.createutilities.core.data.items.BaseItem;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.repack.registrate.util.entry.ItemEntry;
 import com.simibubi.create.repack.registrate.util.nullness.NonNullFunction;

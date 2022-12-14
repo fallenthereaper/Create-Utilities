@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.mixins;
 
-import com.fallenreaper.createutilities.utils.data.SwitchButton;
+import com.fallenreaper.createutilities.core.data.SwitchButton;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

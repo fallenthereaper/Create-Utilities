@@ -1,8 +1,8 @@
 package com.fallenreaper.createutilities.networking;
 
-import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterContainer;
 import com.simibubi.create.foundation.networking.SimplePacketBase;
+import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -52,7 +52,7 @@ public class InventoryEditPacket extends SimplePacketBase {
                 return;
             if (!(player.containerMenu instanceof PunchcardWriterContainer container))
                 return;
-            PunchcardWriterBlockEntity te = ((PunchcardWriterContainer) player.containerMenu).contentHolder;
+            SmartTileEntity te = ((PunchcardWriterContainer) player.containerMenu).contentHolder;
             ItemStackHandler itemstackHandler = container.contentHolder.inventory;
             itemstackHandler.setStackInSlot(0, itemStack);
             te.notifyUpdate();

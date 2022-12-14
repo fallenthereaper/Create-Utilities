@@ -50,5 +50,7 @@
   "item.createutilities.dev_item": "Dev Tool",
   "item.createutilities.red_wax": "Wax",
   "item.createutilities.watering_can": "Watering Can",
-  "createutilities.dev_item.description": "Dev Use Only"
+  "createutilities.dev_item.description": "Dev Use Only",
+  "createutilities.fluid.steam": "Steam",
+  "fluid.createutilities.steam": "Steam"
 }

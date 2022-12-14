@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-import static com.fallenreaper.createutilities.utils.MathUtil.isInsideCircle;
+import static com.fallenreaper.createutilities.core.utils.MathUtil.isInsideCircle;
 import static net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket;
 
 @Mixin(FarmBlock.class)
@@ -19,7 +19,7 @@ public class FarmBlockMixin extends Block {
     public FarmBlockMixin(Properties pProperties) {
         super(pProperties);
     }
-
+//todo: use proper mixins instead of overwriting
     /**
      * @author FallenReaper
      * @reason Null
@@ -33,7 +33,7 @@ public class FarmBlockMixin extends Block {
         }
 
         //messy code I will redo after release, as of now it's just a placeholder
-        for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-8, 1, -8), pPos.offset(8, 1, 8))) {
+        for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-12, 1, -12), pPos.offset(12, 1, 12))) {
             BlockEntity detectedBlock = pLevel.getBlockEntity(blockpos);
 
             if (detectedBlock instanceof SprinklerBlockEntity be) {

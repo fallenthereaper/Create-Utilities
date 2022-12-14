@@ -2,12 +2,14 @@ package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.index.CUConfig;
-import com.fallenreaper.createutilities.utils.data.IDevInfo;
-import com.fallenreaper.createutilities.utils.data.blocks.FluidNode;
+import com.fallenreaper.createutilities.core.data.IDevInfo;
+import com.fallenreaper.createutilities.core.data.blocks.liquidtank.FluidNode;
 import com.jozufozu.flywheel.repack.joml.Math;
+import com.simibubi.create.AllParticleTypes;
+import com.simibubi.create.Create;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
-import com.simibubi.create.content.contraptions.fluids.FluidFX;
+import com.simibubi.create.content.contraptions.fluids.particle.FluidParticleData;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 import com.simibubi.create.foundation.tileEntity.ComparatorUtil;
@@ -50,11 +52,11 @@ import java.util.Random;
 
 import static com.fallenreaper.createutilities.content.blocks.sprinkler.HorizontalAxisBlock.CEILING;
 import static com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler.*;
-import static com.fallenreaper.createutilities.utils.MathUtil.isInsideCircle;
+import static com.fallenreaper.createutilities.core.utils.MathUtil.isInsideCircle;
 import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlock.HORIZONTAL_FACING;
 
 //todo, redo this some day
-
+//------WIP------//
 public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGoggleInformation, IDevInfo {
     public State currentState;
     protected SmartFluidTankBehaviour tankBehaviour;
@@ -79,7 +81,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
 
     public Integer getRadius() {
-        this.radius = (int) Math.min(Math.abs((getSpeed() / 64) * 8), 8);
+        this.radius = (int) Math.min(Math.abs((getSpeed() / 128F) * 8), 12);
         return radius;
     }
 
@@ -137,7 +139,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         if (hasFluid()) {
             start();
-            if (isValidSpeed() && isLoaded() && getFluidAmount() > 10) {
+            if (isValidSpeed() && isLoaded() && getFluidAmount() != 0) {
                 canHydrate = true;
                 this.currentState = State.HYDRATING;
 
@@ -152,12 +154,18 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                 initiateParticles();
 
         } else {
-            if (isHydrating() && getFluidAmount() > 10)
-                applyEffects(getAABB(3), isLava());
-            if (isHydrating() && isWater() && getFluidAmount() > 10)
-                findFarmland();
+            if (isHydrating() && getFluidAmount() != 0) {
+                applyEffects(getAABB((int) aabb().getYsize()), isLava());
+                if (isWater())
+                    findFarmland();
+
+
+                refill();
+            }
+
+
         }
-        refill();
+
     }
 
     private void applyEffects(AABB aabb, boolean lava) {
@@ -183,7 +191,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                             return;
                         }
                         int entitiesAmount = trackedEntities.size();
-                        float value = 8f / entitiesAmount;
+                        float value = (float) getRadius() / entitiesAmount;
 
                         for (MobEffectInstance effectsInTheList : list) {
                             MobEffect actualEffect = effectsInTheList.getEffect();
@@ -276,21 +284,20 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
     protected void refill() {
         FluidNode.Flow flow;
-        if (!isHydrating())
-            return;
 
         flow = new FluidNode.Flow(true, getContainedFluid());
         flow.progress.tickChaser();
-        float multiplier = (getRadius() * getSpeed()) / 256f;
+        float multiplier = Math.abs(getSpeed() / getRadius()) + 8/16F;
         float ratio = multiplier / 8;
 
 
-        float flowSpeed = 1 / 16f + Mth.clamp(ratio, 0, 1);
-        flow.progress.setValue(java.lang.Math.min(flow.progress.getValue(), 1));
+        float flowSpeed = Mth.clamp(flow.progress.getValue() + multiplier, 0, 1);
+        flow.progress.setValue(flowSpeed);
 
 
         if (flow.progress.getValue() >= 1)
             getTank().drain(1, IFluidHandler.FluidAction.EXECUTE);
+        notifyUpdate();
 
     }
 
@@ -531,21 +538,22 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         angle = (time * speed / 3F) % 360F;
         float random = getLevel().getRandom().nextFloat();
         for (int i = 0; i < 4; i++) {
-            float alpha = (((angle*random * -3) + 90 * i) * ((float) Math.PI) / 180);
+            float alpha = (float) (((angle * -3) + 90 * i) * Math.PI) / 180F;
             float cosA = Math.cos(alpha);
             float sinA = Math.sin(alpha);
 
-            float acceleration = Math.min(Math.abs(getSpeed()) / 128f, 0.525f);
-            ParticleOptions particle = FluidFX.getFluidParticle(getContainedFluid());
+            Vec3 acceleration = new Vec3(Math.min(getSpeed() / 128F, 1F), Math.min(getSpeed()/128F, 1F),Math.min(getSpeed()/128F, 1F)).add(random*2.5, random*2.5,random*2.5).normalize();
+            ParticleOptions particle = new FluidParticleData(AllParticleTypes.FLUID_PARTICLE.get(), getContainedFluid());
+            Vec3 speedd = VecHelper.offsetRandomly(Vec3.ZERO, Create.RANDOM, 0.01f).add(acceleration.scale(-0.01f));
             boolean isCeiling = getBlockState().getValue(CEILING);
-
-            for (int k = 0; k <= 2; k++) {
+            float modifier = (float) getRadius() / 12F;
+            for (int k = 0; k <= 4; k++) {
                 float beta = k * ((float) Math.PI) / (180F);
 
 
                 this.getWorld().addParticle(particle,
-                        pos.x + (double) cosA * random * 2.0F, pos.y - (isCeiling ? 15 / 16f : 0), pos.z + (double) sinA * random * 2.0F,
-                        (acceleration * cosA), acceleration * (isCeiling ? Math.sin(-beta) : Math.cos(beta)), (acceleration * sinA));
+                        pos.x() +  (double) cosA / 2 , pos.y() - (isCeiling ? 15 / 16f : 0), pos.z()  + (double) sinA/2 ,
+                        (random * 1.25F * cosA) * modifier, random * 2F * (isCeiling ? Math.sin(-beta)  : Math.cos(beta)),  (random*1.25F * sinA) * modifier);
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
-import com.fallenreaper.createutilities.utils.ContainerBlockEntity;
-import com.fallenreaper.createutilities.utils.data.SwitchButton;
+import com.fallenreaper.createutilities.core.utils.ContainerBlockEntity;
+import com.fallenreaper.createutilities.core.data.SwitchButton;
 import com.simibubi.create.foundation.gui.container.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.container.ContainerBase;
 import net.minecraft.client.gui.components.AbstractWidget;

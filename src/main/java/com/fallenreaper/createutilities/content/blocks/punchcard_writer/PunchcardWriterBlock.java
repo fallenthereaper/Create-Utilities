@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
-import com.fallenreaper.createutilities.utils.ContainerUtil;
+import com.fallenreaper.createutilities.core.utils.ContainerUtil;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.ITE;
 import net.minecraft.core.BlockPos;
@@ -36,6 +36,7 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
         ItemStack stack = player.getItemInHand(handIn);
         if (!worldIn.isClientSide && worldIn.getBlockEntity(pos) instanceof final PunchcardWriterBlockEntity be) {
             be.addAccess();
+
             withTileEntityDo(worldIn, pos,
                     card -> NetworkHooks.openGui((ServerPlayer) player, card, card::sendToContainer));
         }

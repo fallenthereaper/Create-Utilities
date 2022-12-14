@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.mixins;
 
-import com.fallenreaper.createutilities.utils.data.IThirdPersonAnimation;
+import com.fallenreaper.createutilities.core.data.IThirdPersonAnimation;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.InteractionHand;

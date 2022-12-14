@@ -2,7 +2,7 @@
 package com.fallenreaper.createutilities.networking;
 
 
-import com.fallenreaper.createutilities.content.items.InstructionManager;
+import com.fallenreaper.createutilities.core.data.punchcard.InstructionManager;
 import com.simibubi.create.foundation.networking.SimplePacketBase;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;

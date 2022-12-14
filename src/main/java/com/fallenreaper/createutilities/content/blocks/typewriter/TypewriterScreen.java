@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.typewriter;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.content.items.InstructionManager;
+import com.fallenreaper.createutilities.core.data.punchcard.InstructionManager;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
@@ -9,7 +9,7 @@ import com.fallenreaper.createutilities.index.CUItems;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.ModPackets;
 import com.fallenreaper.createutilities.networking.TypewriterEditPacket;
-import com.fallenreaper.createutilities.utils.data.SwitchButton;
+import com.fallenreaper.createutilities.core.data.SwitchButton;
 import com.google.common.collect.ImmutableList;
 import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;

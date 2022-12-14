@@ -83,6 +83,7 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
         return false;
     }
 
+
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
         return face.getAxis() == state.getValue(HORIZONTAL_FACING)

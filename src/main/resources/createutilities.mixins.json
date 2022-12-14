@@ -7,8 +7,9 @@
   "mixins": [
     "FarmBlockMixin",
     "FurnaceBlockEntityMixin",
-    "ItemMixin"
-
+    "ItemMixin",
+    "SteamEngineBlockEntityMixin",
+    "SteamEngineBlockMixin"
   ],
   "client": [
     "HumanoidModelMixin"
