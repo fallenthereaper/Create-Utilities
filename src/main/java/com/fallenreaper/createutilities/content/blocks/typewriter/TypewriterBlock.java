@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.content.blocks.typewriter;
 
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
-import com.fallenreaper.createutilities.utils.ContainerUtil;
+import com.fallenreaper.createutilities.core.utils.ContainerUtil;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.ITE;

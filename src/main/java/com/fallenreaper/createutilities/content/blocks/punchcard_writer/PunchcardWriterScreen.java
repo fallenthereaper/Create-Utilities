@@ -1,16 +1,16 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.content.items.InstructionEntry;
+import com.fallenreaper.createutilities.core.data.punchcard.InstructionEntry;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.InventoryEditPacket;
 import com.fallenreaper.createutilities.networking.ModPackets;
-import com.fallenreaper.createutilities.utils.data.PunchcardWriter;
-import com.fallenreaper.createutilities.utils.data.PunchcardWriterManager;
-import com.fallenreaper.createutilities.utils.data.SwitchButton;
+import com.fallenreaper.createutilities.core.data.punchcard.PunchcardWriter;
+import com.fallenreaper.createutilities.core.data.punchcard.PunchcardWriterManager;
+import com.fallenreaper.createutilities.core.data.SwitchButton;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.relays.advanced.sequencer.Instruction;

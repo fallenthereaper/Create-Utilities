@@ -17,8 +17,8 @@ import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnac
 import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceRenderer;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterRenderer;
-import com.fallenreaper.createutilities.utils.data.blocks.LiquidTankBlockEntity;
-import com.fallenreaper.createutilities.utils.data.blocks.LiquidTankRenderer;
+import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBlockEntity;
+import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankRenderer;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.curiosities.deco.SlidingDoorRenderer;
 import com.simibubi.create.repack.registrate.util.entry.BlockEntityEntry;
@@ -70,7 +70,7 @@ public class CUBlockEntities {
     public static final BlockEntityEntry<SteamFurnaceBlockEntity> STEAM_FURNACE = CreateUtilities.registrate()
             .tileEntity("steam_furnace", SteamFurnaceBlockEntity::new)
             .validBlocks(CUBlocks.STEAM_FURNACE)
-            .renderer(()-> SteamFurnaceRenderer::new)
+            .renderer(() -> SteamFurnaceRenderer::new)
             .register();
 
     public static void register() {

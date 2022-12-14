@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.bellow;
 
-import com.fallenreaper.createutilities.utils.MathUtil;
+import com.fallenreaper.createutilities.core.utils.MathUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.base.KineticTileEntityRenderer;

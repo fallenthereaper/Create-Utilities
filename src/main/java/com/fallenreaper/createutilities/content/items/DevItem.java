@@ -1,8 +1,9 @@
 package com.fallenreaper.createutilities.content.items;
 
-import com.fallenreaper.createutilities.utils.data.blocks.FluidNodeNetwork;
-import com.fallenreaper.createutilities.utils.data.blocks.IFluidTransferProvider;
-import com.fallenreaper.createutilities.utils.data.blocks.LiquidTankBlockEntity;
+import com.fallenreaper.createutilities.core.data.items.BaseItem;
+import com.fallenreaper.createutilities.core.data.blocks.liquidtank.FluidNodeNetwork;
+import com.fallenreaper.createutilities.core.data.blocks.liquidtank.IFluidTransferProvider;
+import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBlockEntity;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;

@@ -2,12 +2,12 @@ package com.fallenreaper.createutilities.content.blocks.steam_furnace;
 
 public enum FurnaceState {
     PRODUCING,
-    LIT,
-    NONE, LOADED;
+    ACTIVE,
+    NONE, LOADED, RUNNING;
 
 
-    public boolean isLit() {
-        return this == LIT;
+    public boolean isActive() {
+        return this == ACTIVE;
     }
 
     public boolean isProducing() {
@@ -20,5 +20,9 @@ public enum FurnaceState {
 
     public boolean isLoaded() {
         return this == LOADED;
+    }
+
+    public boolean isRunning() {
+        return this == RUNNING;
     }
 }

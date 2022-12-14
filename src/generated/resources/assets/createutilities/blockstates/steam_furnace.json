@@ -42,7 +42,7 @@
       "y": 270
     },
     "facing=west,lit=false,creative_lit=true": {
-      "model": "createutilities:block/steam_furnace/block_lit",
+      "model": "createutilities:block/steam_furnace/block_creative_lit",
       "y": 270
     },
     "facing=south,lit=true,creative_lit=true": {

@@ -59,7 +59,7 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
                     CachedBufferer.partial(CUBlockPartials.SPRINKLER_PROPAGATOR, te.getBlockState());
             if (ceiling)
                 model.rotateCentered(Direction.NORTH, (float) (Math.PI));
-            kineticRotationTransform(model, te, direction.getAxis(), angle, lightInFront).renderInto(ms, vb);
+            kineticRotationTransform(model, te, direction.getAxis(), angle, light).renderInto(ms, vb);
 
 
             KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, vb, light);

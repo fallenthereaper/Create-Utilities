@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.bellow;
 
 import com.fallenreaper.createutilities.index.CUBlockPartials;
-import com.fallenreaper.createutilities.utils.MathUtil;
+import com.fallenreaper.createutilities.core.utils.MathUtil;
 import com.jozufozu.flywheel.api.MaterialManager;
 import com.jozufozu.flywheel.api.instance.DynamicInstance;
 import com.jozufozu.flywheel.core.materials.oriented.OrientedData;

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+//------WIP------//
 public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, MenuProvider {
     public float fuelLevel;
     public TypewriterItemHandler inventory;

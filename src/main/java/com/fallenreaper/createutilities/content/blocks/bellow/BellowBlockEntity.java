@@ -2,27 +2,38 @@ package com.fallenreaper.createutilities.content.blocks.bellow;
 
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.utils.IFurnaceBurnTimeAccessor;
+import com.fallenreaper.createutilities.content.blocks.steam_furnace.ISteamProvider;
+import com.fallenreaper.createutilities.core.utils.IFurnaceBurnTimeAccessor;
+import com.fallenreaper.createutilities.index.CUBlocks;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
 import java.util.function.Consumer;
+
+import static com.fallenreaper.createutilities.core.events.CommonEvents.BLOCK_LIST;
 
 public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleInformation {
     public int timer;
@@ -34,6 +45,24 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
     public BellowBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
         setLazyTickRate(20);
+    }
+
+    @SubscribeEvent
+    public static void cancelRightClickInteraction(PlayerInteractEvent.RightClickBlock event) {
+        ItemStack item = event.getItemStack();
+        if (!(item.getItem() instanceof BlockItem blockItem))
+            return;
+        if (blockItem.getBlock() != CUBlocks.BELLOWS.get())
+            return;
+        if (!event.getFace().equals(Direction.UP))
+            return;
+
+        BlockState state = event.getWorld().getBlockState(event.getPos());
+
+        for (Block blocks : BLOCK_LIST) {
+            if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks) || state.getBlock() instanceof ISteamProvider)
+                event.setUseBlock(Event.Result.DENY);
+        }
     }
 
     public ItemStack getItemIn() {

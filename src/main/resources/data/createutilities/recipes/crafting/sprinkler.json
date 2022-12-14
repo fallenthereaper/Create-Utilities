@@ -1,13 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " # ",
+    "A#A",
     "cTc",
     " c "
   ],
   "key": {
     "#": {
       "item": "create:shaft"
+    },
+    "A": {
+      "item": "create:andesite_alloy"
     },
     "c": {
       "tag": "forge:ingots/copper"

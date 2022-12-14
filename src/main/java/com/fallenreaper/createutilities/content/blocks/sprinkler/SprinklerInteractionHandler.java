@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
-import com.fallenreaper.createutilities.utils.InteractionHandler;
+import com.fallenreaper.createutilities.core.utils.InteractionHandler;
 import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;

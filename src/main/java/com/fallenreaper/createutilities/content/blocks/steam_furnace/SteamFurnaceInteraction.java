@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.steam_furnace;
 
-import com.fallenreaper.createutilities.utils.InteractionHandler;
+import com.fallenreaper.createutilities.core.utils.InteractionHandler;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 import com.simibubi.create.foundation.tileEntity.SmartTileEntity;

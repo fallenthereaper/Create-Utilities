@@ -1,9 +1,9 @@
 package com.fallenreaper.createutilities.content.blocks.steam_furnace;
 
+import com.fallenreaper.createutilities.core.data.blocks.InteractableBlockEntity;
+import com.fallenreaper.createutilities.core.utils.ContainerUtil;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
-import com.fallenreaper.createutilities.utils.ContainerUtil;
-import com.fallenreaper.createutilities.utils.data.blocks.InteractableBlockEntity;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.content.contraptions.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ITE;
@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -57,18 +58,21 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
         builder.add(CREATIVE_LIT);
     }
     public static int getLightPower(BlockState state) {
-        return state.getValue(LIT) ? 7 : state.getValue(CREATIVE_LIT) ? 12 : 0;
+        return state.getValue(LIT) ? 7 : state.getValue(CREATIVE_LIT) ? 15 : 0;
     }
 
+    @Override
+    public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
+        return super.updateShape(pState, pDirection, pNeighborState, pLevel, pCurrentPos, pNeighborPos);
+    }
 
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity blockentity = pLevel.getBlockEntity(pPos);
             if (blockentity instanceof SteamFurnaceBlockEntity te) {
                 if (pLevel instanceof ServerLevel) {
-
-                        ContainerUtil.dropContents(pLevel, pPos, te.getInventory());
-                        pLevel.removeBlockEntity(pPos);
+                    te.itemStackHandlers.forEach(handler ->  ContainerUtil.dropContents(pLevel, pPos, handler));
+                    pLevel.removeBlockEntity(pPos);
 
 
                     pLevel.removeBlockEntity(pPos);
@@ -92,6 +96,24 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
         }
         return super.use(state, world, pos, player, hand, ray);
     }
+
+    @Override
+    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof InteractableBlockEntity be) {
+            return be.getLightEmission(state, level, pos);
+        }
+        return super.getLightEmission(state, level, pos);
+    }
+
+    @Override
+    public void fallOn(Level pLevel, BlockState pState, BlockPos pPos, Entity pEntity, float fallDistance) {
+        BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+        withTileEntityDo(pLevel,pPos, (te) -> te.onFall(pLevel,pPos, pState,pEntity, fallDistance ));
+        super.fallOn(pLevel, pState, pPos, pEntity, fallDistance);
+    }
+
+
     @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.MODEL;
@@ -102,7 +124,7 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
         BlockEntity te = pLevel.getBlockEntity(pPos);
         if(pState.hasBlockEntity()) {
             if(te instanceof SteamFurnaceBlockEntity be) {
-                if (be.isProducing()) {
+                if (be.getState().isProducing()) {
                     if (!pEntity.fireImmune() && pEntity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) pEntity)) {
                         pEntity.hurt(DamageSource.HOT_FLOOR, 1.0F/ 4.0F);
                      //   pLevel.playSound(null, pPos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.75f, 1.0f);
@@ -122,5 +144,31 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return CUBlockShapes.STEAM_FURNACE.get(state.getValue(HORIZONTAL_FACING));
+    }
+    @Override
+    public int getAnalogOutputSignal(BlockState pBlockState, Level pLevel, BlockPos pPos) {
+        BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+        if (blockEntity instanceof InteractableBlockEntity be) {
+            return be.getOutputSignal();
+        }
+        return super.getAnalogOutputSignal(pBlockState, pLevel, pPos);
+    }
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+    public static void updateBoilerState(BlockState pState, Level pLevel, BlockPos tankPos) {
+        BlockState tankState = pLevel.getBlockState(tankPos);
+        if (!(tankState.getBlock()instanceof SteamFurnaceBlock tank))
+            return;
+        SteamFurnaceBlockEntity tankTE = tank.getTileEntity(pLevel, tankPos);
+        if (tankTE == null)
+            return;
+
+        tankTE.updateState();
+    }
+
+    public float getProducedSteam() {
+        return 0;
     }
 }

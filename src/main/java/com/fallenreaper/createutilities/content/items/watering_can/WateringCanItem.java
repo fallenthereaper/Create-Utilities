@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.items.watering_can;
 
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler;
-import com.fallenreaper.createutilities.content.items.BaseItem;
+import com.fallenreaper.createutilities.core.data.items.BaseItem;
 import com.jozufozu.flywheel.repack.joml.Math;
 import com.simibubi.create.content.contraptions.fluids.tank.FluidTankTileEntity;
 import com.simibubi.create.content.contraptions.particle.CubeParticleData;
@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.fallenreaper.createutilities.utils.MathUtil.isInsideCircle;
+import static com.fallenreaper.createutilities.core.utils.MathUtil.isInsideCircle;
 
 //todo: actually work on this, ex: use capabilities also add a specialized tool tip for item tanks, also look at how supplementaries do jars
 public class WateringCanItem extends BaseItem {

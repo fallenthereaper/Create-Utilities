@@ -1,7 +1,38 @@
 package com.fallenreaper.createutilities.content.blocks.steering_wheel;
 
 /*
-public class SteeringWheelBlock extends DirectionalKineticBlock  implements ITE<SteeringWheelBlockEntity> {
+import com.fallenreaper.createutilities.index.CUBlockEntities;
+import com.fallenreaper.createutilities.index.CUBlockPartials;
+import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUBlocks;
+import com.jozufozu.flywheel.core.PartialModel;
+import com.simibubi.create.content.contraptions.base.DirectionalKineticBlock;
+import com.simibubi.create.foundation.block.ITE;
+import com.simibubi.create.foundation.config.AllConfigs;
+import com.simibubi.create.foundation.utility.Iterate;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+public class SteeringWheelBlock extends DirectionalKineticBlock implements ITE<SteeringWheelBlockEntity> {
    int speed;
     boolean shouldRotate;
    public SteeringWheelBlock(Properties properties) {
@@ -145,6 +176,7 @@ public class SteeringWheelBlock extends DirectionalKineticBlock  implements ITE<
    }
 
 
+
    public boolean getRayTrace(BlockHitResult blockRayTraceResult, BlockPos pos, BlockState state) {
 
        Vec3 offset = blockRayTraceResult.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
@@ -175,4 +207,6 @@ public class SteeringWheelBlock extends DirectionalKineticBlock  implements ITE<
 
 
 }
-*/
+
+
+ */

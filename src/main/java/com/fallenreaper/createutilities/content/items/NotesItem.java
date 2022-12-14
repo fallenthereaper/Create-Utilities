@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.content.items;
 
 
+import com.fallenreaper.createutilities.core.data.items.BaseItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
