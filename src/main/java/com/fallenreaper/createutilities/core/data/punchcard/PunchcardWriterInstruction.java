@@ -5,11 +5,11 @@ import com.fallenreaper.createutilities.core.data.InstructionType;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.simibubi.create.foundation.utility.Lang;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public class PunchcardWriterInstruction {
     protected InstructionType type;
-    protected TextComponent description;
+    protected Component description;
     protected GuiTextures texture;
     protected CompoundTag data;
 

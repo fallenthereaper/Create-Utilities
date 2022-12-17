@@ -7,8 +7,8 @@ import com.simibubi.create.content.logistics.block.display.target.DisplayTargetS
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -22,7 +22,7 @@ public class BellowDisplaySource extends NumericSingleLineDisplaySource {
             return EMPTY_LINE;
 
 
-        return new TextComponent(te.getTotalTime(te.getMaxBurnTime(te.getItemIn())));
+        return Component.literal(te.getTotalTime(te.getMaxBurnTime(te.getItemIn())));
     }
 
     @Override

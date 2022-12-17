@@ -3,7 +3,6 @@ package com.fallenreaper.createutilities.core.utils;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
 import com.google.common.primitives.Ints;
-import com.jozufozu.flywheel.repack.joml.Vector3d;
 import com.simibubi.create.foundation.render.SuperByteBuffer;
 import com.simibubi.create.foundation.utility.Couple;
 import net.minecraft.core.BlockPos;
@@ -82,25 +81,25 @@ public class MiscUtil {
     }
 
     public static boolean isInsideCircle(double radius, BlockPos blockPos, BlockPos target) {
-        Vector3d centerPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        Vector3d targetPos = new Vector3d(target.getX(), target.getY(), target.getZ());
-        double distance = (int) centerPos.distance(targetPos);
+        Vec3 centerPos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        Vec3 targetPos = new Vec3(target.getX(), target.getY(), target.getZ());
+        double distance = (int) centerPos.distanceTo(targetPos);
 
         return distance <= radius;
 
     }
 
     public static boolean isInsideCircleHorizontal(double radius, BlockPos blockPos, BlockPos target) {
-        Vector3d centerPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        Vector3d targetPos = new Vector3d(target.getX(), target.getY(), target.getZ());
-        double distance = (int) centerPos.distance(targetPos);
+        Vec3 centerPos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        Vec3 targetPos = new Vec3(target.getX(), target.getY(), target.getZ());
+        double distance = (int) centerPos.distanceTo(targetPos);
 
         return distance <= radius;
 
     }
 
-    public static boolean isInsideCircle(double radius, Vector3d center, Vector3d target) {
-        double distance = center.distance(target);
+    public static boolean isInsideCircle(double radius, Vec3 center, Vec3 target) {
+        double distance = center.distanceTo(target);
         return distance <= radius;
     }
 

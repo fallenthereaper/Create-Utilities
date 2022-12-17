@@ -59,7 +59,7 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
         builder.add(CREATIVE_LIT);
     }
     public static int getLightPower(BlockState state) {
-        return state.getValue(LIT) ? 7 : state.getValue(CREATIVE_LIT) ? 15 : 0;
+        return state.getValue(LIT) ? 7 : state.getValue(CREATIVE_LIT) ? 14 : 0;
     }
 
     @Override

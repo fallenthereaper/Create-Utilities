@@ -5,9 +5,9 @@ import com.fallenreaper.createutilities.content.blocks.punchcard_writer.Punchcar
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterScreen;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterContainer;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterScreen;
-import com.simibubi.create.repack.registrate.builders.MenuBuilder;
-import com.simibubi.create.repack.registrate.util.entry.MenuEntry;
-import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
+import com.tterrag.registrate.builders.MenuBuilder;
+import com.tterrag.registrate.util.entry.MenuEntry;
+import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.world.inventory.AbstractContainerMenu;

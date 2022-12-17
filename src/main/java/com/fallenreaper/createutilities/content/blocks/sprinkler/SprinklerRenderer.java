@@ -2,7 +2,6 @@ package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.jozufozu.flywheel.backend.Backend;
-import com.jozufozu.flywheel.repack.joml.Math;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -18,6 +17,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -42,9 +42,9 @@ public class SprinklerRenderer extends KineticTileEntityRenderer {
         float time = AnimationTickHolder.getRenderTime(te.getLevel());
         float speed = te.getSpeed();
         if (speed > 0)
-            speed = Math.clamp(speed, 64, 64 * 8);
+            speed = Mth.clamp(speed, 64, 64 * 8);
         if (speed < 0)
-            speed = Math.clamp(speed, -64 * 8, -64);
+            speed = Mth.clamp(speed, -64 * 8, -64);
 
         float angle = (time * speed * 2 / 10f) % 360;
 

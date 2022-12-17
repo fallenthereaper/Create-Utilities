@@ -31,14 +31,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -66,11 +65,6 @@ public class CommonEvents {
 
     }
 
-    public static void keyboardInput(InputEvent.KeyInputEvent keyInputEvent) {
-
-
-    }
-
     public static void itemExpire(ItemExpireEvent itemExpireEvent) {
         PunchcardItem.removeAfterDespawn(itemExpireEvent);
 
@@ -81,8 +75,8 @@ public class CommonEvents {
     }
 
     @SubscribeEvent
-    public static void onLoadWorld(WorldEvent.Load event) {
-        LevelAccessor world = event.getWorld();
+        public static void onLoadWorld(LevelEvent.Load event) {
+        LevelAccessor world = event.getLevel();
         CreateUtilities.DOORLOCK_MANAGER.levelLoaded(world);
     }
 
@@ -95,7 +89,7 @@ public class CommonEvents {
 
     }
 
-    public void onWorldTick(TickEvent.WorldTickEvent event) {
+    public void onWorldTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.START)
             return;
 
@@ -123,15 +117,14 @@ public class CommonEvents {
     //TODO, move this to punchcard item class
     @SubscribeEvent
     public void onLivingEntityUseItem(PlayerInteractEvent.RightClickBlock event) {
-        boolean isPlayer = event.getEntity() instanceof Player;
+        boolean isPlayer = event.getEntity() != null;
         BlockPos clickedPos = event.getPos();
-        BlockEntity be = event.getWorld().getBlockEntity(clickedPos);
+        BlockEntity be = event.getLevel().getBlockEntity(clickedPos);
         ItemStack itemStack = event.getItemStack();
         UUID id;
         List<InstructionEntry> list;
 
-        if (!(event.getEntity() instanceof Player player))
-            return;
+        Player player = event.getEntity();
         if (!(itemStack.getItem() instanceof PunchcardItem item))
             return;
         if (!(player.getLevel().getBlockState(clickedPos).getBlock() instanceof LockSlidingDoor))

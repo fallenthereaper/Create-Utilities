@@ -1,13 +1,9 @@
 package com.fallenreaper.createutilities.core.data.punchcard;
 
 import com.fallenreaper.createutilities.core.data.TextIcon;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("all")
 public class PunchcardTextWriter {
@@ -166,21 +162,7 @@ public class PunchcardTextWriter {
                 this.addPixel(new Point(yy, xx), this.full);
     }
 
-    @Deprecated
-    public TextComponent getLines(PunchcardTextWriter punchcardWriter, ChatFormatting formatting) {
-        List<TextComponent> dataList = new ArrayList<>();
 
-        for (int i = 1; i < punchcardWriter.getYsize() + 1; i++) {
-            int max = i * punchcardWriter.getXsize();
-            int min = Math.max(max - this.getXsize(), 0);
-            dataList.add((TextComponent) new TextComponent("   " + punchcardWriter.getRawText().substring(min, max)).withStyle(formatting));
-        }
-
-        for (TextComponent component : dataList) {
-            return component;
-        }
-        return null;
-    }
 
     @Deprecated
     public boolean find(Point pixel) {

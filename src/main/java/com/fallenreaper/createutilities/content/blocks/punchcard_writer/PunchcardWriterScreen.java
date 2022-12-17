@@ -1,16 +1,16 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.core.data.punchcard.InstructionEntry;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
+import com.fallenreaper.createutilities.core.data.SwitchButton;
+import com.fallenreaper.createutilities.core.data.punchcard.InstructionEntry;
+import com.fallenreaper.createutilities.core.data.punchcard.PunchcardWriter;
+import com.fallenreaper.createutilities.core.data.punchcard.PunchcardWriterManager;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.InventoryEditPacket;
 import com.fallenreaper.createutilities.networking.ModPackets;
-import com.fallenreaper.createutilities.core.data.punchcard.PunchcardWriter;
-import com.fallenreaper.createutilities.core.data.punchcard.PunchcardWriterManager;
-import com.fallenreaper.createutilities.core.data.SwitchButton;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.relays.advanced.sequencer.Instruction;
@@ -22,6 +22,7 @@ import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
+import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.ChatFormatting;
@@ -31,7 +32,6 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -93,7 +93,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
                         List<Component> tooltipLines = getInventory().getStackInSlot(0).getTooltipLines(getMenu().player, TooltipFlag.Default.NORMAL);
                         //         tooltipLines.remove(Math.min(writer.getTextWriter().getYsize() + 2, tooltipLines.size()));
                        // tooltipLines.remove(1);
-                        tooltipLines.set(0, new TextComponent(" " + "Preview").withStyle(ChatFormatting.GOLD));
+                        tooltipLines.set(0, Component.literal(" " + "Preview").withStyle(ChatFormatting.GOLD));
                         PoseStack poseStack = new PoseStack();
                         poseStack.pushPose();
                         poseStack.scale(1.25F, 1.25F, 0);
@@ -201,9 +201,9 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     public void initTooltips() {
 
 
-        resetButton.getToolTip().add(new TextComponent(lang.translate("gui.punchcardwriter.button.reset").string()));
-        saveButton.getToolTip().add(new TextComponent(lang.translate("gui.punchcardwriter.button.save").string()));
-        removeButton.getToolTip().add(new TextComponent(lang.translate("gui.punchcardwriter.button.remove").string()));
+        resetButton.getToolTip().add(Component.literal(lang.translate("gui.punchcardwriter.button.reset").string()));
+        saveButton.getToolTip().add(Component.literal(lang.translate("gui.punchcardwriter.button.save").string()));
+        removeButton.getToolTip().add(Component.literal(lang.translate("gui.punchcardwriter.button.remove").string()));
     }
 
     //todo: add autosaving buttonswitch
@@ -216,13 +216,13 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         saveButton = new IconButton(leftPos + 32 + BG.width - (60 * 3) + 32, topPos + BG.height - (42 - 18), AllIcons.I_CONFIG_SAVE);
         autosaveSwitch = new SwitchButton(leftPos + 40 + BG.width - (60 * 3) + 32, topPos + BG.height ,18, 18, AllIcons.I_PLAY);
         heightModifier = new ScrollInput(x + 75, topPos + 150, 24, 5).withRange(2, 16)
-                .titled(new TextComponent("Height"))
+                .titled(Component.literal("Height"))
                 .setState(2)
                 .withShiftStep(16 / 2);
         heightModifier.onChanged();
 
         widthModifier = new ScrollInput(x + 75, topPos + 161, 24, 5).withRange(2, 16)
-                .titled(new TextComponent("Width").append(String.valueOf(this.writer.getWidth())))
+                .titled(Component.literal("Width").append(String.valueOf(this.writer.getWidth())))
                 .setState(2)
                 .withShiftStep(16 / 2);
         widthModifier.onChanged();
@@ -240,8 +240,8 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
     private void initGatheringSettings() {
         int x = getGuiLeft();
         int y = getGuiTop();
-        lineLabel = new Label(x + 65, y + 70 - 5, net.minecraft.network.chat.TextComponent.EMPTY).withShadow();
-        lineLabel.text = new net.minecraft.network.chat.TextComponent(Lang.builder(CreateUtilities.ID).translate("gui.punchcardwriter.scroll_input.title").string());
+        lineLabel = new Label(x + 65, y + 70 - 5, Components.empty()).withShadow();
+        lineLabel.text = Component.literal(Lang.builder(CreateUtilities.ID).translate("gui.punchcardwriter.scroll_input.title").string());
 
         optionsInput = new SelectionScrollInput(x + 61, y + 70 - 5, 64 - 4, 16).forOptions(getOptions())
                 .writingTo(lineLabel)

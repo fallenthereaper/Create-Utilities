@@ -38,7 +38,7 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
             be.addAccess();
 
             withTileEntityDo(worldIn, pos,
-                    card -> NetworkHooks.openGui((ServerPlayer) player, card, card::sendToContainer));
+                    card -> NetworkHooks.openScreen((ServerPlayer) player, card, card::sendToContainer));
         }
 
 

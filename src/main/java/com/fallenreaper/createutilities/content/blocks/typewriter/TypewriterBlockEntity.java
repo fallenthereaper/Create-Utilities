@@ -5,7 +5,6 @@ import com.simibubi.create.foundation.tileEntity.TileEntityBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Inventory;
@@ -90,7 +89,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
 
     @Override
     public Component getName() {
-        return new TextComponent("Typewriter");
+        return Component.literal("Typewriter");
     }
 
     public boolean hasBlueprintIn() {
@@ -101,7 +100,7 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
 
     @Override
     public Component getDisplayName() {
-        return new TextComponent("Typewriter");
+        return Component.literal("Typewriter");
     }
 
     @Override
@@ -131,9 +130,10 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
         inventory.deserializeNBT(compound.getCompound("Inventory"));
     }
 
+
     @Override
-    public void setRemoved() {
-        super.setRemoved();
+    public void invalidate() {
+        super.invalidate();
         inventoryProvider.invalidate();
     }
 
@@ -153,8 +153,8 @@ public class TypewriterBlockEntity extends SmartTileEntity implements Nameable, 
     }
 
     @Override
-    public void writeSafe(CompoundTag tag, boolean clientPacket) {
-        super.writeSafe(tag, clientPacket);
+    public void writeSafe(CompoundTag tag) {
+        super.writeSafe(tag);
     }
 
     @NotNull

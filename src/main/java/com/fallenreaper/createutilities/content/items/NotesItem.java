@@ -5,7 +5,6 @@ import com.fallenreaper.createutilities.core.data.items.BaseItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -25,7 +24,7 @@ public class NotesItem extends BaseItem {
     public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> tooltip, @NotNull TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
         if (pStack.hasTag()) {
-            tooltip.add(new TextComponent(pStack.getTag().getString("Description")).withStyle(ChatFormatting.GREEN).append(" ").append("Pos:").append(NbtUtils.readBlockPos(pStack.getTag().getCompound("DoorPosition")).toString()).withStyle(ChatFormatting.YELLOW));
+            tooltip.add(Component.literal(pStack.getTag().getString("Description")).withStyle(ChatFormatting.GREEN).append(" ").append("Pos:").append(NbtUtils.readBlockPos(pStack.getTag().getCompound("DoorPosition")).toString()).withStyle(ChatFormatting.YELLOW));
 
         }
     }

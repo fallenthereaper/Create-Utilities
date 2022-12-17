@@ -8,9 +8,8 @@ import com.fallenreaper.createutilities.networking.ModPackets;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
-import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
+import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -18,9 +17,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -60,13 +57,13 @@ public class CreateUtilities {
 
         @Override
         public @NotNull Component getDisplayName() {
-            return new TextComponent("Create Utilities");
+            return Component.literal("Create Utilities");
         }
     };
     public static final Interactable.IDraggable test = (mouseX, mouseY, coords, rightClick) -> System.out.println(mouseX);
 
 
-    private static final NonNullSupplier<CreateRegistrate> registrate = CreateRegistrate.lazy(ID);
+    private static final NonNullSupplier<CreateRegistrate> registrate = () -> CreateRegistrate.create(ID);
     public static List<Block> BLOCKLIST = new ArrayList<>();
     public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
 
@@ -128,7 +125,7 @@ public class CreateUtilities {
     private static void setup(final FMLCommonSetupEvent event) {
         // some preinit code
         LOGGER.info("HELLO FROM PREINIT");
-        LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+        LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getName());
     }
 
     private static void enqueueIMC(final InterModEnqueueEvent event) {
@@ -160,12 +157,4 @@ public class CreateUtilities {
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
     // Event bus for receiving Registry Events)
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-        @SubscribeEvent
-        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
-            // register a new block here
-            LOGGER.info("HELLO from Register Block");
-        }
-    }
 }

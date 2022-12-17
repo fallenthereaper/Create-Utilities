@@ -1,11 +1,12 @@
 package com.fallenreaper.createutilities.content.blocks.steam_furnace;
 
-import com.fallenreaper.createutilities.core.data.*;
+import com.fallenreaper.createutilities.core.data.FuelItemHandler;
+import com.fallenreaper.createutilities.core.data.FurnaceState;
+import com.fallenreaper.createutilities.core.data.IBoilerProvider;
+import com.fallenreaper.createutilities.core.data.IDevInfo;
 import com.fallenreaper.createutilities.core.data.blocks.InteractableBlockEntity;
 import com.fallenreaper.createutilities.core.utils.InteractionHandler;
 import com.fallenreaper.createutilities.index.CUFluids;
-import com.jozufozu.flywheel.repack.joml.Math;
-import com.jozufozu.flywheel.repack.joml.Vector2d;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.contraptions.components.steam.SteamEngineBlock;
@@ -31,14 +32,13 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -55,16 +55,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
@@ -79,7 +75,6 @@ import static com.fallenreaper.createutilities.core.data.FurnaceState.*;
 import static com.fallenreaper.createutilities.core.utils.MiscUtil.formatEnumName;
 import static com.fallenreaper.createutilities.core.utils.MiscUtil.formatTime;
 import static com.google.common.base.Strings.repeat;
-import static com.simibubi.create.Create.RANDOM;
 import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlock.HORIZONTAL_FACING;
 import static com.simibubi.create.foundation.fluid.FluidHelper.convertToStill;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
@@ -116,7 +111,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     public boolean hasOutputFluidIn;
     public int[] slots;
     public LazyOptional<? extends IItemHandler>[] invHandler;
-    public Vector2d[] offset;
+    public Vec2[] offset;
     int availableSlot;
     private int nextFreeSlot;
 
@@ -126,7 +121,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         this.inventory = createFuelItemHandler();
         this.foodInventory = createFoodItemHandler();
         this.invHandler = new LazyOptional[2];
-        this.offset = new Vector2d[4];
+        this.offset = new Vec2[4];
         //   this.itemCapability = LazyOptional.of(() -> new CombinedInvWrapper(inventory, foodInventory));
         this.invHandler[0] = LazyOptional.of(() -> inventory);
         this.invHandler[1] = LazyOptional.of(() -> foodInventory);
@@ -181,7 +176,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         return slot;
     }
 
-    public int getSlotFromHit(Vector2d vec, Direction direction) {
+    public int getSlotFromHit(Vec2 vec, Direction direction) {
         double x = vec.x;
         double z = vec.y;
         switch (direction) {
@@ -280,14 +275,14 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             SoundEvent soundevent;
             BlockState fluidState = null;
 
-            boolean present = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+            boolean present = itemStack.getCapability( ForgeCapabilities.FLUID_HANDLER)
                     .isPresent();
             if (pPlayer.getItemInHand(pHand).is(Items.BUCKET) && !isFuel(itemStack)) {
                 if (hasWater()) {
                     Fluid fluid = getTank().getFluid().getFluid();
 
-                    FluidAttributes attributes = fluid.getAttributes();
-                    soundevent = attributes.getFillSound();
+
+                    soundevent = FluidHelper.getFillSound(new FluidStack(fluid, fluid.getAmount(fluidState.getFluidState())));
                     if (soundevent == null)
                         soundevent =
                                 FluidHelper.isTag(fluid, FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
@@ -307,9 +302,8 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                         Pair<FluidStack, ItemStack> emptyItem = EmptyingByBasin.emptyItem(pLevel, itemStack, true);
                         Fluid fluid = getTank().getFluid().getFluid();
                         fluidState = fluid.defaultFluidState()
-                                .createLegacyBlock();
-                        FluidAttributes attributes = fluid.getAttributes();
-                        soundevent = attributes.getEmptySound();
+                                .createLegacyBlock();;
+                        soundevent = FluidHelper.getEmptySound(new FluidStack(fluid, fluid.getAmount(fluidState.getFluidState())));
                         if (soundevent == null)
                             soundevent =
                                     FluidHelper.isTag(fluid, FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
@@ -347,7 +341,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
                     if (getLevel().getBlockState(getBlockPos().relative(Direction.UP)).isAir()) {
                         System.out.println(pHitResult.getType());
-                        Vector2d vector2d = new Vector2d(definedPosition.x, definedPosition.z);
+                        Vec2 vector2d = new Vec2((float) definedPosition.x, (float) definedPosition.z);
                         System.out.println("x: " + (float) ((vector2d.x)) + " z: " + (float) ((vector2d.y)));
                         if (insertFood(itemStack, pPlayer, pLevel, pHand, vector2d, false)) {
                             pPlayer.awardStat(Stats.INTERACT_WITH_BLAST_FURNACE);
@@ -425,7 +419,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         return false;
     }
 
-    public boolean insertFood(ItemStack pItemStack, Player pPlayer, Level pLevel, InteractionHand pHand, Vector2d slot, boolean simulate) {
+    public boolean insertFood(ItemStack pItemStack, Player pPlayer, Level pLevel, InteractionHand pHand, Vec2 slot, boolean simulate) {
         boolean consume = !pPlayer.isCreative();
         Direction direction = getLevel().getBlockState(getBlockPos()).getValue(HORIZONTAL_FACING);
         Vec3 playerRotation = pPlayer.getLookAngle();
@@ -469,7 +463,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     public boolean insertFluid(ItemStack pItemStack) {
         LazyOptional<IFluidHandlerItem> capability =
-                pItemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY);
+                pItemStack.getCapability( ForgeCapabilities.FLUID_HANDLER_ITEM);
         IFluidHandlerItem tank = capability.orElse(null);
 
         if (!capability.isPresent())
@@ -511,7 +505,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             producedSteam = getTankCapacity();
         }
         if (producedSteam < 0)
-            producedSteam = Math.clamp(producedSteam, 0, getTankCapacity());
+            producedSteam = Mth.clamp(producedSteam, 0, getTankCapacity());
 
         if (getState().isActive() || getState().isProducing()) {
             cookTick();
@@ -564,7 +558,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     public void drainSteam() {
         float level = (float) boiler.attachedEngines / 6.0f;
         getOutputTank().drain(1, IFluidHandler.FluidAction.EXECUTE);
-        producedSteam = Math.clamp(producedSteam - 1, 0, getTankCapacity());
+        producedSteam = Mth.clamp(producedSteam - 1, 0, getTankCapacity());
     }
 
     public void coolDown() {
@@ -634,7 +628,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
             particleType = isUnlimitedFuel() ? ParticleTypes.ELECTRIC_SPARK : ParticleTypes.LAVA;
             if (getLevel().getRandom().nextFloat() < 0.5F / 16F) {
-                Vec3 random = VecHelper.offsetRandomly(Vec3.ZERO, RANDOM, 0.1f);
+                Vec3 random = VecHelper.offsetRandomly(Vec3.ZERO, getLevel().random, 0.1f);
                 random = random.subtract(N2.scale(random.dot(N2)));
                 pos = pos.add(random);
                 getLevel().addParticle(particleType, pos.x, pos.y, pos.z, 0, 0, 0);
@@ -685,7 +679,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         Vec3i directionNormal = direction.getNormal();
         Vec3 toVec = new Vec3(directionNormal.getX(), directionNormal.getY(), directionNormal.getZ());
         pos = pos.add(-directionNormal.getX() * 0.5F, -0.1, -directionNormal.getZ() * 0.5F);
-        Random levelRandom = getLevel().getRandom();
+        RandomSource levelRandom = getLevel().getRandom();
         Vec3 speed = VecHelper.offsetRandomly(Vec3.ZERO, levelRandom, 0.1f).add(toVec.scale(-0.03));
         SoundEvent soundEvent;
         ParticleOptions particle = creative ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.FLAME;
@@ -741,22 +735,22 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     private boolean defaultGoogleToolTip(List<Component> tooltip, boolean isPlayerSneaking) {
         ItemStack fuelIn = getFuelStack();
-        Component indent = new TextComponent(" ");
-        Component indent1 = new TextComponent(spacing + " ");
-        Component arrow = new TextComponent("->").withStyle(ChatFormatting.DARK_GRAY);
-        Component time = getBurnTime() <= 0 ? new TextComponent("") : new TextComponent(formatTime(getCalculatedBurnTime(fuelIn))).withStyle(ChatFormatting.GOLD);
+        Component indent = Component.literal(" ");
+        Component indent1 = Component.literal(spacing + " ");
+        Component arrow = Component.literal("->").withStyle(ChatFormatting.DARK_GRAY);
+        Component time = getBurnTime() <= 0 ? Component.literal("") : Component.literal(formatTime(getCalculatedBurnTime(fuelIn))).withStyle(ChatFormatting.GOLD);
         String item = !hasFuel() ? "Empty" : fuelIn.getItem().getName(fuelIn).getString();
-        Component in = new TextComponent(item + " " + (fuelIn.isEmpty() ? "" : "x") + (fuelIn.getCount() <= 0 ? "" : fuelIn.getCount())).withStyle(fuelIn.isEmpty() ? ChatFormatting.RED : ChatFormatting.GREEN);
+        Component in = Component.literal(item + " " + (fuelIn.isEmpty() ? "" : "x") + (fuelIn.getCount() <= 0 ? "" : fuelIn.getCount())).withStyle(fuelIn.isEmpty() ? ChatFormatting.RED : ChatFormatting.GREEN);
         LangBuilder mb = Lang.translate("generic.unit.millibuckets");
         FluidStack fluidStackIn = getTank().getFluid();
         MutableComponent firstLine = arrow.plainCopy().append(indent);
-        Component fluidName = new TranslatableComponent(fluidStackIn.getTranslationKey()).withStyle(ChatFormatting.AQUA);
-        Component contained = new TextComponent(String.valueOf(fluidStackIn.getAmount())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
-        Component containedSteam = new TextComponent(String.valueOf((int) getProducedSteam())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
-        Component slash = new TextComponent(" / ").withStyle(ChatFormatting.GRAY);
-        Component capacity = new TextComponent(String.valueOf(getTankCapacity())).plainCopy().append(mb.string()).withStyle(ChatFormatting.DARK_GRAY);
+        Component fluidName =  Component.translatable(fluidStackIn.getTranslationKey()).withStyle(ChatFormatting.AQUA);
+        Component contained = Component.literal(String.valueOf(fluidStackIn.getAmount())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
+        Component containedSteam = Component.literal(String.valueOf((int) getProducedSteam())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
+        Component slash = Component.literal(" / ").withStyle(ChatFormatting.GRAY);
+        Component capacity = Component.literal(String.valueOf(getTankCapacity())).plainCopy().append(mb.string()).withStyle(ChatFormatting.DARK_GRAY);
         Component unlimited;
-        unlimited = new TextComponent("Unlimited").withStyle(ChatFormatting.LIGHT_PURPLE);
+        unlimited = Component.literal("Unlimited").withStyle(ChatFormatting.LIGHT_PURPLE);
 
         tooltip.add(indent1.plainCopy()
                 .append("Steam Furnace:"));
@@ -782,7 +776,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         Direction direction = getLevel().getBlockState(getBlockPos()).getValue(HORIZONTAL_FACING);
         if (hitResult instanceof BlockHitResult blockHitResult && mc.level != null && hasOccupiedSlot() && mc.player != null && !(hitResult.getLocation().subtract(Vec3.atLowerCornerOf(getBlockPos())).y < 1.0D)) {
             Vec3 newHit = blockHitResult.getLocation().subtract(Vec3.atLowerCornerOf(getBlockPos()));
-            int slot = getSlotFromHit(new Vector2d(newHit.x, newHit.z), direction);
+            int slot = getSlotFromHit(new Vec2((float) newHit.x, (float) newHit.z), direction);
             if (!getFoodInventory().getStackInSlot(slot).isEmpty()) {
 
                 float progress = Mth.lerp(((float) cookingProgress[slot] / (float) cookingTime[slot]), 0, 1);
@@ -958,8 +952,8 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
+    public void invalidate() {
+        super.invalidate();
         Arrays.stream(invHandler).toList().forEach(LazyOptional::invalidate);
         fluidCapability.invalidate();
         boiler.clear();
@@ -981,7 +975,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     @Override
     protected boolean isFluidHandlerCap(Capability<?> cap) {
-        return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY;
+        return cap == ForgeCapabilities.FLUID_HANDLER;
 
     }
 
@@ -1045,9 +1039,9 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         if (getLevel() == null || itemStack.isEmpty())
             return;
 
-        ItemEntity itementity = new ItemEntity(getLevel(), worldPosition.getX() + getItemOffset(slot).x, worldPosition.getY() + 1.0, worldPosition.getZ() - getItemOffset(slot).y, itemStack.copy().split(RANDOM.nextInt(25) + 10));
+        ItemEntity itementity = new ItemEntity(getLevel(), worldPosition.getX() + getItemOffset(slot).x, worldPosition.getY() + 1.0, worldPosition.getZ() - getItemOffset(slot).y, itemStack.copy().split(getLevel().getRandom().nextInt(25) + 10));
         float f = 0.05F;
-        itementity.setDeltaMovement(RANDOM.nextGaussian() * (double) f, RANDOM.nextGaussian() * (double) 0.05F + (double) 0.2F, RANDOM.nextGaussian() * (double) 0.05F);
+        itementity.setDeltaMovement(getLevel().getRandom().nextGaussian() * (double) f, getLevel().getRandom().nextGaussian() * (double) 0.05F + (double) 0.2F, getLevel().getRandom().nextGaussian() * (double) 0.05F);
         getLevel().addFreshEntity(itementity);
         getFoodInventory().setStackInSlot(slot, ItemStack.EMPTY);
 
@@ -1074,7 +1068,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             ItemStack itemStack = itemEntity.getItem();
             Vec3 position = itemEntity.position().subtract(Vec3.atLowerCornerOf(getBlockPos()));
             if (hasRecipe(itemStack)) {
-                Vector2d itemPos = new Vector2d(position.x, position.z);
+                Vec2 itemPos = new Vec2((float) position.x, (float) position.z);
                 int slot = getSlotFromHit(itemPos, direction);
                 if (canAcceptItem(slot)) {
                     this.offset[getSlotFromHit(itemPos, direction)] = itemPos;
@@ -1206,7 +1200,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         if (lerpValue < 1)
             base += ChatFormatting.DARK_GRAY + repeat("|", Math.round(remaining));
 
-        return new TextComponent(base);
+        return Component.literal(base);
     }
 
     public float getProgress(int index) {
@@ -1219,17 +1213,17 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     //TODO; RECODE THIS URGENTLY, make the offset public to the class once i implement proper item pickup selection
-    public Vector2d getItemOffset(int slot) {
+    public Vec2 getItemOffset(int slot) {
         float X_OFFSET = 4F / 16F;
         float Y_OFFSET = 4F / 16F;
         if (offset[slot] == null)
-            return new Vector2d(-X_OFFSET, Y_OFFSET);
+            return new Vec2(-X_OFFSET, Y_OFFSET);
 
 
-        Vector2d[] offsett = {new Vector2d(-X_OFFSET, Y_OFFSET),
-                new Vector2d(X_OFFSET, -Y_OFFSET),
-                new Vector2d(X_OFFSET, Y_OFFSET),
-                new Vector2d(-X_OFFSET, -Y_OFFSET)};
+        Vec2[] offsett = {new Vec2(-X_OFFSET, Y_OFFSET),
+                new Vec2(X_OFFSET, -Y_OFFSET),
+                new Vec2(X_OFFSET, Y_OFFSET),
+                new Vec2(-X_OFFSET, -Y_OFFSET)};
 
 
         return offset[slot];

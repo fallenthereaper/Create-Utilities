@@ -3,10 +3,10 @@ package com.fallenreaper.createutilities.core.events;
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.index.CUPonder;
 import com.simibubi.create.foundation.ponder.PonderLocalization;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

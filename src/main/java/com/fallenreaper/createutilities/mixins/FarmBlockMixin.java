@@ -6,6 +6,7 @@ import com.fallenreaper.createutilities.core.data.IFarmBlockAccessor;
 import com.fallenreaper.createutilities.core.utils.MiscUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,8 +18,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Random;
 
 import static com.fallenreaper.createutilities.core.utils.MiscUtil.isInsideCircle;
 
@@ -54,7 +53,7 @@ public abstract class FarmBlockMixin implements IFarmBlockAccessor {
         }
     }
     @Inject(method = "tick", at = @At(value = "HEAD"), remap = false)
-     public void onTick(BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand, CallbackInfo ci) {
+     public void onTick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom, CallbackInfo ci) {
         this.isNearWater = MiscUtil.isNearWater(pLevel, pPos);
     }
 

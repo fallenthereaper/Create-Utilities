@@ -21,7 +21,7 @@ import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBl
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankRenderer;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.curiosities.deco.SlidingDoorRenderer;
-import com.simibubi.create.repack.registrate.util.entry.BlockEntityEntry;
+import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
 import static com.simibubi.create.content.logistics.block.display.AllDisplayBehaviours.assignDataBehaviourTE;
 
@@ -37,7 +37,7 @@ public class CUBlockEntities {
             .validBlock(CUBlocks.TYPEWRITER)
             .renderer(() -> TypewriterRenderer::new)
             .register();
-    public static final BlockEntityEntry<MechanicalPropellerBlockEntity> MECHANICAL_PROPELLER = Create.registrate()
+    public static final BlockEntityEntry<MechanicalPropellerBlockEntity> MECHANICAL_PROPELLER = Create.REGISTRATE
             .tileEntity("mechanical_propeller", MechanicalPropellerBlockEntity::new)
             .validBlocks(CUBlocks.MECHANICAL_PROPELLER)
             .renderer(() -> MechanicalPropellerRenderer::new)

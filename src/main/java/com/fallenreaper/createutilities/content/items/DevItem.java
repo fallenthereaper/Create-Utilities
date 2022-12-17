@@ -1,15 +1,15 @@
 package com.fallenreaper.createutilities.content.items;
 
-import com.fallenreaper.createutilities.core.data.items.BaseItem;
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.FluidNodeNetwork;
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.IFluidTransferProvider;
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBlockEntity;
+import com.fallenreaper.createutilities.core.data.items.BaseItem;
 import com.simibubi.create.AllSoundEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -83,7 +83,7 @@ public class DevItem extends BaseItem {
                         .addCooldown(pItemStack.getItem(), 5);
 
 
-                pPlayer.displayClientMessage(new TextComponent("First Position Set").withStyle(ChatFormatting.YELLOW), true);
+                pPlayer.displayClientMessage(Component.literal("First Position Set").withStyle(ChatFormatting.YELLOW), true);
                 return InteractionResult.SUCCESS;
 
 
@@ -101,7 +101,7 @@ public class DevItem extends BaseItem {
                     createNode(pLevel, pPos, savedPos, pPlayer, uuid);
                     if (pLevel.isClientSide) {
                         pLevel.playSound(pPlayer, pPos, AllSoundEvents.WORLDSHAPER_PLACE.getMainEvent(), SoundSource.BLOCKS, 1.25F, 1F);
-                        pPlayer.displayClientMessage(new TextComponent("Connected Node").withStyle(ChatFormatting.GREEN), true);
+                        pPlayer.displayClientMessage(Component.literal("Connected Node").withStyle(ChatFormatting.GREEN), true);
                     }
                     if (pLevel.getBlockEntity(savedPos) instanceof LiquidTankBlockEntity te) {
                         if (te.getUuidKey() == null) {
@@ -142,7 +142,7 @@ public class DevItem extends BaseItem {
         if (heldItem.getItem() instanceof DevItem && pPlayer.isShiftKeyDown()) {
             if (pPlayer.getItemInHand(pUsedHand).hasTag() && heldItem.getTag().contains("FirstPosition")) {
                 heldItem.setTag(null);
-                pPlayer.displayClientMessage(new TextComponent("Cleared Selection").withStyle(ChatFormatting.RED), true);
+                pPlayer.displayClientMessage(Component.literal("Cleared Selection").withStyle(ChatFormatting.RED), true);
                 return InteractionResultHolder.success(heldItem);
             }
         }

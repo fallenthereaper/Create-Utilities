@@ -2,41 +2,25 @@ package com.fallenreaper.createutilities.core.events;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.armor.BrassJetPackModel;
-import com.fallenreaper.createutilities.content.items.DevItem;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
-import com.fallenreaper.createutilities.core.data.IDevInfo;
-import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBlockEntity;
-import com.fallenreaper.createutilities.core.data.IHaveHiddenToolTip;
-import com.fallenreaper.createutilities.core.utils.ToolTipHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class ClientEvents {
@@ -44,11 +28,11 @@ public class ClientEvents {
             BRASS_JETPACK_LAYER = new ModelLayerLocation(new ResourceLocation(CreateUtilities.ID, "brass_jetpack"), "main");
 
     public static BrassJetPackModel BRASS_JETPACK_MODEL = null;
-
+/*
     @SubscribeEvent
-    public static void onRenderOverlay(RenderGameOverlayEvent.Text event) {
+    public static void onRenderOverlay(Render event) {
         Minecraft mc = Minecraft.getInstance();
-        PoseStack poseStack = event.getMatrixStack();
+        PoseStack poseStack = event.getPoseStack();
         List<Component> tooltip = new ArrayList<>();
         if (mc.level == null) return;
         if (!mc.level.isClientSide())
@@ -71,9 +55,9 @@ public class ClientEvents {
                 BlockEntity blockEntity = level.getBlockEntity(blockPos);
                 if (blockEntity instanceof LiquidTankBlockEntity be) {
 
-                    event.getLeft().add("[DEBUG]");
+                    event.getOverlay().overlay().add("[DEBUG]");
 
-                    event.getLeft().add(be.getProvidedInfo().substring(0, 14));
+                    event..add(be.getProvidedInfo().substring(0, 14));
                     event.getLeft().add(be.getProvidedInfo().substring(14, 35));
                     boolean i = be.getTank().getFluid().getAmount() != 0;
                     event.getLeft().add(be.getProvidedInfo().substring(35, 43  ) + ": " + i);
@@ -95,13 +79,13 @@ public class ClientEvents {
         // event.getLeft().add(fps);
     }
 
+ */
+
     @SubscribeEvent
     public static void addToItemTooltip(ItemTooltipEvent event) {
-        if (event.getPlayer() == null)
+        if (event.getEntity() == null)
             return;
 
-        if (event.getItemStack().getItem() instanceof IHaveHiddenToolTip item)
-            ToolTipHandler.registerToolTip(event.getToolTip(), event.getItemStack(), event.getPlayer(), item.getKey());
 
         PunchcardItem.addToolTip(event.getToolTip(), event.getItemStack());
     }
@@ -188,8 +172,8 @@ public class ClientEvents {
 
     @SubscribeEvent
     public void renderPlayer(RenderPlayerEvent.Post event) {
-        LivingEntity pLivingEntity = event.getEntityLiving();
-        Player player = event.getPlayer();
+        LivingEntity pLivingEntity = event.getEntity();
+        Player player = event.getEntity();
         PlayerRenderer renderer = event.getRenderer();
         PoseStack poseStack = event.getPoseStack();
         float partialTick = event.getPartialTick();

@@ -6,7 +6,6 @@ import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 public abstract class PunchcardInfo implements ISavedInfo {
 
@@ -17,7 +16,7 @@ public abstract class PunchcardInfo implements ISavedInfo {
     public PunchcardInfo() {
         data = new CompoundTag();
         LangBuilder lang = Lang.builder(CreateUtilities.ID);
-        Component txt = new TextComponent(lang.translate("instruction." + getId()).string());
+        Component txt = Component.literal(lang.translate("instruction." + getId()).string());
 
         data.putString("text", txt.getString());
 
@@ -42,7 +41,7 @@ public abstract class PunchcardInfo implements ISavedInfo {
         tag.put("Data", this.data.copy());
 
         LangBuilder lang = Lang.builder(CreateUtilities.ID);
-        Component txt = new TextComponent(lang.translate("instruction." + getId()).string());
+        Component txt = Component.literal(lang.translate("instruction." + getId()).string());
         tag.getCompound("Data").putString("text", txt.getString());
 
 

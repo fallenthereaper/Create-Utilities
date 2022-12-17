@@ -1,12 +1,10 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.index.CUConfig;
 import com.fallenreaper.createutilities.core.data.IDevInfo;
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.FluidNode;
-import com.jozufozu.flywheel.repack.joml.Math;
+import com.fallenreaper.createutilities.index.CUConfig;
 import com.simibubi.create.AllParticleTypes;
-import com.simibubi.create.Create;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.fluids.particle.FluidParticleData;
@@ -23,10 +21,9 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -40,16 +37,15 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 import static com.fallenreaper.createutilities.content.blocks.sprinkler.HorizontalAxisBlock.CEILING;
 import static com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler.*;
@@ -312,12 +308,11 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
     }
 
-    protected Random getRandom() {
-        if (getLevel() != null) {
-            return getLevel().getRandom();
-        }
+    protected RandomSource getRandom() {
 
-        return new Random();
+            return Objects.requireNonNull(getLevel()).getRandom();
+
+
     }
 
     private void findFarmland() {
@@ -445,11 +440,11 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
         var mb = Lang.translate("generic.unit.millibuckets");
         var fluidStackIn = getContainedFluid();
-        var fluidName = new TranslatableComponent(fluidStackIn.getTranslationKey()).withStyle(ChatFormatting.GRAY);
-        var indent = new TextComponent(spacing + " ");
-        var contained = new TextComponent(String.valueOf(fluidStackIn.getAmount())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
-        var slash = new TextComponent(" / ").withStyle(ChatFormatting.GRAY);
-        var capacity = new TextComponent("1,500").plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
+        var fluidName = Component.translatable(fluidStackIn.getTranslationKey()).withStyle(ChatFormatting.GRAY);
+        var indent = Component.literal(spacing + " ");
+        var contained = Component.literal(String.valueOf(fluidStackIn.getAmount())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
+        var slash = Component.literal(" / ").withStyle(ChatFormatting.GRAY);
+        var capacity = Component.literal("1,500").plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
 
         if (hasFluidIn && !getContainedFluid().isEmpty()) {
             tooltip.add(indent.plainCopy()
@@ -542,12 +537,12 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         float random = getLevel().getRandom().nextFloat();
         for (int i = 0; i < 4; i++) {
             float alpha = (float) (((angle * -3) + 90 * i) * Math.PI) / 180F;
-            float cosA = Math.cos(alpha);
-            float sinA = Math.sin(alpha);
+            float cosA = (float) Math.cos(alpha);
+            float sinA = (float) Math.sin(alpha);
 
             Vec3 acceleration = new Vec3(Math.min(getSpeed() / 128F, 1F), Math.min(getSpeed()/128F, 1F),Math.min(getSpeed()/128F, 1F)).add(random*2.5, random*2.5,random*2.5).normalize();
             ParticleOptions particle = new FluidParticleData(AllParticleTypes.FLUID_PARTICLE.get(), getContainedFluid());
-            Vec3 speedd = VecHelper.offsetRandomly(Vec3.ZERO, Create.RANDOM, 0.01f).add(acceleration.scale(-0.01f));
+            Vec3 speedd = VecHelper.offsetRandomly(Vec3.ZERO, level.getRandom(), 0.01f).add(acceleration.scale(-0.01f));
             boolean isCeiling = getBlockState().getValue(CEILING);
             float modifier = (float) getRadius() / 12F;
             for (int k = 0; k <= 4; k++) {
@@ -592,7 +587,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
     @Override
     protected boolean isFluidHandlerCap(Capability<?> cap) {
-        return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY;
+        return cap == ForgeCapabilities.FLUID_HANDLER;
 
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -46,9 +46,9 @@ public class LiquidTankRenderer extends SmartTileEntityRenderer<LiquidTankBlockE
         AABB bb = new AABB(Vec3.ZERO, Vec3.ZERO).inflate(1/16f)
                 .contract(1/16f, 1/16f, 1/16f)
                 .move(0.75, 0, 0);
-        ValueBox valueBox = new ValueBox.TextValueBox(new TextComponent(""), bb, te.getBlockPos(), new TextComponent(String.valueOf(te.getTank().getFluidAmount())));
+        ValueBox valueBox = new ValueBox.TextValueBox(Component.literal(""), bb, te.getBlockPos(), Component.literal(String.valueOf(te.getTank().getFluidAmount())));
         renderFluid(te, partialTicks, ms, buffer, light);
-        // CreateClient.OUTLINER.showValueBox(te.getBlockPos(), new ValueBox(new TextComponent(te.toString()),box.contract(10, 10, 10), origin) );
+        // CreateClient.OUTLINER.showValueBox(te.getBlockPos(), new ValueBox(Component.literal(te.toString()),box.contract(10, 10, 10), origin) );
         CreateClient.OUTLINER.showAABB("blockPos" + te.getBlockPos(), box).colored(Color.WHITE).lineWidth((1 / 16F)).withFaceTexture(AllSpecialTextures.THIN_CHECKERED);
 
 

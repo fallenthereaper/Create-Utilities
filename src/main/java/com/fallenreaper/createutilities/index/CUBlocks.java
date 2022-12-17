@@ -8,8 +8,8 @@ import com.fallenreaper.createutilities.content.blocks.sliding_door.LockSlidingD
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlock;
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBlock;
-import com.fallenreaper.createutilities.core.utils.DefaultProperties;
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBlock;
+import com.fallenreaper.createutilities.core.utils.DefaultProperties;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.AllSections;
@@ -18,9 +18,9 @@ import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.BuilderTransformers;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.data.SharedProperties;
-import com.simibubi.create.repack.registrate.util.entry.BlockEntry;
-import com.simibubi.create.repack.registrate.util.nullness.NonNullFunction;
-import com.simibubi.create.repack.registrate.util.nullness.NonNullSupplier;
+import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.util.nullness.NonNullFunction;
+import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -28,9 +28,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.shapes.Shapes;
 
-import static com.simibubi.create.AllTags.axeOrPickaxe;
-import static com.simibubi.create.AllTags.pickaxeOnly;
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
+import static com.simibubi.create.foundation.data.TagGen.axeOrPickaxe;
+import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 
 public class CUBlocks {
     private static final CreateRegistrate REGISTRATE = CreateUtilities.registrate().creativeModeTab(() -> CreateUtilities.TAB);
@@ -110,8 +110,8 @@ public class CUBlocks {
             .defaultLoot()
             .register();
     public static void register() {
-        Create.registrate().addToSection(BELLOWS, AllSections.KINETICS);
-        Create.registrate().addToSection(SPRINKLER, AllSections.KINETICS);
+        Create.REGISTRATE.addToSection(BELLOWS, AllSections.KINETICS);
+        Create.REGISTRATE.addToSection(SPRINKLER, AllSections.KINETICS);
     }
 
     public static BlockEntry<?> createHorizontal(String name, NonNullFunction<BlockBehaviour.Properties, ? extends Block> factory, NonNullSupplier<? extends Block> properties) {

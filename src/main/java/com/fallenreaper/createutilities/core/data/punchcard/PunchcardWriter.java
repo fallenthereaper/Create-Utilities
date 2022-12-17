@@ -1,7 +1,6 @@
 package com.fallenreaper.createutilities.core.data.punchcard;
 
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.AbstractSmartContainerScreen;
-import com.fallenreaper.createutilities.core.data.Interactable;
 import com.fallenreaper.createutilities.core.data.*;
 import com.fallenreaper.createutilities.core.utils.MiscUtil;
 import com.fallenreaper.createutilities.index.CUConfig;
@@ -11,15 +10,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.jozufozu.flywheel.repack.joml.Math;
-import com.jozufozu.flywheel.repack.joml.Vector2i;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.Vec2;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -46,7 +43,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
     private PunchcardTextWriter textWriter;
     private PunchcardButton[][] grid;
     private PunchcardButton button;
-    private Vector2i position;
+    private Vec2 position;
     private byte width, height;
 
     private PunchcardWriter(AbstractSmartContainerScreen<?> screen, int x, int y, byte width, byte height, SwitchIcon switchIcon, TextIcon icon) {
@@ -56,7 +53,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         this.width = width;
         this.textWriter = new PunchcardTextWriter(TextIcon.of(defaultFull, defaultEmpty), width, height).writeText();
         this.screen = screen;
-        this.position = new Vector2i(x, y);
+        this.position = new Vec2(x, y);
         this.switchIcon = switchIcon;
     }
 
@@ -78,7 +75,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
      * Returns a copy of the specified {@link PunchcardWriter}
      */
     public static PunchcardWriter copy(PunchcardWriter copied$writer) {
-        PunchcardWriter copy = new PunchcardWriter(copied$writer.screen, copied$writer.position.x(), copied$writer.position.y(), copied$writer.width, copied$writer.height, copied$writer.switchIcon, TextIcon.of(copied$writer.defaultEmpty, copied$writer.defaultFull));
+        PunchcardWriter copy = new PunchcardWriter(copied$writer.screen,(int) copied$writer.position.x,(int) copied$writer.position.y, copied$writer.width, copied$writer.height, copied$writer.switchIcon, TextIcon.of(copied$writer.defaultEmpty, copied$writer.defaultFull));
         copy.textWriter = copied$writer.getTextWriter();
         copy.width = copied$writer.width;
         copy.height = copied$writer.height;
@@ -219,7 +216,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         if (getProgress() < 1)
             base += ChatFormatting.DARK_GRAY + repeat("|", Math.round(remaining));
 
-        return new TextComponent(base);
+        return Component.literal(base);
     }
 
     protected float getPercentage() {
@@ -441,7 +438,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
             for (int j = 1; j < textWriter.getXsize() + 1; j++) {
                 int h = CUConfig.PUNCHCARDWRITER_HEIGHT.get();
                 int w = CUConfig.PUNCHCARDWRITER_WIDTH.get();
-                this.button = new PunchcardButton((int) (16 * j + position.x() + (5 * 16) + 6), (int) (16 * i + position.y() + 6), 16, 16, switchIcon);
+                this.button = new PunchcardButton((int) (16 * j + position.x + (5 * 16) + 6), (int) (16 * i + position.y + 6), 16, 16, switchIcon);
                 this.addButton(new Point(j - 1, i - 1), button);
                 this.screen.addWidget(button);
             }
@@ -518,7 +515,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         for (int i = 1; i < this.textWriter.getYsize() + 1; i++) {
             var max = i * this.textWriter.getXsize();
             var min = Math.max(max - this.textWriter.getXsize(), 0);
-            toolTip.add(new TextComponent(space + this.textWriter.getRawText().substring(min, max)).withStyle(format));
+            toolTip.add(Component.literal(space + this.textWriter.getRawText().substring(min, max)).withStyle(format));
         }
         if (showProgress)
             toolTip.add(getProgressBar());
@@ -528,8 +525,8 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
     public String toString() {
         return "PunchcardWriter[" +
                 "textData = " + this.getTextWriter().getRawText() +
-                " x = " + position.x() +
-                " y = " + position.y() +
+                " x = " + position +
+                " y = " + position +
                 " fillPercentage = " + (int) getPercentage() +
                 " boxAmount = " + getWidth() * getHeight() +
                 "]";

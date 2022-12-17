@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,7 +43,7 @@ public class BaseItem extends Item implements IThirdPersonAnimation, ISweepParti
     public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
         if(hasDescription) {
 
-           pTooltipComponents.add(new TranslatableComponent(CreateUtilities.ID + "." +this.getDescriptionId().substring(21)+"."+"description").withStyle((chatFormatting)));
+           pTooltipComponents.add(Component.translatable(CreateUtilities.ID + "." +this.getDescriptionId().substring(21)+"."+"description").withStyle((chatFormatting)));
         }
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
     }

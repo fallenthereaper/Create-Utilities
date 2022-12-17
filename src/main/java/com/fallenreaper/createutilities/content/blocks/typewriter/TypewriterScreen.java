@@ -1,15 +1,15 @@
 package com.fallenreaper.createutilities.content.blocks.typewriter;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.core.data.punchcard.InstructionManager;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
+import com.fallenreaper.createutilities.core.data.SwitchButton;
+import com.fallenreaper.createutilities.core.data.punchcard.InstructionManager;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.fallenreaper.createutilities.index.CUItems;
 import com.fallenreaper.createutilities.index.GuiTextures;
 import com.fallenreaper.createutilities.networking.ModPackets;
 import com.fallenreaper.createutilities.networking.TypewriterEditPacket;
-import com.fallenreaper.createutilities.core.data.SwitchButton;
 import com.google.common.collect.ImmutableList;
 import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -28,7 +28,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
@@ -160,7 +159,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         closeButton = new IconButton(leftPos + 30 + BG.width - 33, topPos + BG.height - 22 - 13, AllIcons.I_CONFIRM);
 
         //   extraAreas = ImmutableList.of(new Rect2i(x + BG.width, y + BG.height + BG.height - 62 - 2, 84, 92 - 2));
-        clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 97 - 14, new TextComponent("Off"));
+        clickIndicator = new Indicator(leftPos + 118 + BG.width - 154, topPos + BG.height - 97 - 14, Component.literal("Off"));
 
      //   switchButton = new SwitchButton(leftPos + 118 + BG.width - 175 , topPos + BG.height - 97,18, 18, AllIcons.I_ADD);
      //    switchButtonAlt  = new SwitchButton(leftPos + 118 + BG.width - 223 , topPos + BG.height - 56,18, 18, AllIcons.I_REPLACE_ANY).withCallback(() -> linkTo("https://github.com/LegendaryReaper670/Create-Utilities"));
@@ -216,7 +215,7 @@ public class TypewriterScreen extends AbstractSimiContainerScreen<TypewriterCont
         boolean enabled = confirmButton.active;
         LangBuilder lang = Lang.builder(CreateUtilities.ID);
         if (enabled) {
-            confirmButton.setToolTip(new TextComponent(lang.translate("gui.typewriter.status.show").string()));
+            confirmButton.setToolTip(Component.translatable("gui.typewriter.status.show"));
         }
 
     }

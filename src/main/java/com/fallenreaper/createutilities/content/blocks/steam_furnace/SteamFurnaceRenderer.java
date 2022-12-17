@@ -1,7 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.steam_furnace;
 
 import com.fallenreaper.createutilities.index.CUBlockPartials;
-import com.jozufozu.flywheel.repack.joml.Vector2d;
 import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.SheetedDecalTextureGenerator;
@@ -24,6 +23,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -101,7 +101,7 @@ public class SteamFurnaceRenderer extends SmartTileEntityRenderer<SteamFurnaceBl
                 ms.mulPose(Vector3f.XP.rotationDegrees(90.0F + te.getRotation(i)/270F));
 
 
-                Vector2d itemOffset = te.getItemOffset(i);
+                Vec2 itemOffset = te.getItemOffset(i);
                 float rotation = te.getRotation(i);
                 ms.translate(itemOffset.x , itemOffset.y , 0.0D);
                 ms.translate(-8/16D, -8/16D, 0.0D);

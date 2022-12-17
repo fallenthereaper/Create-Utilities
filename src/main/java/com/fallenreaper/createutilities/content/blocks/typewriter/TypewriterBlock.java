@@ -45,7 +45,7 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
         ItemStack stack = player.getItemInHand(handIn);
         if (!worldIn.isClientSide && worldIn.getBlockEntity(pos) instanceof final TypewriterBlockEntity be && !stack.is(AllItems.CRAFTING_BLUEPRINT.get())) {
             withTileEntityDo(worldIn, pos,
-                    typewriter -> NetworkHooks.openGui((ServerPlayer) player, typewriter, typewriter::sendToContainer));
+                    typewriter -> NetworkHooks.openScreen((ServerPlayer) player, typewriter, typewriter::sendToContainer));
         }
 
         /*

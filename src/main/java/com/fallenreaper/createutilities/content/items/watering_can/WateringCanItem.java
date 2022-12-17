@@ -2,7 +2,6 @@ package com.fallenreaper.createutilities.content.items.watering_can;
 
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler;
 import com.fallenreaper.createutilities.core.data.items.BaseItem;
-import com.jozufozu.flywheel.repack.joml.Math;
 import com.simibubi.create.content.contraptions.fluids.tank.FluidTankTileEntity;
 import com.simibubi.create.content.contraptions.particle.CubeParticleData;
 import com.simibubi.create.foundation.utility.Color;
@@ -93,7 +92,7 @@ public class WateringCanItem extends BaseItem {
                                             var m = new Vec3(pos.getX(), pos.getY(), pos.getZ())
                                                     .scale(.325f);
                                             m = VecHelper.rotate(m, new Random().nextFloat() * 360, Direction.Axis.X);
-                                            m = m.add(VecHelper.offsetRandomly(Vec3.ZERO, new Random(), 4f));
+                                            m = m.add(VecHelper.offsetRandomly(Vec3.ZERO, level.getRandom(), 4f));
 
                                             CubeParticleData data =
                                                     new CubeParticleData(0, 0.25F, .95f, .65f + (new Random().nextFloat() - .5f) * .25f, 4, false);
@@ -140,13 +139,13 @@ public class WateringCanItem extends BaseItem {
             return;
         // MutableBoundingBox boundingBox = new MutableBoundingBox(worldPosition.offset(-getRadius(), -1, -getRadius()), worldPosition.offset(getRadius(), -1, getRadius()));
         // Farmland hydration & plants growth logic
-        for (BlockPos blockPositions : BlockPos.randomBetweenClosed(random, 15, (int) (position.x - radius), (int) position.y, (int) (position.z - radius), (int) position.x + radius, (int) position.y + 1, (int) position.z+ radius)) {
+        for (BlockPos blockPositions : BlockPos.randomBetweenClosed(level.getRandom(), 15, (int) (position.x - radius), (int) position.y, (int) (position.z - radius), (int) position.x + radius, (int) position.y + 1, (int) position.z+ radius)) {
             var blockState = level.getBlockState(blockPositions);
 
             if (SprinklerInteractionHandler.checkForPlants(blockState.getBlock())) {
                 if (isInsideCircle(radius,pos , blockPositions)) {
                     if (random.nextInt(100) < 50)
-                        blockState.getBlock().randomTick(blockState, (ServerLevel) level, blockPositions, random);
+                        blockState.getBlock().randomTick(blockState, (ServerLevel) level, blockPositions, level.getRandom());
                 }
             }
         }

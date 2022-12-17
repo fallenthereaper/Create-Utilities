@@ -59,8 +59,8 @@ public abstract class InteractableBlockEntity extends SmartTileEntity {
     }
 
     @Override
-    public void writeSafe(CompoundTag tag, boolean clientPacket) {
-        super.writeSafe(tag, clientPacket);
+    public void writeSafe(CompoundTag tag) {
+        super.writeSafe(tag);
     }
 
     public abstract void addInteractionHandler(List<InteractionHandler> interactions);
