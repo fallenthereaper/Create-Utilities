@@ -38,7 +38,7 @@ repositories {
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
     maven {
         name 'tterrag maven'
-        url "https://maven.tterrag.com/"
+        url 'https://maven.tterrag.com'
     }
     maven {
         // Location of the maven that hosts JEI files (and TiC)
@@ -214,19 +214,47 @@ repositories {
         // The userdev artifact is a special name and will get all sorts of transformations applied to it.
         minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-        implementation fg.deobf("com.simibubi.create:Create:mc${create_mc_version}_v${create_version}")
-        implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:${flywheel_mc_version}-${flywheel_version}")
-        compileOnly fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}:api")
-        runtimeOnly fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}")
+
+        jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: '[MC1.19-1.1.5,)') {
+            jarJar.pin(it, project.registrate_version)
+        }
+
+        implementation fg.deobf("com.simibubi.create:create-${create_mc_version}:${create_version}:slim") { transitive = false }
+      implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${flywheel_mc_version}:${flywheel_version}")
+      implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+
+        /* other minecraft dependencies are here */
+
+        // compile against the JEI API but do not include it at runtime
+        compileOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-common-api:${jei_version}"))
+        compileOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-forge-api:${jei_version}"))
+        // at runtime, use the full JEI jar for Forge
+        runtimeOnly(fg.deobf("mezz.jei:jei-${jei_mc_version}-forge:${jei_version}"))
+    //    jarJar(group: 'com.jozufozu.flywheel', name: "flywheel-forge-${flywheel_minecraft_version}", version: '[0.6.8,0.6.9)') {
+       //     jarJar.pin(it, project.flywheel_version)
+     //   }
+
+      //  if (inWorkspace) {
+      //      implementation project(':Flywheel')
+      //  } else {
+      //      implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${mc_version}:${flywheel_version}") // Flywheel
+      //  }
+       // implementation fg.deobf("com.simibubi.create:Create:mc${create_mc_version}_v${create_version}")
+   //     implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:${flywheel_mc_version}-${flywheel_version}")
+       // compileOnly fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}:api")
+      //  runtimeOnly fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}")
         // Real mod deobf dependency examples - these get remapped to your current mappings
 
-        implementation fg.deobf("com.tterrag.registrate:Registrate:MC${registrate_mc_version}-${registrate_version}") // Adds registrate as a dependency
+       // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${registrate_mc_version}-${registrate_version}") // Adds registrate as a dependency
 
+     //   implementation fg.deobf("com.simibubi.create:create-${mc_version}:${create_version}:slim") { transitive = false } // Create
+
+       // implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}") // Registrate
         // Examples using mod jars from ./libs
         // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-        def registrate = "com.tterrag.registrate:Registrate:MC${registrate_mc_version}-${registrate_version}"
-        implementation fg.deobf(registrate)
-        shade registrate
+     //   def registrate = "com.tterrag.registrate:Registrate:MC${registrate_mc_version}-${registrate_version}"
+     //   implementation fg.deobf(registrate)
+     //   shade registrate
         // For more info...
         // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
         // http://www.gradle.org/docs/current/userguide/dependency_management.html

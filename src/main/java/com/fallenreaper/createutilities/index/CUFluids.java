@@ -2,7 +2,7 @@ package com.fallenreaper.createutilities.index;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.simibubi.create.content.contraptions.fluids.VirtualFluid;
-import com.simibubi.create.repack.registrate.util.entry.FluidEntry;
+import com.tterrag.registrate.util.entry.FluidEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.Fluid;
@@ -16,7 +16,7 @@ public class CUFluids {
                 .lang(f -> "fluid." + CreateUtilities.ID + ".steam", "Steam")
                 .register();
 
-    private static class SteamFluidAttributes extends FluidAttributes {
+    private static class SteamFluidAttributes extends Fluid {
 
         protected SteamFluidAttributes(Builder builder, Fluid fluid) {
             super(builder, fluid);
