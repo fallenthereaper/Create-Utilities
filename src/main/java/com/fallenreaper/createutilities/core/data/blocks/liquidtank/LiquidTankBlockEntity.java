@@ -230,13 +230,14 @@ public class LiquidTankBlockEntity extends InteractableBlockEntity implements IF
 
     }
 
+
     @Override
-    public void setRemoved() {
-       super.setRemoved();
-       if(getUuidKey() != null) {
-           if (FluidNodeNetwork.hasNode(getUuidKey()))
-               FluidNodeNetwork.removeNode(getUuidKey());
-       }
+    public void remove() {
+        super.remove();
+        if(getUuidKey() != null) {
+            if (FluidNodeNetwork.hasNode(getUuidKey()))
+                FluidNodeNetwork.removeNode(getUuidKey());
+        }
     }
 
     @Override
