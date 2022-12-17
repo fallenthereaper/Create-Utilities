@@ -67,9 +67,9 @@ public class CUBlockEntities {
             .renderer(() -> LiquidTankRenderer::new)
             .register();
 
-    public static final BlockEntityEntry<SteamFurnaceBlockEntity> STEAM_FURNACE = CreateUtilities.registrate()
+    public static final BlockEntityEntry<SteamFurnaceBlockEntity> BOILER_FURNACE = CreateUtilities.registrate()
             .tileEntity("steam_furnace", SteamFurnaceBlockEntity::new)
-            .validBlocks(CUBlocks.STEAM_FURNACE)
+            .validBlocks(CUBlocks.BOILER_FURNACE)
             .renderer(() -> SteamFurnaceRenderer::new)
             .register();
 

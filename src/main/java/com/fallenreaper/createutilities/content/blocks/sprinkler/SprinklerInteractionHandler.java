@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -42,6 +43,10 @@ public class SprinklerInteractionHandler extends InteractionHandler {
 
     public static boolean checkForPlants(Block block) {
         return block instanceof BonemealableBlock;
+    }
+
+    public static boolean checkForCrops(Block block) {
+        return block instanceof CropBlock;
     }
 
     public static double randomWithRange(double min, double max) {

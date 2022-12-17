@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.bellow;
 
 import com.fallenreaper.createutilities.index.CUBlockPartials;
-import com.fallenreaper.createutilities.core.utils.MathUtil;
+import com.fallenreaper.createutilities.core.utils.MiscUtil;
 import com.jozufozu.flywheel.api.MaterialManager;
 import com.jozufozu.flywheel.api.instance.DynamicInstance;
 import com.jozufozu.flywheel.core.materials.oriented.OrientedData;
@@ -30,7 +30,7 @@ public class BellowInstance extends ShaftInstance implements DynamicInstance {
 
     protected void updatePosition() {
         float timer = (AnimationTickHolder.getPartialTicks());
-        double value = MathUtil.lerp(0, 2, Mth.clamp(timer, -1, 1));
+        double value = MiscUtil.lerp(0, 2, Mth.clamp(timer, -1, 1));
         Vector3f position = new Vector3f(0, 4, 0);
         this.bellowBottom.setPosition(position);
         this.bellowMiddle.setPosition(position);

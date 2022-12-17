@@ -2,8 +2,8 @@ package com.fallenreaper.createutilities.content.blocks.bellow;
 
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.content.blocks.steam_furnace.ISteamProvider;
-import com.fallenreaper.createutilities.core.utils.IFurnaceBurnTimeAccessor;
+import com.fallenreaper.createutilities.core.data.IBoilerProvider;
+import com.fallenreaper.createutilities.core.data.IFurnaceBurnTimeAccessor;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
@@ -60,7 +60,7 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         BlockState state = event.getWorld().getBlockState(event.getPos());
 
         for (Block blocks : BLOCK_LIST) {
-            if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks) || state.getBlock() instanceof ISteamProvider)
+            if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks) || state.getBlock() instanceof IBoilerProvider<?, ?>)
                 event.setUseBlock(Event.Result.DENY);
         }
     }

@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.mixins;
 
 import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlockEntity;
-import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBoilerData;
+import com.fallenreaper.createutilities.core.data.IBoilerProvider;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.contraptions.base.GeneratingKineticTileEntity;
@@ -10,10 +10,8 @@ import com.simibubi.create.content.contraptions.components.steam.PoweredShaftTil
 import com.simibubi.create.content.contraptions.components.steam.SteamEngineBlock;
 import com.simibubi.create.content.contraptions.components.steam.SteamEngineTileEntity;
 import com.simibubi.create.content.contraptions.components.structureMovement.bearing.WindmillBearingTileEntity;
-import com.simibubi.create.content.contraptions.fluids.tank.BoilerData;
 import com.simibubi.create.content.contraptions.fluids.tank.FluidTankTileEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
-import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
 import com.simibubi.create.foundation.tileEntity.behaviour.scrollvalue.ScrollOptionBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,8 +23,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -52,35 +50,41 @@ public abstract class SteamEngineBlockEntityMixin {
     @Shadow(remap = false)
     public abstract FluidTankTileEntity getTank();
 
-    public WeakReference<SteamFurnaceBlockEntity> getSourceSteam() {
-        return sourceSteam;
-    }
 
     @Inject(method = "<init>", at = @At("TAIL"), remap = false)
     public void init(BlockEntityType<?> type, BlockPos pos, BlockState state, CallbackInfo ci) {
         this.sourceSteam = new WeakReference<>(null);
     }
 
-    @Inject(method = "spawnParticles", at = @At(value = "FIELD", target="Lcom/simibubi/create/content/contraptions/components/steam/SteamEngineTileEntity;source:Ljava/lang/ref/WeakReference;"), remap = false )
+    @Inject(method = "spawnParticles", at = @At(value = "FIELD", target= "Lcom/simibubi/create/content/contraptions/components/steam/SteamEngineTileEntity;source:Ljava/lang/ref/WeakReference;",  shift = At.Shift.BEFORE), remap = false )
     private void playSound(CallbackInfo ci) {
         SteamEngineTileEntity te = (SteamEngineTileEntity) (Object) this;
         SteamFurnaceBlockEntity be = sourceSteam.get();
         if( te.getLevel() == null) return;
 
         if (be != null) {
-            if (be.getBoiler() != null) {
-                float volume = 3f / Math.max(2, be.boiler.attachedEngines / 2);
-                float pitch = 1.18f - be.getLevel().random.nextFloat() * .25f;
-                be.getLevel().playLocalSound(be.getBlockPos().getX(), be.getBlockPos().getY(), be.getBlockPos().getZ(),
-                        SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, volume, pitch, false);
-                AllSoundEvents.STEAM.playAt(be.getLevel(), be.getBlockPos(), volume / 16, .8f, false);
-            }
+            float volume = 3f / Math.max(2, be.boiler.attachedEngines / 2);
+            float pitch = 1.18f - be.getLevel().random.nextFloat() * .25f;
+            be.getLevel().playLocalSound(be.getBlockPos().getX(), be.getBlockPos().getY(), be.getBlockPos().getZ(),
+                    SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, volume, pitch, false);
+            AllSoundEvents.STEAM.playAt(be.getLevel(), be.getBlockPos(), volume / 16, .8f, false);
         }
     }
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/components/steam/SteamEngineTileEntity;getTank()Lcom/simibubi/create/content/contraptions/fluids/tank/FluidTankTileEntity;", shift = At.Shift.BEFORE), remap = false, cancellable = true, require = 0)
+    public void onTick(CallbackInfo ci) {
+        SteamEngineTileEntity te = (SteamEngineTileEntity) (Object) this;
+        Direction facing = SteamEngineBlock.getFacing(te.getBlockState());
+        BlockEntity be = te.getLevel().getBlockEntity(te.getBlockPos().relative(facing.getOpposite()));
+        act(te);
+        if(be instanceof IBoilerProvider<?, ?>)
+            ci.cancel();
+    }
+
     /**
      * @author FallenReaper
-     * @reason Had to make it this way
+     * @reason Had to make it this way #EDIT HOLY SHIT I FOUND A WAY TO DO IT WITHOUT OVERWITE
      */
+    /*
     @Overwrite(remap = false)
     public void tick() {
         SteamEngineTileEntity te = (SteamEngineTileEntity) (Object) this;
@@ -98,6 +102,8 @@ public abstract class SteamEngineBlockEntityMixin {
 
     }
 
+     */
+
     public SteamFurnaceBlockEntity getFurnaceTank() {
         SteamEngineTileEntity te = (SteamEngineTileEntity) (Object) this;
         SteamFurnaceBlockEntity steamTank = sourceSteam.get();
@@ -112,23 +118,11 @@ public abstract class SteamEngineBlockEntityMixin {
         return steamTank;
     }
 
-    public void act(boolean steamFurnace, SteamEngineTileEntity te) {
+   //todo: Make this extensible by using IBoilerProvider<?, ?> instead of SteamFurnace;
+    public void act(@NotNull SteamEngineTileEntity te) {
 
         PoweredShaftTileEntity shaft = te.getShaft();
-        SmartTileEntity tank;
-        BoilerData boilerData = null;
-        if (steamFurnace) {
-            tank = getFurnaceTank();
-            if(getFurnaceTank() != null) {
-                boilerData = getFurnaceTank().boiler;
-            }
-        } else {
-            tank = getTank();
-            if(getTank() != null) {
-                boilerData = getTank().boiler;
-            }
-        }
-
+        SteamFurnaceBlockEntity tank = getFurnaceTank();
 
         Direction facing = SteamEngineBlock.getFacing(te.getBlockState());
 
@@ -164,15 +158,7 @@ public abstract class SteamEngineBlockEntityMixin {
             facing = blockState.getValue(SteamEngineBlock.FACING);
 
 
-        float efficiency = 0;
-        if (!steamFurnace) {
-            efficiency = Mth.clamp(boilerData.getEngineEfficiency(((FluidTankTileEntity) tank).getTotalTankSize()), 0, 1);
-        }
-        else {
-            if (boilerData instanceof SteamFurnaceBoilerData data) {
-                efficiency = Mth.clamp(data.getEngineEfficiency(), 0, 1);
-            }
-        }
+        float efficiency = Mth.clamp(tank.getBoiler().getEngineEfficiency(), 0, 1);
 
         if (efficiency > 0)
             te.award(AllAdvancements.STEAM_ENGINE);
@@ -194,8 +180,7 @@ public abstract class SteamEngineBlockEntityMixin {
 
         shaft.update(te.getBlockPos(), conveyedSpeedLevel, efficiency);
 
-        if (!te.getLevel().isClientSide)
-            return;
+
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::spawnParticles);
     }

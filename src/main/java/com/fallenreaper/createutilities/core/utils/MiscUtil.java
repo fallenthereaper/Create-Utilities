@@ -1,14 +1,34 @@
 package com.fallenreaper.createutilities.core.utils;
 
+import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
+import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
 import com.google.common.primitives.Ints;
 import com.jozufozu.flywheel.repack.joml.Vector3d;
 import com.simibubi.create.foundation.render.SuperByteBuffer;
 import com.simibubi.create.foundation.utility.Couple;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.FarmlandWaterManager;
+import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.PlantType;
+
+import java.util.HashSet;
+import java.util.Set;
+
 @SuppressWarnings("ALL")
-public class MathUtil {
+public class MiscUtil {
     /**
      * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
      */
@@ -38,7 +58,7 @@ public class MathUtil {
         return start + ((target - start) * increment);
     }
 
-    private static double getAngleForFacing(Direction facing) {
+    public static double getAngleForFacing(Direction facing) {
         return 90 * (facing.equals(Direction.NORTH) ? 4 : facing.equals(Direction.SOUTH) ? 2 : facing.equals(Direction.EAST) ? 3 : 1);
     }
 
@@ -61,11 +81,6 @@ public class MathUtil {
         return cubicLerp;
     }
 
-    public Vec3 getPositions(double t) {
-
-        return lerpVector(starts.getFirst(), starts.getSecond(), (float) t);
-    }
-
     public static boolean isInsideCircle(double radius, BlockPos blockPos, BlockPos target) {
         Vector3d centerPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         Vector3d targetPos = new Vector3d(target.getX(), target.getY(), target.getZ());
@@ -74,6 +89,7 @@ public class MathUtil {
         return distance <= radius;
 
     }
+
     public static boolean isInsideCircleHorizontal(double radius, BlockPos blockPos, BlockPos target) {
         Vector3d centerPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         Vector3d targetPos = new Vector3d(target.getX(), target.getY(), target.getZ());
@@ -82,9 +98,51 @@ public class MathUtil {
         return distance <= radius;
 
     }
+
     public static boolean isInsideCircle(double radius, Vector3d center, Vector3d target) {
         double distance = center.distance(target);
         return distance <= radius;
+    }
+
+    public static void setPlantFromSeed(ItemStack itemstack, Level pLevel, BlockPos aboveFarmlandPos) {
+        if (!(pLevel.getBlockState(aboveFarmlandPos).getBlock() instanceof FarmBlock))
+            return;
+        if (!(itemstack.getItem() instanceof IPlantable plantable))
+            return;
+        if (itemstack.isEmpty())
+            return;
+
+        if (plantable.getPlantType(pLevel, aboveFarmlandPos) == PlantType.CROP) {
+            pLevel.setBlock(aboveFarmlandPos, plantable.getPlant(pLevel, aboveFarmlandPos), 3);
+        }
+    }
+
+    public static Set<BlockPos> getAllWithinRadius(Level pLevel, Player player, int radius, BlockPos pBlockPos) {
+        Set<BlockPos> allBlocks = new HashSet<>();
+
+        for (BlockPos blockPositions : pBlockPos.betweenClosed(pBlockPos.getX() - radius, pBlockPos.getY(), pBlockPos.getZ() - radius, pBlockPos.getX() + radius, pBlockPos.getY() + 1, pBlockPos.getZ() + radius)) {
+            BlockState blockState = pLevel.getBlockState(blockPositions);
+            if (blockState.isAir())
+                continue;
+            if (blockState.is(BlockTags.WITHER_IMMUNE))
+                continue;
+            if(allBlocks.contains(blockPositions))
+                continue;
+
+            // if(!blockState.canHarvestBlock(level, blockPositions, player))
+            //     continue;
+            BlockPos p;
+            p = new BlockPos(blockPositions);
+
+
+                if (isInsideCircle(radius, pBlockPos, blockPositions)) {
+                    Block block = blockState.getBlock();
+                    if (block instanceof CropBlock cropBlock && cropBlock.isMaxAge(blockState)) {
+                        allBlocks.add(blockPositions);
+                    }
+            }
+        }
+        return allBlocks;
     }
 
     public static String formatTime(int ticks) {
@@ -129,5 +187,35 @@ public class MathUtil {
             if (to[i] < max)
                 max = to[i];
         return max;
+    }
+
+    public static boolean isNearWater(LevelReader pLevel, BlockPos pPos) {
+        for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-12, 1, -12), pPos.offset(12, 12, 12))) {
+            BlockEntity detectedBlock = pLevel.getBlockEntity(blockpos);
+
+            if (detectedBlock instanceof SprinklerBlockEntity be) {
+                BlockPos posBe = be.getBlockPos();
+                boolean isCeiling = pLevel.getBlockState(posBe).getValue(SprinklerBlock.CEILING);
+
+                if (be.isHydrating() && be.isWater()) {
+                    for (BlockPos pos : BlockPos.betweenClosed(posBe.offset(-be.getRadius(), 1, -be.getRadius()), posBe.offset(be.getRadius(), 12, be.getRadius()))) {
+                        if (isInsideCircle(be.getRadius(), posBe, pPos)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-4, 0, -4), pPos.offset(4, 1, 4))) {
+            if (pLevel.getFluidState(blockpos).is(FluidTags.WATER)) {
+                return true;
+            }
+        }
+        return FarmlandWaterManager.hasBlockWaterTicket(pLevel, pPos);
+    }
+
+    public Vec3 getPositions(double t) {
+
+        return lerpVector(starts.getFirst(), starts.getSecond(), (float) t);
     }
 }

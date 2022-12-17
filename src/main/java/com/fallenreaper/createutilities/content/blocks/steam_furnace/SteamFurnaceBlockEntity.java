@@ -1,24 +1,27 @@
 package com.fallenreaper.createutilities.content.blocks.steam_furnace;
 
-import com.fallenreaper.createutilities.core.data.IDevInfo;
+import com.fallenreaper.createutilities.core.data.*;
 import com.fallenreaper.createutilities.core.data.blocks.InteractableBlockEntity;
 import com.fallenreaper.createutilities.core.utils.InteractionHandler;
 import com.fallenreaper.createutilities.index.CUFluids;
 import com.jozufozu.flywheel.repack.joml.Math;
+import com.jozufozu.flywheel.repack.joml.Vector2d;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.contraptions.components.steam.SteamEngineBlock;
+import com.simibubi.create.content.contraptions.components.steam.SteamEngineTileEntity;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.contraptions.processing.EmptyingByBasin;
+import com.simibubi.create.content.contraptions.wrench.WrenchItem;
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
-import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
 import com.simibubi.create.foundation.tileEntity.TileEntityBehaviour;
 import com.simibubi.create.foundation.tileEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.tileEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.utility.*;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -33,6 +36,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -46,13 +50,14 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
@@ -61,66 +66,79 @@ import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static com.fallenreaper.createutilities.content.blocks.steam_furnace.FurnaceState.*;
 import static com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlock.CREATIVE_LIT;
-import static com.fallenreaper.createutilities.core.utils.MathUtil.*;
+import static com.fallenreaper.createutilities.core.data.FurnaceState.*;
+import static com.fallenreaper.createutilities.core.utils.MiscUtil.formatEnumName;
+import static com.fallenreaper.createutilities.core.utils.MiscUtil.formatTime;
 import static com.google.common.base.Strings.repeat;
 import static com.simibubi.create.Create.RANDOM;
+import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlock.HORIZONTAL_FACING;
 import static com.simibubi.create.foundation.fluid.FluidHelper.convertToStill;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 import static net.minecraftforge.items.ItemHandlerHelper.canItemStacksStack;
 
 //------WIP------//
-public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements IHaveGoggleInformation, ISteamProvider, IDevInfo {
+public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements IHaveGoggleInformation, IBoilerProvider<SteamFurnaceBlockEntity, SteamFurnaceBoilerData>, IDevInfo{
+
     public static int MAX_SLOT_SIZE = 4;
     protected final int[] cookingProgress;
     protected final int[] cookingTime;
+    //FLUID INVENTORY
     private final Couple<SmartFluidTankBehaviour> tanks;
+    //LOGIC
     public SteamFurnaceBoilerData boiler;
     public float indicatorProgress;
-    public ItemStackHandler internalInventory;
+    public FurnaceState furnaceState;
+    //ITEM INVENTORY
+    public RecipeType<?> recipeType;
+    public float[] offsetRotation;
+    public FuelItemHandler inventory;
+    public boolean hasFuel;
+    public int litTime;
+    public boolean isUnlimited;
+    public ItemStackHandler foodInventory;
     public int itemSearchCooldown;
     public List<ItemStackHandler> itemStackHandlers;
-    public boolean hasSteamEngine;
-    public boolean hasInputFluidIn;
-    public FurnaceState furnaceState;
-    public SteamFurnaceItemHandler inventory;
-    public boolean hasFuel;
-    public LazyOptional<IItemHandler> itemCapability;
     public LazyOptional<IFluidHandler> fluidCapability;
     public SmartFluidTankBehaviour inputTank;
     public SmartFluidTankBehaviour outputTank;
-    public int litTime;
-    public boolean isUnlimited;
-    public float fluidConsumptionTick;
+    public boolean hasInputFluidIn;
+    public float usageRate;
     public float producedSteam;
     public boolean hasOutputFluidIn;
-    public boolean spawnCookingParticles;
-    public RecipeType<?> recipeType;
-    public float[] offsetRotation;
+    public int[] slots;
+    public LazyOptional<? extends IItemHandler>[] invHandler;
+    public Vector2d[] offset;
+    int availableSlot;
+    private int nextFreeSlot;
 
 
     public SteamFurnaceBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        this.inventory = createItemHandler();
-        this.internalInventory = createInternalItemHandler();
-        this.itemCapability = LazyOptional.of(() -> new CombinedInvWrapper(inventory, internalInventory));
+        this.inventory = createFuelItemHandler();
+        this.foodInventory = createFoodItemHandler();
+        this.invHandler = new LazyOptional[2];
+        this.offset = new Vector2d[4];
+        //   this.itemCapability = LazyOptional.of(() -> new CombinedInvWrapper(inventory, foodInventory));
+        this.invHandler[0] = LazyOptional.of(() -> inventory);
+        this.invHandler[1] = LazyOptional.of(() -> foodInventory);
         this.furnaceState = FurnaceState.NONE;
         this.tanks = Couple.create(inputTank, outputTank);
         this.cookingProgress = new int[MAX_SLOT_SIZE];
         this.cookingTime = new int[MAX_SLOT_SIZE];
         this.offsetRotation = new float[MAX_SLOT_SIZE];
         this.itemStackHandlers = new ArrayList<>();
-        itemStackHandlers.add(getInternalInventory());
-        itemStackHandlers.add(getInventory());
+        this.slots = new int[4];
+        this.itemStackHandlers.add(getFoodInventory());
+        this.itemStackHandlers.add(getFuelInventory());
         this.recipeType = RecipeType.CAMPFIRE_COOKING;
         this.boiler = new SteamFurnaceBoilerData(this);
     }
@@ -153,13 +171,61 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     public static int getOccupiedSlot(IItemHandler itemHandler) {
+        int slot = -1;
         for (int i = 0; i < itemHandler.getSlots(); ++i) {
             ItemStack slotStack = itemHandler.getStackInSlot(i);
             if (!slotStack.isEmpty()) {
-                return i;
+                slot = i;
             }
         }
-        return -1;
+        return slot;
+    }
+
+    public int getSlotFromHit(Vector2d vec, Direction direction) {
+        double x = vec.x;
+        double z = vec.y;
+        switch (direction) {
+            case NORTH -> {
+                if (x >= 0.5F && z <= 0.5F)
+                    return 0;
+                else if (x >= 0.5F && z >= 0.5F)
+                    return 1;
+                else if (x <= 0.5F && z <= 0.5F)
+                    return 2;
+                else
+                    return 3;
+            }
+            case SOUTH -> {
+                if (x <= 0.5F && z >= 0.5F)
+                    return 3;
+                else if (x <= 0.5F && z <= 0.5F)
+                    return 2;
+                else if (x >= 0.5F && z <= 0.5F)
+                    return 1;
+                else
+                    return 0;
+            }
+            case WEST -> {
+                if (x >= 0.5F && z <= 0.5F)
+                    return 2;
+                else if (x >= 0.5F && z >= 0.5F)
+                    return 3;
+                else if (x <= 0.5F && z <= 0.5F)
+                    return 0;
+                else
+                    return 1;
+            }
+            default -> {
+                if (x >= 0.5F && z <= 0.5F)
+                    return 3;
+                else if (x >= 0.5F && z >= 0.5F)
+                    return 1;
+                else if (x <= 0.5F && z <= 0.5F)
+                    return 0;
+                else
+                    return 2;
+            }
+        }
     }
 
     @Override
@@ -180,14 +246,17 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     private SmartFluidTankBehaviour createFluidHandler(BehaviourType<SmartFluidTankBehaviour> type) {
-        return new SmartFluidTankBehaviour(type, this, 1, getTankCapacity(), true);
+        return new SmartFluidTankBehaviour(type, this, 1, getTankCapacity(), true).whenFluidUpdates(() -> {
+            if (boiler.isActive())
+                boiler.gatheredSupply += Math.max(Math.round((float) getTank().getFluidAmount() / 16f), 0);
+        });
     }
 
-    private SteamFurnaceItemHandler createItemHandler() {
-        return new SteamFurnaceItemHandler(this, 1);
+    private FuelItemHandler createFuelItemHandler() {
+        return new FuelItemHandler(this, 1);
     }
 
-    private ItemStackHandler createInternalItemHandler() {
+    private ItemStackHandler createFoodItemHandler() {
 
         return new InternalItemStackHandler(
                 MAX_SLOT_SIZE, this);
@@ -196,14 +265,14 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     public int getTankCapacity() {
         return 1024 / 2;
     }
-//TODO: ADD LAST SAVED SLOT OPTION
+
+    //TODO: ADD LAST SAVED SLOT OPTION
     @Override
     public InteractionResult onInteract(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult) {
         if (level == null)
             return InteractionResult.FAIL;
 
         ItemStack itemStack = pPlayer.getItemInHand(pHand).copy();
-        ItemStack stackInSlot = getFuelStack().copy();
         if (level.getBlockEntity(pPos) instanceof SteamFurnaceBlockEntity) {
 
             //FLUIDS
@@ -215,7 +284,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                     .isPresent();
             if (pPlayer.getItemInHand(pHand).is(Items.BUCKET) && !isFuel(itemStack)) {
                 if (hasWater()) {
-                    Fluid fluid = getInputTank().getFluid().getFluid();
+                    Fluid fluid = getTank().getFluid().getFluid();
 
                     FluidAttributes attributes = fluid.getAttributes();
                     soundevent = attributes.getFillSound();
@@ -223,7 +292,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                         soundevent =
                                 FluidHelper.isTag(fluid, FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
 
-                    this.getInputTank().drain(Math.min(getTankCapacity(), getInputTank().getFluidAmount()), IFluidHandler.FluidAction.EXECUTE);
+                    this.getTank().drain(Math.min(getTankCapacity(), getTank().getFluidAmount()), IFluidHandler.FluidAction.EXECUTE);
                     if (pLevel.isClientSide())
                         pLevel.playSound(pPlayer, pPos, soundevent, SoundSource.BLOCKS, 1.0f, 1f);
 
@@ -233,10 +302,10 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
             if (present && !isFuel(itemStack)) {
 
-                if (getInputTank() != null) {
+                if (getTank() != null) {
                     if (!pPlayer.getItemInHand(pHand).is(Items.BUCKET)) {
                         Pair<FluidStack, ItemStack> emptyItem = EmptyingByBasin.emptyItem(pLevel, itemStack, true);
-                        Fluid fluid = getInputTank().getFluid().getFluid();
+                        Fluid fluid = getTank().getFluid().getFluid();
                         fluidState = fluid.defaultFluidState()
                                 .createLegacyBlock();
                         FluidAttributes attributes = fluid.getAttributes();
@@ -246,7 +315,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                                     FluidHelper.isTag(fluid, FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
                         FluidStack fluidFromItem = emptyItem.getFirst();
 
-                        this.getInputTank().fill(fluidFromItem, IFluidHandler.FluidAction.EXECUTE);
+                        this.getTank().fill(fluidFromItem, IFluidHandler.FluidAction.EXECUTE);
 
 
                         if (pLevel.isClientSide())
@@ -257,87 +326,161 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 return InteractionResult.SUCCESS;
             }
 
-            //FUEL ITEMS
+            //ITEMS
             if (pHitResult.getDirection() != Direction.UP) {
-                if (!hasFuel() && itemStack.isEmpty())
-                    return InteractionResult.FAIL;
-                if (!itemStack.isEmpty() && !isFuel(itemStack))
-                    return InteractionResult.FAIL;
-
-                if (!hasFuel()) {
-                    if (!itemStack.isEmpty() && isFuel(itemStack)) {
-                        //  if (!pPlayer.isCreative()) {
-                        pPlayer.setItemInHand(pHand, ItemStack.EMPTY);
-                        setItemStack(itemStack);
-                        if (getBurnTime() > 0)
-                            setBurnTime(getFuelBurnTime(getFuelStack()));
-                    }
-                } else if (!itemStack.isEmpty()) {
-                    if (canItemStacksStack(itemStack, stackInSlot)) {
-                        int desiredAmount = Math.max(stackInSlot.getMaxStackSize() - stackInSlot.getCount(), 0);
-                        stackInSlot.grow(Math.min(desiredAmount, itemStack.getCount()));
-                        setItemStack(stackInSlot);
-                        itemStack.shrink(desiredAmount);
-                        pPlayer.setItemInHand(pHand, itemStack);
-                    }
-                } else {
-                    setItemStack(ItemStack.EMPTY);
-                    pPlayer.setItemInHand(pHand, stackInSlot);
-                    if (isBurning())
-                        setBurnTime(getFuelBurnTime(getFuelStack()));
-                    if (pLevel.isClientSide())
-                        pLevel.playSound(pPlayer, pPos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.25F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+                if (insertFuel(itemStack.copy(), pPlayer, pHand, getLevel(), false)) {
+                    notifyUpdate();
+                    return InteractionResult.SUCCESS;
                 }
-                notifyUpdate();
-                return InteractionResult.SUCCESS;
             } else {
-                if (level.getBlockState(getBlockPos().relative(Direction.UP)).isAir()) {
-                    //TODO: MAKE THIS ONLY REMOVE THE AMOUNT DEPENDING ON THE AMOUNT OF FREE SLOTS
-                    if (hasFreeSlot() && hasRecipe(itemStack) && !itemStack.isEmpty()) {
-                        if (addItem(itemStack, level.getRandom().nextFloat() * 360f)) {
-                            itemStack.shrink(1);
-                            pPlayer.setItemInHand(pHand, itemStack);
+                if (!(pHitResult.getLocation().subtract(Vec3.atLowerCornerOf(pPos)).y < 1.0D)) {
+                    Vec3 position = pHitResult.getLocation();
 
-                            if (pLevel.isClientSide())
-                                pLevel.playSound(pPlayer, pPos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.25F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+
+                    float yRot = AngleHelper.horizontalAngle(pState.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite());
+
+                    //  position = VecHelper.rotateCentered(position, yRot, Direction.Axis.Y);
+
+                    Vec3 definedPosition = position.subtract(Vec3.atLowerCornerOf(pPos));
+                    definedPosition = VecHelper.rotateCentered(definedPosition, yRot, Direction.Axis.Y);
+
+
+                    if (getLevel().getBlockState(getBlockPos().relative(Direction.UP)).isAir()) {
+                        System.out.println(pHitResult.getType());
+                        Vector2d vector2d = new Vector2d(definedPosition.x, definedPosition.z);
+                        System.out.println("x: " + (float) ((vector2d.x)) + " z: " + (float) ((vector2d.y)));
+                        if (insertFood(itemStack, pPlayer, pLevel, pHand, vector2d, false)) {
+                            pPlayer.awardStat(Stats.INTERACT_WITH_BLAST_FURNACE);
+                            notifyUpdate();
                             return InteractionResult.SUCCESS;
                         }
-                    } else if (itemStack.isEmpty() && hasOccupiedSlot()) {
-                        ItemStack stackInSlotInternal = getInternalInventory().getStackInSlot(getOccupiedSlot(getInternalInventory()));
-                        pPlayer.setItemInHand(pHand, stackInSlotInternal.copy());
-                        stackInSlotInternal.shrink(1);
-
-                        if (pLevel.isClientSide())
-                            pLevel.playSound(pPlayer, pPos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.25F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
-                        return InteractionResult.SUCCESS;
                     }
-                /*
-                else if (!itemStack.isEmpty() && hasOccupiedSlot()) {
-                    ItemStack stackInSlotInternal = getInternalInventory().getStackInSlot(getOccupiedSlot(getInternalInventory()));
-                    if (canItemStacksStack(itemStack, stackInSlotInternal)) {
-                       itemStack.grow(1);
-                        stackInSlotInternal.shrink(1);
-                        pPlayer.setItemInHand(pHand, itemStack);
-                    }
-                }
-
-                 */
                 }
             }
         }
         return super.onInteract(pState, pLevel, pPos, pPlayer, pHand, pHitResult);
     }
 
-    public boolean isUnlimitedFuel() {
-        return isUnlimited;
+    public boolean insertFuel(ItemStack pItemStack, Player pPlayer, InteractionHand pHand, Level pLevel, boolean simulate) {
+        ItemStack furnaceStack = getFuelStack().copy();
+        boolean consume = !pPlayer.isCreative();
+        if (!hasFuel() && pItemStack.isEmpty())
+            return false;
+        if (!pItemStack.isEmpty() && !isFuel(pItemStack) && !(pItemStack.getItem() instanceof WrenchItem))
+            return false;
+        if (pLevel == null)
+            return false;
+
+        if (!hasFuel()) {
+            if (!pItemStack.isEmpty() && isFuel(pItemStack)) {
+                //  if (!pPlayer.isCreative()) {
+                if (!simulate) {
+                   // if (consume) {
+                        pPlayer.setItemInHand(pHand, ItemStack.EMPTY);
+
+                  //  }
+                    setItemStack(pItemStack);
+                    if (boiler.isActive())
+                        boiler.activeHeat += Math.round((float) pItemStack.getCount() / 16F);
+
+                    if (getBurnTime() > 0)
+                        setBurnTime(getFuelBurnTime(getFuelStack()));
+
+                    if (pLevel.isClientSide()) {
+                        pLevel.playSound(pPlayer, getBlockPos(), SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 1.25F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+                    }
+                    return true;
+                }
+            }
+        } else if (!pItemStack.isEmpty()) {
+            if (canItemStacksStack(pItemStack, furnaceStack)) {
+                int desiredAmount = Math.max(furnaceStack.getMaxStackSize() - furnaceStack.getCount(), 0);
+                if (!simulate) {
+                    furnaceStack.grow(Math.min(desiredAmount, furnaceStack.getCount()));
+                    setItemStack(furnaceStack);
+                    pItemStack.shrink(desiredAmount);
+                    pPlayer.setItemInHand(pHand, pItemStack);
+
+                    if (pLevel.isClientSide())
+                        pLevel.playSound(pPlayer, getBlockPos(), SoundEvents.ITEM_FRAME_ROTATE_ITEM, SoundSource.BLOCKS, 1.5F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+
+                    return true;
+                }
+            }
+        } else {
+            int oldBurnTime = getFuelBurnTime(furnaceStack);
+            if (!simulate) {
+                if (isBurning())
+                    setBurnTime(0);
+                setItemStack(ItemStack.EMPTY);
+            //    if (consume) {
+                    pPlayer.getInventory().placeItemBackInInventory(furnaceStack);
+            //    }
+                if (pLevel.isClientSide()) {
+                    pLevel.playSound(pPlayer, getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.75F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void initFields() {
+    public boolean insertFood(ItemStack pItemStack, Player pPlayer, Level pLevel, InteractionHand pHand, Vector2d slot, boolean simulate) {
+        boolean consume = !pPlayer.isCreative();
+        Direction direction = getLevel().getBlockState(getBlockPos()).getValue(HORIZONTAL_FACING);
+        Vec3 playerRotation = pPlayer.getLookAngle();
+        if (getLevel() == null) return false;
 
-        this.hasInputFluidIn = !getInputTank().getFluid().isEmpty();
-        this.hasOutputFluidIn = !getOutputTank().getFluid().isEmpty() || producedSteam > 0;
-        this.hasFuel = !getFuelStack().isEmpty() && !getFuelStack().is(Items.AIR);
-        this.isUnlimited = getFuelBurnTime(getFuelStack()) >= 220000;
+
+        if (hasFreeSlot() && hasRecipe(pItemStack) && !pItemStack.isEmpty()) {
+
+            if (addFood(pItemStack, pPlayer.getYHeadRot(), getSlotFromHit(slot, direction), false)) {
+                this.offset[getSlotFromHit(slot, direction)] = slot;
+                if (!simulate) {
+                    pItemStack.shrink(1);
+                    pPlayer.setItemInHand(pHand, pItemStack);
+                    notifyUpdate();
+                    if (pLevel.isClientSide())
+                        pLevel.playSound(pPlayer, getBlockPos(), SoundEvents.ITEM_FRAME_PLACE, SoundSource.BLOCKS, 1.0F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+
+                    return true;
+                }
+            }
+        } else if (pItemStack.isEmpty() && hasOccupiedSlot()) {
+            ItemStack furnaceStack = getFoodInventory().getStackInSlot(getSlotFromHit(slot, direction));
+            if (!simulate) {
+
+                pPlayer.getInventory().placeItemBackInInventory(furnaceStack.copy());
+                furnaceStack.shrink(1);
+                notifyUpdate();
+                if (pLevel.isClientSide())
+                    pLevel.playSound(pPlayer, getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 1.0F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void onFuelConsume() {
+        if (!isUnlimitedFuel())
+            getFuelStack().shrink(1);
+    }
+
+    public boolean insertFluid(ItemStack pItemStack) {
+        LazyOptional<IFluidHandlerItem> capability =
+                pItemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY);
+        IFluidHandlerItem tank = capability.orElse(null);
+
+        if (!capability.isPresent())
+            return false;
+
+
+        return false;
+    }
+
+    public boolean isUnlimitedFuel() {
+        return isUnlimited;
     }
 
     @Override
@@ -349,16 +492,17 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
 
         boolean isClientSide = this.getLevel().isClientSide;
-        initFields();
+        this.hasInputFluidIn = !getTank().getFluid().isEmpty();
+        this.hasOutputFluidIn = !getOutputTank().getFluid().isEmpty() || producedSteam > 0;
+        this.hasFuel = !getFuelStack().isEmpty() && !getFuelStack().is(Items.AIR);
+        this.isUnlimited = getFuelBurnTime(getFuelStack()) >= 220000;
 
         if (litTime > 0 && !isUnlimitedFuel())
             litTime--;
 
         if (litTime <= 0 && hasFuel()) {
             setBurnTime(getFuelBurnTime(getFuelStack()));
-            if (!isUnlimitedFuel())
-                getFuelStack().shrink(1);
-
+            onFuelConsume();
         }
         tickItemSearch();
         syncBlockState();
@@ -369,69 +513,84 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         if (producedSteam < 0)
             producedSteam = Math.clamp(producedSteam, 0, getTankCapacity());
 
-        if(getState().isActive() || getState().isProducing()) {
+        if (getState().isActive() || getState().isProducing()) {
             cookTick();
-        }
-        else {
+        } else {
             coolDown();
-            spawnCookingParticles = false;
         }
+        if (hasEngineAttached()) {
+            ItemStack itemStack;
+            boolean forcePush = getLevel().getBlockEntity(getBlockPos().above()) != null;
+            if (forcePush) {
+                for (int slot = 0; slot < getFoodInventory().getSlots(); slot++) {
+                    itemStack = getFoodInventory().getStackInSlot(slot);
+                    dropItemStack(itemStack, slot);
+                }
+            }
+        }
+        float coolDown = 0;
 
         if (getState().isProducing()) {
-
             updateBoilerTemperature();
-            fluidConsumptionTick++;
+            usageRate++;
 
-            if (fluidConsumptionTick % 4 == 0) {
-                fluidConsumptionTick -= Math.max(0, fluidConsumptionTick);
-                tryDrain();
+            if (usageRate % 5 == 0) {
+                usageRate -= Math.max(0, usageRate);
+                produceSteam();
             }
 
         }
-        if (producedSteam > 0 && !isBurning() || !hasWater() && hasSteamEngineAttached()) {
-                float level = (float) boiler.attachedEngines / 6.0f;
-            getOutputTank().drain(1, IFluidHandler.FluidAction.EXECUTE);
-            producedSteam = Math.clamp(producedSteam - 1, 0, getTankCapacity());
-        }
+        if ((producedSteam > 0) && !isBurning() || !hasWater() && hasEngineAttached())
+            drainSteam();
 
+
+        ItemStack freeStack = getFoodInventory().getStackInSlot(nextFreeSlot);
+
+        nextFreeSlot = (nextFreeSlot + 1) % getFoodInventory().getSlots();
+
+
+        if (freeStack.isEmpty())
+            availableSlot = nextFreeSlot;
 
         if (hasFuel() || isBurning()) {
             if (isClientSide) {
                 spawnParticles();
             }
         }
-        if (boiler != null)
-            boiler.tick();
+        boiler.tick();
 
+    }
+
+    public void drainSteam() {
+        float level = (float) boiler.attachedEngines / 6.0f;
+        getOutputTank().drain(1, IFluidHandler.FluidAction.EXECUTE);
+        producedSteam = Math.clamp(producedSteam - 1, 0, getTankCapacity());
     }
 
     public void coolDown() {
-        for (int i = 0; i < getInternalInventory().getSlots(); ++i) {
-            if (getInternalInventory().getStackInSlot(i).isEmpty())
-                return;
+        for (int i = 0; i < getFoodInventory().getSlots(); ++i) {
+            if (getFoodInventory().getStackInSlot(i).isEmpty())
+                continue;
 
             if (cookingProgress[i] > 0) {
-                cookingProgress[i] = Mth.clamp(cookingProgress[i] - 1, 0, cookingTime[i]);
+                cookingProgress[i] = Mth.clamp(cookingProgress[i] - 2, 0, cookingTime[i]);
             }
         }
     }
-//rename to produceSteam
-    public void tryDrain() {
-        boolean needsWater = false;
-        if (isUnlimitedFuel())
-            return;
 
-
+    //rename to produceSteam
+    public void produceSteam() {
 
         producedSteam++;
         if (producedSteam >= getTankCapacity()) {
             producedSteam = getTankCapacity();
         }
-        FluidStack drained = getInputTank().drain(getInputTank().getFluid(), IFluidHandler.FluidAction.SIMULATE);
-        getInputTank().drain(1, IFluidHandler.FluidAction.EXECUTE);
+        getTank().drain(1, IFluidHandler.FluidAction.EXECUTE);
+
         FluidStack steam = new FluidStack(CUFluids.STEAM.get(), getTankCapacity());
         getOutputTank().fill(steam, IFluidHandler.FluidAction.SIMULATE);
     }
+
 
     public void syncFurnaceState() {
         if (getLevel() != null) {
@@ -463,7 +622,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         pos = pos.add(-N.getX() * 0.53, -0.1, -N.getZ() * 0.53);
 
         if (getState().isProducing()) {
-            if (fluidConsumptionTick % 10 == 0 && !(getOutputTank().getFluidAmount() >= getTankCapacity())) {
+            if (usageRate % 10 == 0 && !(getOutputTank().getFluidAmount() >= getTankCapacity())) {
                 if (getLevel().getRandom().nextFloat() * 100 < 100) {
                     float volume = 8f / 12 - level.random.nextFloat() * .5f;
                     float pitch = 1.18f - level.random.nextFloat() * .25f;
@@ -499,19 +658,11 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         if (getLevel().getRandom().nextFloat() * 100F < 25F) {
             getLevel().addParticle(ParticleTypes.SMOKE, (d0 + d5) / d5 * d0, (d1 + d6) / d1, d2 + d7, 0.0D, 0.0D, 0.0D);
         }
-
-        for (int i = 0; i < getInternalInventory().getSlots(); i++) {
-            if (spawnCookingParticles) {
-
-                getLevel().playSound(null, worldPosition, SoundEvents.AZALEA_STEP, SoundSource.BLOCKS,
-                        1.5f - getLevel().random.nextFloat() * .425f, 1.0f - level.random.nextFloat() * .25f);
-            }
-        }
     }
 
     public ItemStack getFuelStack() {
 
-        return getInventory().getStackInSlot(0);
+        return getFuelInventory().getStackInSlot(0);
     }
 
     public void updateState(FurnaceState furnaceState) {
@@ -547,17 +698,11 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             random = random.subtract(toVec.scale(random.dot(toVec)));
             pos = pos.add(random);
             level.addParticle(particle, pos.x, pos.y, pos.z, speed.x, speed.y, speed.z);
-
         }
-
-
     }
 
-    public boolean canUpdateState() {
-        return !this.getBlockState().getValue(LIT) && isBurning();
-    }
 
-    public void syncBlockState() {
+    private void syncBlockState() {
 
         if (getLevel() != null) {
             boolean isBlockStateLit = this.getBlockState().getValue(LIT);
@@ -590,6 +735,11 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+
+        return getBoiler().isActive() || hasEngineAttached() ? getBoiler().addToGoggleTooltip(tooltip, isPlayerSneaking) : defaultGoogleToolTip(tooltip, isPlayerSneaking);
+    }
+
+    private boolean defaultGoogleToolTip(List<Component> tooltip, boolean isPlayerSneaking) {
         ItemStack fuelIn = getFuelStack();
         Component indent = new TextComponent(" ");
         Component indent1 = new TextComponent(spacing + " ");
@@ -598,7 +748,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         String item = !hasFuel() ? "Empty" : fuelIn.getItem().getName(fuelIn).getString();
         Component in = new TextComponent(item + " " + (fuelIn.isEmpty() ? "" : "x") + (fuelIn.getCount() <= 0 ? "" : fuelIn.getCount())).withStyle(fuelIn.isEmpty() ? ChatFormatting.RED : ChatFormatting.GREEN);
         LangBuilder mb = Lang.translate("generic.unit.millibuckets");
-        FluidStack fluidStackIn = getInputTank().getFluid();
+        FluidStack fluidStackIn = getTank().getFluid();
         MutableComponent firstLine = arrow.plainCopy().append(indent);
         Component fluidName = new TranslatableComponent(fluidStackIn.getTranslationKey()).withStyle(ChatFormatting.AQUA);
         Component contained = new TextComponent(String.valueOf(fluidStackIn.getAmount())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
@@ -607,13 +757,13 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         Component capacity = new TextComponent(String.valueOf(getTankCapacity())).plainCopy().append(mb.string()).withStyle(ChatFormatting.DARK_GRAY);
         Component unlimited;
         unlimited = new TextComponent("Unlimited").withStyle(ChatFormatting.LIGHT_PURPLE);
-        if (!hasSteamEngineAttached() && !boiler.isActive()) {
-            tooltip.add(indent1.plainCopy()
-                    .append("Steam Furnace:"));
-            if (getBurnTime() > 0)
-                tooltip.add(firstLine.plainCopy().append(" Burn Time:").withStyle(ChatFormatting.GRAY).append(indent).append(isUnlimitedFuel() ? unlimited : time));
 
-            tooltip.add(firstLine.plainCopy().append(" Fuel:").withStyle(ChatFormatting.GRAY).append(indent).append(in));
+        tooltip.add(indent1.plainCopy()
+                .append("Steam Furnace:"));
+        if (getBurnTime() > 0)
+            tooltip.add(firstLine.plainCopy().append(" Burn Time:").withStyle(ChatFormatting.GRAY).append(indent).append(isUnlimitedFuel() ? unlimited : time));
+
+        tooltip.add(firstLine.plainCopy().append(" Fuel:").withStyle(ChatFormatting.GRAY).append(indent).append(in));
 //todo: find a way to check if it has atleast one item on the furnace int tank and use degrading progress like the burn time but instead for cooking time
         /*
         if (hasOccupiedSlot()) {
@@ -624,44 +774,29 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         }
          */
 
-            int slot = getOccupiedSlot(getInternalInventory());
-            int prevSlot = 0;
 
-            if(getState().isProducing() || getState().isActive()) {
-                for (int i = 0; i < getInternalInventory().getSlots(); i++) {
-                    ItemStack stackInSlot = getInternalInventory().getStackInSlot(i);
-                    if(!stackInSlot.isEmpty()) {
-                         prevSlot = i;
-                         break;
-                    }
-                }
+        // int highestCookProgress = sortLowest(cookingProgress);
+        // int indexOf = getIndexOf(cookingProgress, highestCookProgress);
+        Minecraft mc = Minecraft.getInstance();
+        HitResult hitResult = mc.hitResult;
+        Direction direction = getLevel().getBlockState(getBlockPos()).getValue(HORIZONTAL_FACING);
+        if (hitResult instanceof BlockHitResult blockHitResult && mc.level != null && hasOccupiedSlot() && mc.player != null && !(hitResult.getLocation().subtract(Vec3.atLowerCornerOf(getBlockPos())).y < 1.0D)) {
+            Vec3 newHit = blockHitResult.getLocation().subtract(Vec3.atLowerCornerOf(getBlockPos()));
+            int slot = getSlotFromHit(new Vector2d(newHit.x, newHit.z), direction);
+            if (!getFoodInventory().getStackInSlot(slot).isEmpty()) {
 
-             boolean change = false;
-                if(!(slot == prevSlot)) {
-                    prevSlot = slot;
-                    change = true;
-                }
-                int highestCookProgress = sortLowest(cookingProgress);
-                int indexOf = getIndexOf(cookingProgress, highestCookProgress);
+                float progress = Mth.lerp(((float) cookingProgress[slot] / (float) cookingTime[slot]), 0, 1);
+                Component cookTime = getCookingProgress(16, progress, cookingTime[slot]);
 
-                    if(slot != indexOf && change)
-                        slot = indexOf;
-
-                        float progress = Mth.lerp(((float) cookingProgress[slot] / (float) cookingTime[slot]), 0, 1);
-                        if (progress >= 1)
-                            progress = 0;
-                        Component cookTime = getCookProgressBar(16, progress, cookingTime[slot]);
-
-                        if(!change)
-                        tooltip.add(firstLine.plainCopy().append(" Cooking:").withStyle(ChatFormatting.GRAY).append(indent).append(cookTime));
-
-
-                //  System.out.println(progress);
+                tooltip.add(firstLine.plainCopy().append(" Cooking:").withStyle(ChatFormatting.GRAY).append(indent).append(cookTime));
             }
-            tooltip.add(indent.plainCopy());
-            Lang.translate("gui.goggles.fluid_container")
-                    .forGoggles(tooltip);
-            if (hasWater()) {
+        }
+
+
+        tooltip.add(indent.plainCopy());
+        Lang.translate("gui.goggles.fluid_container")
+                .forGoggles(tooltip);
+        if (hasWater()) {
             /*
             tooltip.add(arrow.plainCopy()
                     .append(indent)
@@ -669,20 +804,20 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                     .append(fluidName)
             );
          */
-                FluidStack fluid = getInputTank().getFluid();
-                Lang.fluidName(fluid)
-                        .style(ChatFormatting.GRAY)
-                        .forGoggles(tooltip, 1);
+            FluidStack fluid = getTank().getFluid();
+            Lang.fluidName(fluid)
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip, 1);
 
-                Lang.builder()
-                        .add(Lang.number(fluid.getAmount())
-                                .add(mb)
-                                .style(ChatFormatting.GOLD))
-                        .text(ChatFormatting.GRAY, " / ")
-                        .add(Lang.number(getTankCapacity())
-                                .add(mb)
-                                .style(ChatFormatting.DARK_GRAY))
-                        .forGoggles(tooltip, 1);
+            Lang.builder()
+                    .add(Lang.number(fluid.getAmount())
+                            .add(mb)
+                            .style(ChatFormatting.GOLD))
+                    .text(ChatFormatting.GRAY, " / ")
+                    .add(Lang.number(getTankCapacity())
+                            .add(mb)
+                            .style(ChatFormatting.DARK_GRAY))
+                    .forGoggles(tooltip, 1);
             /*
             tooltip.add(firstLine
                     .append("Water Amount: ").withStyle(ChatFormatting.GRAY)
@@ -690,39 +825,31 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                     .append(slash)
                     .append(capacity));
              */
-            } else {
-                Lang.translate("gui.goggles.fluid_container.capacity")
-                        .add(Lang.number(getTankCapacity())
-                                .add(mb)
-                                .style(ChatFormatting.GOLD))
-                        .style(ChatFormatting.GRAY)
-                        .forGoggles(tooltip, 1);
-            }
-            if (hasSteam()) {
-                FluidStack fluid = getOutputTank().getFluid();
-                Lang.fluidName(new FluidStack(CUFluids.STEAM.get(), 2))
-                        .style(ChatFormatting.GRAY)
-                        .forGoggles(tooltip, 1);
-
-                Lang.builder()
-                        .add(Lang.number(Math.round(producedSteam))
-                                .add(mb)
-                                .style(ChatFormatting.GOLD))
-                        .text(ChatFormatting.GRAY, " / ")
-                        .add(Lang.number(getTankCapacity())
-                                .add(mb)
-                                .style(ChatFormatting.DARK_GRAY))
-                        .forGoggles(tooltip, 1);
-            }
-
-            return true;
         } else {
-            if(boiler.isActive()) {
-                return boiler.addToGoggleTooltip(tooltip, isPlayerSneaking);
-            }
-
+            Lang.translate("gui.goggles.fluid_container.capacity")
+                    .add(Lang.number(getTankCapacity())
+                            .add(mb)
+                            .style(ChatFormatting.GOLD))
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip, 1);
         }
-        return false;
+        if (hasSteam()) {
+            FluidStack fluid = getOutputTank().getFluid();
+            Lang.fluidName(new FluidStack(CUFluids.STEAM.get(), 2))
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip, 1);
+
+            Lang.builder()
+                    .add(Lang.number(Math.round(producedSteam))
+                            .add(mb)
+                            .style(ChatFormatting.GOLD))
+                    .text(ChatFormatting.GRAY, " / ")
+                    .add(Lang.number(getTankCapacity())
+                            .add(mb)
+                            .style(ChatFormatting.DARK_GRAY))
+                    .forGoggles(tooltip, 1);
+        }
+        return true;
     }
 
     public boolean hasFuel() {
@@ -731,7 +858,6 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
         return hasFuel;
     }
-
 
 
     public boolean hasWater() {
@@ -746,12 +872,12 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         this.inventory.setStackInSlot(0, itemStack);
     }
 
-    public SteamFurnaceItemHandler getInventory() {
+    public FuelItemHandler getFuelInventory() {
         return this.inventory;
     }
 
-    public ItemStackHandler getInternalInventory() {
-        return this.internalInventory;
+    public ItemStackHandler getFoodInventory() {
+        return this.foodInventory;
     }
 
     @Override
@@ -763,9 +889,9 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     protected void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
         // compound.put("BoilerData", boiler.write());
-        compound.putBoolean("HasFuel", !getInventory().getStackInSlot(0).isEmpty());
-        compound.put("FurnaceInventory", getInventory().serializeNBT());
-        compound.put("Inventory", getInternalInventory().serializeNBT());
+        compound.putBoolean("HasFuel", !getFuelInventory().getStackInSlot(0).isEmpty());
+        compound.put("FurnaceInventory", getFuelInventory().serializeNBT());
+        compound.put("FoodInventory", getFoodInventory().serializeNBT());
         compound.putInt("BurnTime", getBurnTime());
         compound.putBoolean("HasWater", hasWater());
         compound.putBoolean("HasSteam", hasSteam());
@@ -773,7 +899,11 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         compound.putFloat("SteamAmount", producedSteam);
         compound.putIntArray("CookingProgress", this.cookingProgress);
         compound.putIntArray("CookingTotalTimes", this.cookingTime);
-        compound.put("Boiler", boiler.write());
+        if(boiler.isActive()) {
+            compound.put("Boiler", boiler.write());
+        }
+
+
         NBTHelper.writeEnum(compound, "State", getState());
     }
 
@@ -783,14 +913,18 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         //  boiler.read(compound.getCompound("BoilerData"), 2);
         this.hasFuel = compound.getBoolean("HasFuel");
         this.inventory.deserializeNBT(compound.getCompound("FurnaceInventory"));
-        this.internalInventory.deserializeNBT(compound.getCompound("Inventory"));
+        this.foodInventory.deserializeNBT(compound.getCompound("FoodInventory"));
         this.litTime = compound.getInt("BurnTime");
         this.hasInputFluidIn = compound.getBoolean("HasWater");
         this.hasOutputFluidIn = compound.getBoolean("HasSteam");
         this.furnaceState = NBTHelper.readEnum(compound, "State", FurnaceState.class);
         this.isUnlimited = compound.getBoolean("IsCreative");
         this.producedSteam = compound.getFloat("SteamAmount");
-        boiler.read(compound.getCompound("Boiler"), 1);
+        if(boiler.isActive()) {
+            this.boiler.read(compound.getCompound("Boiler"), 1);
+        }
+
+
         if (compound.contains("CookingProgress", 11)) {
             int[] aint = compound.getIntArray("CookingProgress");
             System.arraycopy(aint, 0, this.cookingProgress, 0, Math.min(this.cookingTime.length, aint.length));
@@ -809,7 +943,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     }
 
-    public SmartFluidTank getInputTank() {
+    public SmartFluidTank getTank() {
         return this.inputTank.getPrimaryHandler();
     }
 
@@ -819,14 +953,14 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     @Override
     public String getProvidedInfo() {
-        String timer = hasFuel() ? formatTime(getCalculatedBurnTime(getInventory().getStackInSlot(0))) : "None";
+        String timer = hasFuel() ? formatTime(getCalculatedBurnTime(getFuelInventory().getStackInSlot(0))) : "None";
         return "HasFuel: " + hasFuel() + "; BurnTime: " + getBurnTime() + "; Timer: " + timer + "; State: " + formatEnumName(getState());
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        itemCapability.invalidate();
+        Arrays.stream(invHandler).toList().forEach(LazyOptional::invalidate);
         fluidCapability.invalidate();
         boiler.clear();
     }
@@ -835,8 +969,11 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
 
-        if (isItemHandlerCap(cap))
-            return itemCapability.cast();
+        if (isItemHandlerCap(cap)) {
+            if (side != Direction.UP) {
+                return invHandler[0].cast();
+            }
+        }
         if (isFluidHandlerCap(cap))
             return fluidCapability.cast();
         return super.getCapability(cap);
@@ -849,7 +986,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     private IFluidHandler handlerForCapability() {
-        return boiler.isActive() ? boiler.createHandler() : getInputTank();
+        return getBoiler().isActive() ? getBoiler().createHandler() : getTank();
     }
 
     private void refreshCapability() {
@@ -892,7 +1029,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     @Override
     public int getOutputSignal() {
-        float fluidAmountRatio = (float) getInputTank().getFluidAmount() / getTankCapacity();
+        float fluidAmountRatio = (float) getTank().getFluidAmount() / getTankCapacity();
         float itemAmountRatio = (float) getFuelStack().getCount() / getFuelStack().getMaxStackSize();
         float signal = itemAmountRatio;
         if (hasWater()) {
@@ -904,45 +1041,48 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     }
 
-    //TODO: ADD SMOKIG PARTICLES TO THE FOODS WHILE COOKING
-    public void finishCooking(ItemStack itemStack, int slot) {
-        if (getLevel() == null)
+    public void dropItemStack(ItemStack itemStack, int slot) {
+        if (getLevel() == null || itemStack.isEmpty())
             return;
-        boolean finish = false;
 
-        if (!itemStack.isEmpty()) {
-            ItemEntity itementity = new ItemEntity(getLevel(), worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5, itemStack.split(RANDOM.nextInt(25) + 10));
-            float f = 0.05F;
-            itementity.setDeltaMovement(RANDOM.nextGaussian() * (double) f, RANDOM.nextGaussian() * (double) 0.05F + (double) 0.2F, RANDOM.nextGaussian() * (double) 0.05F);
-            getLevel().addFreshEntity(itementity);
-            getInternalInventory().setStackInSlot(slot, ItemStack.EMPTY);
-            finish = true;
-        }
-        if (finish) {
-            getLevel().playSound(null, worldPosition, SoundEvents.AZALEA_STEP, SoundSource.BLOCKS,
-                    .5f + level.random.nextFloat() * .325f, 1.0f - level.random.nextFloat() * .25f);
-        }
+        ItemEntity itementity = new ItemEntity(getLevel(), worldPosition.getX() + getItemOffset(slot).x, worldPosition.getY() + 1.0, worldPosition.getZ() - getItemOffset(slot).y, itemStack.copy().split(RANDOM.nextInt(25) + 10));
+        float f = 0.05F;
+        itementity.setDeltaMovement(RANDOM.nextGaussian() * (double) f, RANDOM.nextGaussian() * (double) 0.05F + (double) 0.2F, RANDOM.nextGaussian() * (double) 0.05F);
+        getLevel().addFreshEntity(itementity);
+        getFoodInventory().setStackInSlot(slot, ItemStack.EMPTY);
+
+
+        getLevel().playSound(null, worldPosition, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS,
+                .5f + level.random.nextFloat() * .325f, 1.0f - level.random.nextFloat() * .5F);
+
         setChanged();
     }
 
     public void handleInsertion() {
-
+        Direction direction = getLevel().getBlockState(getBlockPos()).getValue(HORIZONTAL_FACING);
+        boolean canInsert = getLevel().getBlockState(getBlockPos().above()).isAir();
         if (level == null || level.isClientSide)
             return;
+        if (!canInsert)
+            return;
 
-        boolean discard = false;
-
-        AABB box = new AABB(worldPosition.getX(), worldPosition.getY() + 1, worldPosition.getZ(), worldPosition.getX() + 1, (worldPosition.getY()) + 5 / 16D, worldPosition.getZ() + 1).deflate(0.961f);
+        AABB box = new AABB(worldPosition.getX(), worldPosition.getY() + 1, worldPosition.getZ(), worldPosition.getX() + 1, (worldPosition.getY()) + 4 / 16D, worldPosition.getZ() + 1).deflate(0.961f);
 
         for (ItemEntity itemEntity : level.getEntitiesOfClass(ItemEntity.class, box)) {
             if (!itemEntity.isAlive())
                 continue;
             ItemStack itemStack = itemEntity.getItem();
+            Vec3 position = itemEntity.position().subtract(Vec3.atLowerCornerOf(getBlockPos()));
+            if (hasRecipe(itemStack)) {
+                Vector2d itemPos = new Vector2d(position.x, position.z);
+                int slot = getSlotFromHit(itemPos, direction);
+                if (canAcceptItem(slot)) {
+                    this.offset[getSlotFromHit(itemPos, direction)] = itemPos;
+                    if (addFood(itemStack.copy(), level.getRandom().nextFloat() * 360f, slot, false)) {
 
-            if (hasRecipe(itemStack) || canAcceptItem(getFreeSlot(getInternalInventory())) || hasFreeSlot()) {
-                if (addItem(itemStack.copy(), level.getRandom().nextFloat() * 360f)) {
-                    itemEntity.discard();
-                    break;
+                        itemEntity.discard();
+                        break;
+                    }
                 }
             }
         }
@@ -959,7 +1099,6 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         if (!hasFreeSlot())
             return;
 
-
         if (itemSearchCooldown-- <= 0) {
             itemSearchCooldown = 5;
             handleInsertion();
@@ -968,39 +1107,40 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     public boolean hasFreeSlot() {
-        return getFreeSlot(getInternalInventory()) != -1;
+        return getFreeSlot(getFoodInventory()) != -1;
     }
 
     public boolean canAcceptItem(int slot) {
-        return getInternalInventory().getStackInSlot(slot).isEmpty();
+        return getFoodInventory().getStackInSlot(slot).isEmpty();
     }
 
-    public boolean addItem(ItemStack itemStack, float rotation) {
+    public boolean addFood(ItemStack itemStack, float offsetRotation, int slot, boolean simulate) {
+        if(!hasRecipe(itemStack))
+            return false;
+        if(getCookingRecipe(itemStack).isEmpty())
+            return false;
 
-
-        if (hasRecipe(itemStack) && getCookingRecipe(itemStack).isPresent()) {
-
-            for (int i = 0; i < getInternalInventory().getSlots(); i++) {
-                ItemStack stack = getInternalInventory().getStackInSlot(i);
-                int cookingTime = getCookingRecipe(itemStack).get().getCookingTime();
-                if (canAcceptItem(i)) {
-                    this.cookingProgress[i] = 0;
-                    this.cookingTime[i] = cookingTime;
-                    this.offsetRotation[i] = rotation;
-                    getInternalInventory().setStackInSlot(i, itemStack.split(1));
-                    return true;
+            if (canAcceptItem(slot)) {
+                int efficiency = getState().isProducing() ? 2 : 1;
+                int cookingTime = getCookingRecipe(itemStack).get().getCookingTime() / efficiency;
+                if (!simulate) {
+                    this.cookingProgress[slot] = 0;
+                    this.cookingTime[slot] = cookingTime;
+                    this.offsetRotation[slot] = offsetRotation;
+                    getFoodInventory().setStackInSlot(slot, itemStack.split(1));
                 }
+                notifyUpdate();
+                return true;
             }
-        }
-        notifyUpdate();
+
 
         return false;
     }
 
     public ItemStack getEmptySlot() {
         ItemStack itemStack = null;
-        for (int i = 0; i < getInternalInventory().getSlots(); ++i) {
-            ItemStack found = getInternalInventory().getStackInSlot(i);
+        for (int i = 0; i < getFoodInventory().getSlots(); ++i) {
+            ItemStack found = getFoodInventory().getStackInSlot(i);
             if (!found.isEmpty())
                 itemStack = found;
 
@@ -1010,25 +1150,51 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     public void cookTick() {
         boolean shouldUpdate = false;
-        if (getLevel() == null) return;
+        if (getLevel() == null || hasEngineAttached()) return;
 
-        for (int i = 0; i < getInternalInventory().getSlots(); ++i) {
-            ItemStack itemstack = getInternalInventory().getStackInSlot(i);
+        for (int i = 0; i < getFoodInventory().getSlots(); ++i) {
+            ItemStack itemstack = getFoodInventory().getStackInSlot(i);
             if (!itemstack.isEmpty()) {
+                if (!hasRecipe(itemstack))
+                    return;
+
+                int efficiency = getState().isActive() ? 2 : getState().isProducing() ? 3 : 1;
+
+                int cookingTimer = getCookingRecipe(itemstack).get().getCookingTime() / efficiency;
+                if (cookingTimer != cookingTime[i])
+                    cookingTime[i] = cookingTimer;
+
                 shouldUpdate = true;
-                spawnCookingParticles = true;
-                cookingProgress[i]++;
-                if (hasRecipe(itemstack)) {
-                    if (cookingProgress[i] >= cookingTime[i]) {
-                        finishCooking(getRecipeResult(itemstack), i);
+
+
+                Direction direction = getBlockState().getValue(HORIZONTAL_FACING);
+
+                    if (!getFoodInventory().getStackInSlot(getSlotFromHit(offset[i], direction)).isEmpty()) {
+
+                        Vec3 pos = new Vec3(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
+                        Vec3 slotPos = pos.add(new Vec3(offset[i].x, 1.0D, offset[i].y));
+                        if (getLevel().getRandom().nextFloat() < 0.2F)
+                            for (int k = 0; k < 4; ++k) {
+                                if(getLevel().isClientSide()) {
+                                    getLevel().addParticle(ParticleTypes.SMOKE, slotPos.x, slotPos.y, slotPos.z, 0.0D + getLevel().getRandom().nextFloat() * 0.005F, 5.0E-4D, 0.0D + getLevel().getRandom().nextFloat() * 0.005F);
+                                }
+                            }
                     }
+                    getLevel().playSound(null, worldPosition, SoundEvents.AZALEA_STEP, SoundSource.BLOCKS,
+                            1.0F - getLevel().random.nextFloat() * .425f, 1.5f - level.random.nextFloat() * .5f);
+
+
+                cookingProgress[i]++;
+                if (cookingProgress[i] >= cookingTime[i]) {
+                    dropItemStack(getRecipeResult(itemstack), i);
                 }
             }
+
         }
         if (shouldUpdate) setChanged();
     }
 
-    public Component getCookProgressBar(int maxWidth, float lerpValue, int maxSize) {
+    public Component getCookingProgress(int maxWidth, float lerpValue, int maxSize) {
 
         var base = "";
         float modifier = lerpValue * maxSize;
@@ -1044,7 +1210,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     public float getProgress(int index) {
-        return Math.min(1, (float) (cookingProgress[index] / cookingTime[index]));
+        return Math.min(1, cookingProgress[index] / (float) cookingTime[index]);
     }
 
     public ItemStack getRecipeResult(ItemStack itemStack) {
@@ -1052,14 +1218,20 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         return getCookingRecipe(itemStack).map((p_155305_) -> p_155305_.assemble(container)).orElse(itemStack);
     }
 
-    //TODO; RECODE THIS URGENTLY
-    public Vec2 getItemOffset(int slot) {
-        final float X_OFFSET = 4F / 16F;
-        final float Y_OFFSET = 4F / 16F;
-        Vec2[] offset = {new Vec2(-X_OFFSET, Y_OFFSET),
-                new Vec2(X_OFFSET, -Y_OFFSET),
-                new Vec2(X_OFFSET, Y_OFFSET),
-                new Vec2(-X_OFFSET, -Y_OFFSET)};
+    //TODO; RECODE THIS URGENTLY, make the offset public to the class once i implement proper item pickup selection
+    public Vector2d getItemOffset(int slot) {
+        float X_OFFSET = 4F / 16F;
+        float Y_OFFSET = 4F / 16F;
+        if (offset[slot] == null)
+            return new Vector2d(-X_OFFSET, Y_OFFSET);
+
+
+        Vector2d[] offsett = {new Vector2d(-X_OFFSET, Y_OFFSET),
+                new Vector2d(X_OFFSET, -Y_OFFSET),
+                new Vector2d(X_OFFSET, Y_OFFSET),
+                new Vector2d(-X_OFFSET, -Y_OFFSET)};
+
+
         return offset[slot];
     }
 
@@ -1069,7 +1241,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     public boolean hasOccupiedSlot() {
-        return getOccupiedSlot(getInternalInventory()) != -1;
+        return getOccupiedSlot(getFoodInventory()) != -1;
     }
 
     public Optional<CampfireCookingRecipe> getCookingRecipe(ItemStack itemStack) {
@@ -1089,21 +1261,21 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         return recipeType;
     }
 
-    public SteamFurnaceBoilerData getBoiler() {
+    public @NotNull SteamFurnaceBoilerData getBoiler() {
         return boiler;
     }
 
-    @Override
-    public @Nullable SmartTileEntity getBlockEntity() {
-        return null;
+    public void updateSlotIndex() {
+
     }
 
-    public void updateState() {
+    @Override
+    public void updateBoiler() {
         boolean wasBoiler = boiler.isActive();
-        boolean changed = boiler.evaluate(this);
+        boolean changed = boiler.evaluate();
 
         if (wasBoiler != boiler.isActive()) {
-        // refreshCapability();
+            // refreshCapability();
         }
 
         if (changed) {
@@ -1111,7 +1283,19 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         }
     }
 
-    public boolean hasSteamEngineAttached() {
+    @Override
+    public @Nullable SteamFurnaceBlockEntity getBlockEntity() {
+        return this;
+    }
+
+    public void updateState() {
+
+    }
+
+    public boolean hasEngineAttached() {
+        if (getLevel() == null)
+            return false;
+
         for (Direction direction : Iterate.directions) {
             BlockPos pos = getBlockPos().relative(direction);
             BlockState attachedState = level.getBlockState(pos);
@@ -1119,6 +1303,37 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 return true;
         }
         return false;
+    }
+
+    public SteamEngineTileEntity getEngineAttached(Direction direction) {
+        if (getLevel() != null) {
+            BlockPos pos = getBlockPos().relative(direction);
+            BlockState attachedState = getLevel().getBlockState(pos);
+            if (AllBlocks.STEAM_ENGINE.has(attachedState) && SteamEngineBlock.getFacing(attachedState) == direction) {
+                BlockEntity blockEntity = Objects.requireNonNull(getLevel()).getBlockEntity(pos);
+                if (blockEntity instanceof SteamEngineTileEntity te)
+                    return te;
+            }
+        }
+        return null;
+    }
+
+    public List<SteamEngineTileEntity> getAllEnginesAttached() {
+        List<SteamEngineTileEntity> attached = new ArrayList<>(6);
+        boolean prev;
+        for (Direction direction : Iterate.directions) {
+            if (!attached.isEmpty())
+                attached.removeIf(BlockEntity::isRemoved);
+
+
+            BlockPos pos = getBlockPos().relative(direction);
+            BlockState attachedState = level.getBlockState(pos);
+            if (AllBlocks.STEAM_ENGINE.has(attachedState) && SteamEngineBlock.getFacing(attachedState) == direction) {
+                BlockEntity blockEntity = getLevel().getBlockEntity(pos);
+                attached.add((SteamEngineTileEntity) blockEntity);
+            }
+        }
+        return attached;
     }
 
     public void updateBoilerTemperature() {

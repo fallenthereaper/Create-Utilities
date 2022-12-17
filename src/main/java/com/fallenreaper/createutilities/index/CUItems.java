@@ -4,7 +4,10 @@ package com.fallenreaper.createutilities.index;
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.armor.BrassJetPackItem;
 import com.fallenreaper.createutilities.content.armor.BrassSuitArmorItem;
-import com.fallenreaper.createutilities.content.items.*;
+import com.fallenreaper.createutilities.content.items.DevItem;
+import com.fallenreaper.createutilities.content.items.NotesItem;
+import com.fallenreaper.createutilities.content.items.PunchcardItem;
+import com.fallenreaper.createutilities.content.items.ScytheItem;
 import com.fallenreaper.createutilities.content.items.watering_can.WateringCanItem;
 import com.fallenreaper.createutilities.core.data.items.BaseItem;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -13,6 +16,7 @@ import com.simibubi.create.repack.registrate.util.nullness.NonNullFunction;
 import com.simibubi.create.repack.registrate.util.nullness.NonNullUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -42,6 +46,10 @@ public class CUItems {
     public static final ItemEntry<? extends Item> DEV_ITEM =
             registerItem("dev_item", "Dev Tool", (p) -> new DevItem(p.tab(CreateUtilities.TAB)).addDescription((ChatFormatting.ITALIC), ChatFormatting.DARK_PURPLE),
                     (p) -> p.stacksTo(1));
+
+
+    public static final ItemEntry<? extends Item> IRON_SCYTHE =
+            registerItem("iron_scythe", "Iron Scythe", (p) -> new ScytheItem(Tiers.IRON, 3, -2.4F), (properties)->properties.stacksTo(1));
 
 
     public static final ItemEntry<? extends BrassSuitArmorItem> BRASS_JETPACK =

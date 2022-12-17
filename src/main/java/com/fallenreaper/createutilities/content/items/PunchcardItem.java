@@ -11,7 +11,7 @@ import com.fallenreaper.createutilities.core.data.punchcard.InstructionEntry;
 import com.fallenreaper.createutilities.core.data.punchcard.InstructionManager;
 import com.fallenreaper.createutilities.networking.InventoryEditPacket;
 import com.fallenreaper.createutilities.networking.ModPackets;
-import com.fallenreaper.createutilities.core.utils.IHaveHiddenToolTip;
+import com.fallenreaper.createutilities.core.data.IHaveHiddenToolTip;
 import com.fallenreaper.createutilities.core.data.punchcard.PunchcardWriter;
 import com.fallenreaper.createutilities.core.data.punchcard.PunchcardWriterManager;
 import com.jozufozu.flywheel.repack.joml.Math;

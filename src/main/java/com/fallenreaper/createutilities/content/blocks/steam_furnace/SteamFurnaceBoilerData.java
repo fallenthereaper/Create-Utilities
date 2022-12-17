@@ -1,4 +1,3 @@
-
 package com.fallenreaper.createutilities.content.blocks.steam_furnace;
 
 import com.simibubi.create.AllBlocks;
@@ -7,7 +6,6 @@ import com.simibubi.create.content.contraptions.components.steam.SteamEngineBloc
 import com.simibubi.create.content.contraptions.fluids.tank.BoilerData;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.block.BlockStressValues;
-import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.animation.LerpedFloat;
@@ -22,43 +20,37 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
+
 public class SteamFurnaceBoilerData extends BoilerData {
     static final int SAMPLE_RATE = 5;
 
     private static final int waterSupplyPerLevel = 10;
     private static final float passiveEngineEfficiency = 2 / 8f;
-
+    // Heat score
+    public boolean needsHeatLevelUpdate;
+    public boolean passiveHeat;
+    public int activeHeat;
+    public float waterSupply;
+    public int attachedEngines;
+    public SteamFurnaceBlockEntity te;
+    public float steamAmount;
+    public float steamLevel;
+    public LerpedFloat gauge = LerpedFloat.linear();
+    public int boilerWater;
     // Pooled water supply
     int gatheredSupply;
     float[] supplyOverTime = new float[10];
     int ticksUntilNextSample;
     int currentIndex;
-
-    // Heat score
-    public boolean needsHeatLevelUpdate;
-    public boolean passiveHeat;
-    public int activeHeat;
-
-    public float waterSupply;
-    public int attachedEngines;
-
     // Display
     private int maxHeatForWater = 0;
     private int maxHeatForSize = 0;
     private int minValue = 0;
     private int maxValue = 0;
-    public SteamFurnaceBlockEntity te;
-
-    public float steamAmount;
-    public float steamLevel;
-
-    public LerpedFloat gauge = LerpedFloat.linear();
 
     public SteamFurnaceBoilerData(SteamFurnaceBlockEntity te) {
         super();
@@ -68,9 +60,9 @@ public class SteamFurnaceBoilerData extends BoilerData {
     public void tick() {
         if (!isActive())
             return;
-        if(te.getLevel() == null)
+        if (te.getLevel() == null)
             return;
-        if(!te.hasSteam())
+        if (!te.hasSteam())
             return;
 
         if (te.getLevel().isClientSide) {
@@ -80,6 +72,7 @@ public class SteamFurnaceBoilerData extends BoilerData {
                 gauge.setValueNoUpdate(current + Math.min(-(current - 1) * Create.RANDOM.nextFloat(), 0));
             return;
         }
+        boilerWater = te.getTank().getFluidAmount();
         if (needsHeatLevelUpdate && updateTemperature())
             te.notifyUpdate();
         ticksUntilNextSample--;
@@ -94,8 +87,8 @@ public class SteamFurnaceBoilerData extends BoilerData {
         gatheredSupply = 0;
 
 
-         steamAmount = te.getProducedSteam();
-         steamLevel = Mth.clamp((float) te.getProducedSteam() /  (float)  128F,0, 1);
+        steamAmount = te.getProducedSteam();
+        steamLevel = Mth.clamp(te.getProducedSteam() / 128F, 0, 1);
 
         if (currentIndex == 0) {
             waterSupply = 0;
@@ -110,29 +103,33 @@ public class SteamFurnaceBoilerData extends BoilerData {
         te.notifyUpdate();
     }
 
+    @Override
     public int getTheoreticalHeatLevel() {
         return activeHeat;
     }
 
+    @Override
     public int getMaxHeatLevelForWaterSupply() {
-       float level = Mth.clamp((float) te.getProducedSteam() /  (float)  512F,0, 1);
-        return Math.round((float) level*10) ;
+        float level = Mth.clamp(te.getProducedSteam() / 512F, 0, 1);
+        return Math.min(18, Mth.ceil(waterSupply) / waterSupplyPerLevel);
     }
 
+    @Override
     public boolean isPassive() {
-        return  passiveHeat && maxHeatForSize > 0 && maxHeatForWater > 0;
+        return passiveHeat && maxHeatForSize > 0 && maxHeatForWater > 0;
     }
+
+    @Override
     public boolean isPassive(int boilerSize) {
         calcMinMaxForSize();
         return isPassive();
     }
 
 
-
     public float getEngineEfficiency() {
 
-       // if (isPassive())
-       //     return passiveEngineEfficiency / attachedEngines;
+        // if (isPassive())
+        //     return passiveEngineEfficiency / attachedEngines;
         /*
         if (activeHeat == 0)
             return 0;
@@ -140,32 +137,28 @@ public class SteamFurnaceBoilerData extends BoilerData {
          */
         float val = 0;
 
-        if(!te.hasSteam())
+        if (!te.hasSteam())
             return 0;
-if(te.hasSteam()) {
-    int level = Math.round((float) steamLevel * 16);
+        if (te.hasSteam()) {
+            int level = Math.round(steamLevel * 16);
 
-    if (level <= 4)
-        val = 0;
+            if (level <= 4)
+                val = 0;
 
-    if (level <= 8 && level > 4)
-        val = 0.25F/2f;
+            if (level <= 8 && level > 4)
+                val = 0.25F;
 
-    if (level <= 12 && level > 8)
-        val = 0.75F/2f;
+            if (level <= 12 && level > 8)
+                val = 0.75F;
 
-    if (level <= 16 && level > 12)
-        val = 1.0F/2f;
+            if (level <= 16 && level > 12)
+                val = 1.0F;
 
-}
-
-
-
-
+        }
 
 
         int actualHeat = getActualHeat();
-        return    (float) val / attachedEngines;
+        return val / attachedEngines;
     }
 
     private int getActualHeat() {
@@ -227,7 +220,7 @@ if(te.hasSteam()) {
                         : Lang.translate("boiler.via_engines", attachedEngines)).style(ChatFormatting.DARK_GRAY))
                 .forGoggles(tooltip, 1);
 
-        if(isPlayerSneaking)
+        if (isPlayerSneaking)
             Lang.number(steamAmount)
                     .translate("mb")
                     .style(ChatFormatting.GRAY)
@@ -236,11 +229,12 @@ if(te.hasSteam()) {
         return true;
     }
 
+    @Override
     @NotNull
     public MutableComponent getHeatLevelTextComponent() {
         int boilerLevel = Math.min(activeHeat, maxHeatForWater);
         int val = 0;
-        int level = Math.round((float) steamLevel * 16);
+        int level = Math.round(steamLevel * 16);
 
         if (level <= 4)
             val = 0;
@@ -260,12 +254,12 @@ if(te.hasSteam()) {
                 : Lang.translateDirect("boiler.lvl", String.valueOf(val)));
     }
 
-
-
+    @Override
     public MutableComponent getWaterComponent(boolean forGoggles, boolean useBlocksAsBars, ChatFormatting... styles) {
         return componentHelper("water", maxHeatForWater, forGoggles, useBlocksAsBars, styles);
     }
 
+    @Override
     public MutableComponent getHeatComponent(boolean forGoggles, boolean useBlocksAsBars, ChatFormatting... styles) {
         return componentHelper("heat", passiveHeat ? 1 : activeHeat, forGoggles, useBlocksAsBars, styles);
     }
@@ -307,21 +301,23 @@ if(te.hasSteam()) {
         return new TextComponent(Strings.repeat('|', level)).withStyle(format);
     }
 
-    public boolean evaluate(ISteamProvider controller) {
-        BlockPos controllerPos = controller.getBlockPos();
-        Level level = controller.getLevel();
+    public boolean evaluate() {
+        BlockPos controllerPos = te.getBlockPos();
+
+
+        Level level = te.getLevel();
         int prevEngines = attachedEngines;
         attachedEngines = 0;
         attachedWhistles = 0;
 
         for (Direction direction : Iterate.directions) {
 
-                    BlockPos pos = controllerPos.relative(direction);
+            BlockPos pos = controllerPos.relative(direction);
 
 
             BlockState attachedState = level.getBlockState(pos);
-                        if (AllBlocks.STEAM_ENGINE.has(attachedState) && SteamEngineBlock.getFacing(attachedState) == direction )
-                            attachedEngines++;
+            if (AllBlocks.STEAM_ENGINE.has(attachedState) && SteamEngineBlock.getFacing(attachedState) == direction)
+                attachedEngines++;
                         /*
                         if (AllBlocks.STEAM_WHISTLE.has(attachedState)
                                 && WhistleBlock.getAttachedDirection(attachedState)
@@ -335,10 +331,8 @@ if(te.hasSteam()) {
     }
 
 
-
-
     public boolean updateTemperature() {
-        BlockPos controllerPos = te.getBlockPos();
+        BlockPos pos = te.getBlockPos();
         Level level = te.getLevel();
         needsHeatLevelUpdate = false;
 
@@ -347,22 +341,28 @@ if(te.hasSteam()) {
         passiveHeat = false;
         activeHeat = 0;
 
-        BlockState blockState = level.getBlockState(controllerPos);
-                float heat = (float) steamLevel;
-                if (heat == 0) {
-                    passiveHeat = true;
-                } else if (heat > 0) {
-                    activeHeat += heat;
-                }
+        BlockState blockState = level.getBlockState(pos);
+        float heat = steamLevel;
+        if (heat == 0) {
+            passiveHeat = true;
+        } else if (heat > 0) {
+            activeHeat += heat;
+        }
 
         passiveHeat &= activeHeat == 0;
 
         return prevActive != activeHeat || prevPassive != passiveHeat;
     }
+
     @Override
     public boolean isActive() {
         return attachedEngines > 0;
     }
+
+    public void addHeat() {
+        activeHeat += te.producedSteam / 16.0F;
+    }
+
     @Override
     public void clear() {
         waterSupply = 0;
@@ -373,6 +373,7 @@ if(te.hasSteam()) {
         steamAmount = 0;
         Arrays.fill(supplyOverTime, 0);
     }
+
     @Override
     public CompoundTag write() {
         CompoundTag nbt = new CompoundTag();
@@ -383,8 +384,10 @@ if(te.hasSteam()) {
         nbt.putBoolean("Update", needsHeatLevelUpdate);
         nbt.putFloat("ActiveSteamAmount", steamAmount);
         nbt.putFloat("SteamLevel", steamLevel);
+        nbt.putInt("BoilerWaterLevel", boilerWater);
         return nbt;
     }
+
     @Override
     public void read(CompoundTag nbt, int boilerSize) {
         waterSupply = nbt.getFloat("Supply");
@@ -394,6 +397,7 @@ if(te.hasSteam()) {
         needsHeatLevelUpdate = nbt.getBoolean("Update");
         steamAmount = nbt.getFloat("ActiveSteamAmount");
         steamLevel = nbt.getFloat("SteamLevel");
+        boilerWater = nbt.getInt("BoilerWaterLevel");
         Arrays.fill(supplyOverTime, (int) waterSupply);
 
         int forBoilerSize = getMaxHeatLevelForBoilerSize(boilerSize);
@@ -402,51 +406,4 @@ if(te.hasSteam()) {
         float target = isPassive(boilerSize) ? 1 / 8f : forBoilerSize == 0 ? 0 : actualHeat / (forBoilerSize * 1f);
         gauge.chase(target, 0.125f, LerpedFloat.Chaser.EXP);
     }
-
-
-
-    public class BoilerFluidHandler implements IFluidHandler {
-
-        @Override
-        public int getTanks() {
-            return 1;
-        }
-
-        @Override
-        public FluidStack getFluidInTank(int tank) {
-            return FluidStack.EMPTY;
-        }
-
-        @Override
-        public int getTankCapacity(int tank) {
-            return 10000;
-        }
-
-        @Override
-        public boolean isFluidValid(int tank, FluidStack stack) {
-            return FluidHelper.isWater(stack.getFluid());
-        }
-
-        @Override
-        public int fill(FluidStack resource, FluidAction action) {
-            if (!isFluidValid(0, resource))
-                return 0;
-            int amount = resource.getAmount();
-            if (action.execute())
-                gatheredSupply += amount;
-            return amount;
-        }
-
-        @Override
-        public FluidStack drain(FluidStack resource, FluidAction action) {
-            return FluidStack.EMPTY;
-        }
-
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction action) {
-            return FluidStack.EMPTY;
-        }
-
-    }
-
 }

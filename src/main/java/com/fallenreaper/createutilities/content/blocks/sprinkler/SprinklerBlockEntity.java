@@ -19,6 +19,7 @@ import com.simibubi.create.foundation.utility.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -52,7 +53,7 @@ import java.util.Random;
 
 import static com.fallenreaper.createutilities.content.blocks.sprinkler.HorizontalAxisBlock.CEILING;
 import static com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler.*;
-import static com.fallenreaper.createutilities.core.utils.MathUtil.isInsideCircle;
+import static com.fallenreaper.createutilities.core.utils.MiscUtil.isInsideCircle;
 import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlock.HORIZONTAL_FACING;
 
 //todo, redo this some day
@@ -321,8 +322,8 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
     private void findFarmland() {
         int CHANCE = CUConfig.FARMLAND_HYDRATE_CHANCE.get();
-        AABB aabb = new AABB(worldPosition).inflate(getRadius(), getBlockState().getValue(CEILING) ? aabb().getYsize() : 0, getRadius());
-
+        AABB aabb = new AABB(worldPosition).inflate(getRadius(), getBlockState().getValue(CEILING) ? 12 : 0, getRadius());
+        int actualsize = (int) aabb.maxY;
         // MutableBoundingBox boundingBox = new MutableBoundingBox(worldPosition.offset(-getRadius(), -1, -getRadius()), worldPosition.offset(getRadius(), -1, getRadius()));
         // Farmland hydration & plants growth logic
         for (BlockPos blockPositions : BlockPos.randomBetweenClosed(getRandom(), 15, getBlockPos().getX() - getRadius(), (int) (getBlockPos().getY() - aabb().getYsize()), getBlockPos().getZ() - getRadius(), getBlockPos().getX() + getRadius(), getBlockPos().getY() + 1, getBlockPos().getZ() + getRadius())) {
@@ -331,6 +332,8 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
                 continue;
             if (hasFarmlandBlock(blockPositions, getLevel())) {
                 if (isInsideCircle(getRadius(), getBlockPos(), blockPositions))
+                  actualsize = getBlockPos().distManhattan(new Vec3i(0,blockPositions.getY() ,0 ));
+                    aabb.setMaxY(actualsize) ;
                     hydrateFarmland(blockPositions, getLevel(), blockState, aabb);
             }
             //todo: WIP, obviously this doesn't get called so just a placeholder for now
@@ -446,7 +449,7 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
         var indent = new TextComponent(spacing + " ");
         var contained = new TextComponent(String.valueOf(fluidStackIn.getAmount())).plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
         var slash = new TextComponent(" / ").withStyle(ChatFormatting.GRAY);
-        var capacity = new TextComponent(String.valueOf(getTankMaxCapacity())).plainCopy().append(mb.string()).withStyle(ChatFormatting.DARK_GRAY);
+        var capacity = new TextComponent("1,500").plainCopy().append(mb.string()).withStyle(ChatFormatting.GOLD);
 
         if (hasFluidIn && !getContainedFluid().isEmpty()) {
             tooltip.add(indent.plainCopy()
@@ -465,24 +468,24 @@ public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGogg
 
 */
         } else {
-            var maxCapacity = Lang.translate("gui.goggles.fluid_container.capacity").style(ChatFormatting.GRAY);
+            var maxCapacity = Lang.translate("gui.goggles.fluid_container.capacity").style(ChatFormatting.DARK_GRAY);
             var amount = Lang.builder(String.valueOf((tankBehaviour.getPrimaryHandler().getTankCapacity(0)))).add(mb).style(ChatFormatting.GOLD);
 
             tooltip.add(indent.plainCopy()
                     .append(maxCapacity.string())
-                    .append(amount.string()));
+                    .append(capacity));
         }
 
         if (isPlayerSneaking) {
             if (Math.abs(getSpeed()) < 8) {
 
                 tooltip.add(componentSpacing.plainCopy().plainCopy()
-                        .append(lang.translate("sprinkler.content.range" + ":").string())
-                        .withStyle(ChatFormatting.GRAY).append(getRadius() + " " + lang.translate("sprinkler.content.units").string()).withStyle(ChatFormatting.RED));
+                        .append("Range" + ":")
+                        .withStyle(ChatFormatting.GRAY).append(getRadius() + " " + "blocks").withStyle(ChatFormatting.RED));
             } else {
                 tooltip.add(componentSpacing.plainCopy()
-                        .append(lang.translate("sprinkler.content.range").string() + ":")
-                        .append(getRadius() + " " + lang.translate("sprinkler.content.units").string()).withStyle(ChatFormatting.AQUA));
+                        .append("Range"+ ":")
+                        .append(getRadius() + " " + "blocks").withStyle(ChatFormatting.AQUA));
             }
 
 

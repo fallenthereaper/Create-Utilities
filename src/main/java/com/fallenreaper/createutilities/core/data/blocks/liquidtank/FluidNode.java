@@ -32,7 +32,7 @@ public class FluidNode {
         int y1 = teFrom.getBlockPosition().getY();
          boolean a  = Math.min(y1, y0) == y1;
 
-        return y1 > y0 ? FlowType.DOWN : y0 == y1 ? FlowType.EQUAL : FlowType.UP;
+        return y1 > y0 ? FlowType.DOWNWARDS : y0 == y1 ? FlowType.EQUAL : FlowType.UPWARDS;
     }
 
     public IFluidTransferProvider getSource() {
@@ -215,13 +215,13 @@ public class FluidNode {
             return;
 
         switch (getFlowType(selectedSource, selectedTarget)) {
-            case DOWN -> {
+            case DOWNWARDS -> {
                 //("SOURCE -> TARGET");
-                updateFlow(source, target, FlowType.DOWN);
+                updateFlow(source, target, FlowType.DOWNWARDS);
             }
-            case UP -> {
+            case UPWARDS -> {
                 //("SOURCE <- TARGET");
-                updateFlow(source, target, FlowType.UP);
+                updateFlow(source, target, FlowType.UPWARDS);
             }
             case EQUAL -> {
                 if (diff.length() == diff.horizontalDistance()) {
@@ -322,8 +322,8 @@ public class FluidNode {
      */
 
     public enum FlowType {
-        UP(1),
-        DOWN(-1),
+        UPWARDS(1),
+        DOWNWARDS(-1),
         EQUAL(0);
 
         private final int value;

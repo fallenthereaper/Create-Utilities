@@ -5,14 +5,20 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "createutilities.refmap.json",
   "mixins": [
+    "CampFireBlockMixin",
     "FarmBlockMixin",
     "FurnaceBlockEntityMixin",
+    "HaybaleBlockMixin",
     "ItemMixin",
+    "PlayerMixin",
     "SteamEngineBlockEntityMixin",
     "SteamEngineBlockMixin"
   ],
   "client": [
-    "HumanoidModelMixin"
+    "AbstractContainerScreenMixin",
+    "HumanoidModelMixin",
+    "ItemInHandRendererMixin",
+    "LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

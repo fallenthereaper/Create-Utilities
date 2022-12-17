@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.bellow;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.content.blocks.steam_furnace.ISteamProvider;
+import com.fallenreaper.createutilities.core.data.IBoilerProvider;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
 import com.fallenreaper.createutilities.index.CUBlockShapes;
@@ -75,7 +75,7 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
         Minecraft mc = Minecraft.getInstance();
         for (Block blocks : CreateUtilities.BLOCKLIST) {
 
-            if ((getState.getBlock() instanceof AbstractFurnaceBlock) || getState.getBlock().equals(blocks) || be instanceof ISteamProvider) {
+            if ((getState.getBlock() instanceof AbstractFurnaceBlock) || getState.getBlock().equals(blocks) || be instanceof IBoilerProvider) {
                 return true;
             }
         }

@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.events;
+package com.fallenreaper.createutilities.core.events;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.index.CUPonder;

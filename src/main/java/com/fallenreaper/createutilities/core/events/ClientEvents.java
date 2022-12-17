@@ -1,13 +1,13 @@
-package com.fallenreaper.createutilities.events;
+package com.fallenreaper.createutilities.core.events;
 
 import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.content.armor.BrassJetPackModel;
 import com.fallenreaper.createutilities.content.items.DevItem;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
-import com.fallenreaper.createutilities.core.utils.IHaveHiddenToolTip;
-import com.fallenreaper.createutilities.core.utils.ToolTipHandler;
 import com.fallenreaper.createutilities.core.data.IDevInfo;
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBlockEntity;
+import com.fallenreaper.createutilities.core.data.IHaveHiddenToolTip;
+import com.fallenreaper.createutilities.core.utils.ToolTipHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -25,6 +25,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -71,6 +72,7 @@ public class ClientEvents {
                 if (blockEntity instanceof LiquidTankBlockEntity be) {
 
                     event.getLeft().add("[DEBUG]");
+
                     event.getLeft().add(be.getProvidedInfo().substring(0, 14));
                     event.getLeft().add(be.getProvidedInfo().substring(14, 35));
                     boolean i = be.getTank().getFluid().getAmount() != 0;
@@ -79,7 +81,8 @@ public class ClientEvents {
 
                 }
                  if(blockEntity instanceof IDevInfo devInfo && !(blockEntity instanceof LiquidTankBlockEntity) ) {
-
+                     Vec3 pos = hitResult1.getLocation().subtract(Vec3.atLowerCornerOf(blockPos));
+                     event.getRight().add("X: " + pos.x + ";" + " Y: " + pos.y +  "; " + "Z: " + pos.z );
                      event.getLeft().add("[DEBUG]");
                     // event.getLeft().add(devInfo.getProvidedInfo().substring(0, 13));
                      event.getLeft().add(devInfo.getProvidedInfo());

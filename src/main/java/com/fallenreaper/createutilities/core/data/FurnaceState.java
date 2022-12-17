@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.content.blocks.steam_furnace;
+package com.fallenreaper.createutilities.core.data;
 
 public enum FurnaceState {
     PRODUCING,

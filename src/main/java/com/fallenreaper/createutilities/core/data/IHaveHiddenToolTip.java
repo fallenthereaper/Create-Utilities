@@ -1,4 +1,4 @@
-package com.fallenreaper.createutilities.core.utils;
+package com.fallenreaper.createutilities.core.data;
 
 import net.minecraft.network.chat.TextComponent;
 

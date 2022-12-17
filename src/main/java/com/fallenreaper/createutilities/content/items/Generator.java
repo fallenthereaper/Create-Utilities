@@ -17,7 +17,7 @@ import java.util.List;
 
 public class Generator {
 
-    /**
+@Deprecated    /**
      * Generates a Blockstate JSON for the specified block using all of it's properties.
      * @param path Starting path ie "E://Modding/forge".
      * @param modid The modid for this blocks mod, used mainly as an identifier.

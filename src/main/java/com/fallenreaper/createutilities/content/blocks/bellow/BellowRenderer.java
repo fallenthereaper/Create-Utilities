@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.bellow;
 
-import com.fallenreaper.createutilities.core.utils.MathUtil;
+import com.fallenreaper.createutilities.core.utils.MiscUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.base.KineticTileEntityRenderer;
@@ -27,7 +27,7 @@ public class BellowRenderer extends KineticTileEntityRenderer {
         if (block instanceof BellowBlock bellowBlock) {
             Direction facing = blockState.getValue(BellowBlock.HORIZONTAL_FACING);
             SuperByteBuffer bellows = CachedBufferer.partial(bellowBlock.getPartialModel(), blockState);
-            MathUtil.rotateCenteredInDirection(bellows, Direction.UP, facing);
+            MiscUtil.rotateCenteredInDirection(bellows, Direction.UP, facing);
             bellows.renderInto(ms, buffer.getBuffer(RenderType.solid()));
             KineticTileEntityRenderer.renderRotatingKineticBlock(te, this.getRenderedBlockState(te), ms, buffer.getBuffer(RenderType.solid()), light);
 

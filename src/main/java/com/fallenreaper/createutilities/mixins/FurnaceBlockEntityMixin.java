@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.mixins;
 
-import com.fallenreaper.createutilities.core.utils.IFurnaceBurnTimeAccessor;
+import com.fallenreaper.createutilities.core.data.IFurnaceBurnTimeAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.inventory.ContainerData;

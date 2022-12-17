@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.core.utils;
 
+import com.fallenreaper.createutilities.core.data.IHaveHiddenToolTip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;

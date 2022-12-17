@@ -1,5 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.steam_furnace;
 
+import com.fallenreaper.createutilities.core.data.ISmokeSource;
 import com.fallenreaper.createutilities.core.data.blocks.InteractableBlockEntity;
 import com.fallenreaper.createutilities.core.utils.ContainerUtil;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
@@ -33,7 +34,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 
-public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<SteamFurnaceBlockEntity>, IWrenchable {
+public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<SteamFurnaceBlockEntity>, IWrenchable, ISmokeSource {
     public static final BooleanProperty CREATIVE_LIT = BooleanProperty.create("creative_lit");
     public SteamFurnaceBlock(Properties properties) {
         super(properties);
@@ -71,6 +72,10 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
             BlockEntity blockentity = pLevel.getBlockEntity(pPos);
             if (blockentity instanceof SteamFurnaceBlockEntity te) {
                 if (pLevel instanceof ServerLevel) {
+                    if(te.hasEngineAttached())
+                        te.updateBoiler();
+
+
                     te.itemStackHandlers.forEach(handler ->  ContainerUtil.dropContents(pLevel, pPos, handler));
                     pLevel.removeBlockEntity(pPos);
 
@@ -85,7 +90,7 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
 
     @Override
     public BlockEntityType<? extends SteamFurnaceBlockEntity> getTileEntityType() {
-        return CUBlockEntities.STEAM_FURNACE.get();
+        return CUBlockEntities.BOILER_FURNACE.get();
     }
 
     @Override

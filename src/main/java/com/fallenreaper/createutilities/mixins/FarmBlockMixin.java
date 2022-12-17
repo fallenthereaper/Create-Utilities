@@ -1,54 +1,73 @@
 package com.fallenreaper.createutilities.mixins;
 
+import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
+import com.fallenreaper.createutilities.core.data.IFarmBlockAccessor;
+import com.fallenreaper.createutilities.core.utils.MiscUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.FluidTags;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static com.fallenreaper.createutilities.core.utils.MathUtil.isInsideCircle;
-import static net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket;
+import java.util.Random;
+
+import static com.fallenreaper.createutilities.core.utils.MiscUtil.isInsideCircle;
 
 @Mixin(FarmBlock.class)
-public class FarmBlockMixin extends Block {
+public abstract class FarmBlockMixin implements IFarmBlockAccessor {
 
-    public FarmBlockMixin(Properties pProperties) {
-        super(pProperties);
+   @Unique
+    protected boolean isNearWater;
+
+    @Inject(method = "<init>*", at = @At("TAIL"), remap = false)
+    public void init(BlockBehaviour.Properties pProperties, CallbackInfo ci) {
+        this.isNearWater = false;
     }
-//todo: use proper mixins instead of overwriting
-    /**
-     * @author FallenReaper
-     * @reason Null
-     */
-    @Overwrite(remap = false)
-    private static boolean isNearWater(LevelReader pLevel, BlockPos pPos) {
-        for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-4, 0, -4), pPos.offset(4, 1, 4))) {
-            if (pLevel.getFluidState(blockpos).is(FluidTags.WATER)) {
-                return true;
-            }
-        }
 
-        //messy code I will redo after release, as of now it's just a placeholder
-        for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-12, 1, -12), pPos.offset(12, 1, 12))) {
+    @Inject(method = "isNearWater", at = @At(value = "HEAD"), remap = false, cancellable = true)
+    private static void detectWater(LevelReader pLevel, BlockPos pPos, CallbackInfoReturnable<Boolean> cir) {
+
+        for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-12, 1, -12), pPos.offset(12, 12, 12))) {
             BlockEntity detectedBlock = pLevel.getBlockEntity(blockpos);
 
             if (detectedBlock instanceof SprinklerBlockEntity be) {
                 BlockPos posBe = be.getBlockPos();
+                boolean isCeiling = pLevel.getBlockState(posBe).getValue(SprinklerBlock.CEILING);
+
                 if (be.isHydrating() && be.isWater()) {
-                    for (BlockPos pos : BlockPos.betweenClosed(posBe.offset(-be.getRadius(), 1, -be.getRadius()), posBe.offset(be.getRadius(), 1, be.getRadius()))) {
+                    for (BlockPos pos : BlockPos.betweenClosed(posBe.offset(-be.getRadius(), 1, -be.getRadius()), posBe.offset(be.getRadius(), 12, be.getRadius()))) {
                         if (isInsideCircle(be.getRadius(), posBe, pPos)) {
-                            return true;
+                            cir.setReturnValue(true);
                         }
                     }
                 }
             }
         }
+    }
+    @Inject(method = "tick", at = @At(value = "HEAD"), remap = false)
+     public void onTick(BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand, CallbackInfo ci) {
+        this.isNearWater = MiscUtil.isNearWater(pLevel, pPos);
+    }
 
-        return hasBlockWaterTicket(pLevel, pPos);
+
+
+    @Override
+    public boolean getWaterCheck() {
+        return this.isNearWater;
+    }
+
+    @Override
+    public void setWaterCheck(boolean value) {
+        this.isNearWater = value;
     }
 }
 

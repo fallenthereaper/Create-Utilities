@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.fallenreaper.createutilities.core.utils.MathUtil.isInsideCircle;
+import static com.fallenreaper.createutilities.core.utils.MiscUtil.isInsideCircle;
 
 //todo: actually work on this, ex: use capabilities also add a specialized tool tip for item tanks, also look at how supplementaries do jars
 public class WateringCanItem extends BaseItem {
@@ -156,6 +156,7 @@ public class WateringCanItem extends BaseItem {
     @Override
     public <T extends LivingEntity> boolean poseArm(ItemStack itemStack, HumanoidArm arm, HumanoidModel<T> model, T entity, boolean rightHand) {
         if(itemStack.getItem() instanceof WateringCanItem) {
+            model.rightArm.yRot = model.head.yRot;
 
         }
         return super.poseArm(itemStack, arm, model, entity, rightHand);

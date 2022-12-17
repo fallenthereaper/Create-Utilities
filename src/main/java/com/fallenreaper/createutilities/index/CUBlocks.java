@@ -98,7 +98,7 @@ public class CUBlocks {
             .transform(customItemModel())
             .register();
 
-    public static final BlockEntry<SteamFurnaceBlock> STEAM_FURNACE = REGISTRATE.block("steam_furnace", SteamFurnaceBlock::new)
+    public static final BlockEntry<SteamFurnaceBlock> BOILER_FURNACE = REGISTRATE.block("steam_furnace", SteamFurnaceBlock::new)
             .initialProperties(SharedProperties::copperMetal)
             .properties(p -> p.lightLevel(SteamFurnaceBlock::getLightPower).strength(3.6F).sound(SoundType.NETHERITE_BLOCK))
             .transform(pickaxeOnly())

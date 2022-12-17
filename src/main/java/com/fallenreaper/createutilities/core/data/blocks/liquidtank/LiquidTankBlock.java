@@ -20,13 +20,8 @@ public class LiquidTankBlock extends BaseInteractableBlock implements ITE<Liquid
     public Class<LiquidTankBlockEntity> getTileEntityClass() {
         return LiquidTankBlockEntity.class;
     }
-    @Override
-    public void onPlace(BlockState state, Level world, BlockPos pos, BlockState p_220082_4_, boolean p_220082_5_) {
-        withTileEntityDo(world, pos, LiquidTankBlockEntity::onAdded);
-        if (p_220082_5_)
-            return;
 
-    }
+
 
     @Override
     public BlockEntityType<? extends LiquidTankBlockEntity> getTileEntityType() {

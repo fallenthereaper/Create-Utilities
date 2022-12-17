@@ -1,8 +1,9 @@
 package com.fallenreaper.createutilities.core.data.punchcard;
 
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.AbstractSmartContainerScreen;
+import com.fallenreaper.createutilities.core.data.Interactable;
 import com.fallenreaper.createutilities.core.data.*;
-import com.fallenreaper.createutilities.core.utils.MathUtil;
+import com.fallenreaper.createutilities.core.utils.MiscUtil;
 import com.fallenreaper.createutilities.index.CUConfig;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -222,7 +223,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
     }
 
     protected float getPercentage() {
-        return (float) MathUtil.lerp(0, 100, getProgress());
+        return (float) MiscUtil.lerp(0, 100, getProgress());
     }
 
     /**

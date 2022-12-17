@@ -355,11 +355,7 @@ public class LiquidTankBlockEntity extends InteractableBlockEntity implements IF
         }
     }
 
-    public void onAdded() {
-        refreshBlockState();
 
-
-    }
     boolean canPropagate() {
         return propagateNeighbours;
     }

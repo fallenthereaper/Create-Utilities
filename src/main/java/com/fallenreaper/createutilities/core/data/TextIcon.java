@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.core.data;
 
-import com.fallenreaper.createutilities.events.DataEvents;
+
+import com.fallenreaper.createutilities.core.events.DataEvents;
 
 import java.util.HashMap;
 import java.util.Map;

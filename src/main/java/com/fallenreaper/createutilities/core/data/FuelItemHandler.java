@@ -1,13 +1,16 @@
-package com.fallenreaper.createutilities.content.blocks.steam_furnace;
+package com.fallenreaper.createutilities.core.data;
 
+import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class SteamFurnaceItemHandler extends ItemStackHandler {
+import static com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlockEntity.isFuel;
+
+public class FuelItemHandler extends ItemStackHandler {
     public SteamFurnaceBlockEntity te;
 
-    public SteamFurnaceItemHandler(SteamFurnaceBlockEntity te, int size) {
+    public FuelItemHandler(SteamFurnaceBlockEntity te, int size) {
         super(size);
         this.te = te;
     }
@@ -29,7 +32,7 @@ public class SteamFurnaceItemHandler extends ItemStackHandler {
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         if(slot == 0) {
-            return SteamFurnaceBlockEntity.isFuel(stack);
+            return isFuel(stack);
         }
         else return false;
 

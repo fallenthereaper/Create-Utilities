@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
+loaderVersion = "[43,)"
 license = "MIT"
 
 [[mods]]
@@ -13,18 +13,18 @@ description = '''
 Aims to expand the Create Mod by introducing new tools and additions!
 '''
 [[dependencies.createutilities]]
-modId = "forge"
-mandatory = true
-versionRange = "[40.1.0,)"
-ordering = "NONE"
-side = "BOTH"
+modId="forge"
+mandatory=true
+versionRange="[43.0.0,)"
+ordering="NONE"
+side="BOTH"
 
 [[dependencies.createutilities]]
-modId = "minecraft"
-mandatory = true
-versionRange = "[1.18.2,1.19)"
-ordering = "NONE"
-side = "BOTH"
+modId="minecraft"
+mandatory=true
+versionRange="[1.19.2,1.20)"
+ordering="NONE"
+side="BOTH"
 
 [[dependencies.createutilities]]
 modId = "create"
@@ -34,8 +34,8 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.createutilities]]
-modId = "flywheel"
-mandatory = true
-versionRange = "[1.18-0.6.4,1.18-0.6.5)"
-ordering = "AFTER"
-side = "CLIENT"
+modId="flywheel"
+mandatory=true
+versionRange="[0.6.8,0.6.9)"
+ordering="AFTER"
+side="CLIENT"
