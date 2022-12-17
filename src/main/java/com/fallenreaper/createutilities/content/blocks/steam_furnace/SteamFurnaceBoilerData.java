@@ -68,7 +68,7 @@ public class SteamFurnaceBoilerData extends BoilerData {
         if (te.getLevel().isClientSide) {
             gauge.tickChaser();
             float current = gauge.getValue(1);
-            if (current > 1 && Create.RANDOM.nextFloat() < 1 / 2f)
+            if (current > 1 && te.getLevel().getRandom().nextFloat() < 1 / 2f)
                 gauge.setValueNoUpdate(current + Math.min(-(current - 1) * Create.RANDOM.nextFloat(), 0));
             return;
         }
