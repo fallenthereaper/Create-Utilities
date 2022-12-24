@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.core.events;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.content.armor.BrassJetPackModel;
+import com.fallenreaper.createutilities.core.client.BrassJetPackModel;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -135,13 +135,13 @@ public class ClientEvents {
 
     @SubscribeEvent
     public void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(BRASS_JETPACK_LAYER, BRASS_JETPACK_MODEL::createBodyLayer);
+       // event.registerLayerDefinition(BRASS_JETPACK_LAYER, BRASS_JETPACK_MODEL::createBodyLayer);
 
     }
 
     @SubscribeEvent
     public void onRegisterLayers(EntityRenderersEvent.AddLayers event) {
-        BRASS_JETPACK_MODEL = new BrassJetPackModel(event.getEntityModels().bakeLayer(BRASS_JETPACK_LAYER));
+       // BRASS_JETPACK_MODEL = new BrassJetPackModel(event.getEntityModels().bakeLayer(BRASS_JETPACK_LAYER));
     }
 
     @SubscribeEvent

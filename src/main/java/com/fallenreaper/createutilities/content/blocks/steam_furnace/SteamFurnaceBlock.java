@@ -4,7 +4,7 @@ import com.fallenreaper.createutilities.core.data.ISmokeSource;
 import com.fallenreaper.createutilities.core.data.blocks.InteractableBlockEntity;
 import com.fallenreaper.createutilities.core.utils.ContainerUtil;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
-import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUVoxelShapes;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.content.contraptions.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ITE;
@@ -102,21 +102,9 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
         return super.use(state, world, pos, player, hand, ray);
     }
 
-    @Override
-    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof InteractableBlockEntity be) {
-            return be.getLightEmission(state, level, pos);
-        }
-        return super.getLightEmission(state, level, pos);
-    }
 
-    @Override
-    public void fallOn(Level pLevel, BlockState pState, BlockPos pPos, Entity pEntity, float fallDistance) {
-        BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-        withTileEntityDo(pLevel,pPos, (te) -> te.onFall(pLevel,pPos, pState,pEntity, fallDistance ));
-        super.fallOn(pLevel, pState, pPos, pEntity, fallDistance);
-    }
+
+
 
 
     @Override
@@ -144,11 +132,11 @@ public class SteamFurnaceBlock extends HorizontalKineticBlock implements ITE<Ste
 
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.STEAM_FURNACE.get(pState.getValue(HORIZONTAL_FACING));
+        return CUVoxelShapes.STEAM_FURNACE.get(pState.getValue(HORIZONTAL_FACING));
     }
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return CUBlockShapes.STEAM_FURNACE.get(state.getValue(HORIZONTAL_FACING));
+        return CUVoxelShapes.STEAM_FURNACE.get(state.getValue(HORIZONTAL_FACING));
     }
     @Override
     public int getAnalogOutputSignal(BlockState pBlockState, Level pLevel, BlockPos pPos) {

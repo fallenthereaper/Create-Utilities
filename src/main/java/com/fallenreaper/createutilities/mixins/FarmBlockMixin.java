@@ -28,12 +28,12 @@ public abstract class FarmBlockMixin implements IFarmBlockAccessor {
     protected boolean isNearWater;
 
     @Inject(method = "<init>*", at = @At("TAIL"), remap = false)
-    public void init(BlockBehaviour.Properties pProperties, CallbackInfo ci) {
+    public void createutilities_init(BlockBehaviour.Properties pProperties, CallbackInfo ci) {
         this.isNearWater = false;
     }
 
     @Inject(method = "isNearWater", at = @At(value = "HEAD"), remap = false, cancellable = true)
-    private static void detectWater(LevelReader pLevel, BlockPos pPos, CallbackInfoReturnable<Boolean> cir) {
+    private static void createutilities_detectWater(LevelReader pLevel, BlockPos pPos, CallbackInfoReturnable<Boolean> cir) {
 
         for (BlockPos blockpos : BlockPos.betweenClosed(pPos.offset(-12, 1, -12), pPos.offset(12, 12, 12))) {
             BlockEntity detectedBlock = pLevel.getBlockEntity(blockpos);
@@ -53,7 +53,7 @@ public abstract class FarmBlockMixin implements IFarmBlockAccessor {
         }
     }
     @Inject(method = "tick", at = @At(value = "HEAD"), remap = false)
-     public void onTick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom, CallbackInfo ci) {
+     public void createutilities_onTick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom, CallbackInfo ci) {
         this.isNearWater = MiscUtil.isNearWater(pLevel, pPos);
     }
 

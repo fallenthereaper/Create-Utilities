@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.typewriter;
 
 import com.fallenreaper.createutilities.index.CUBlockEntities;
-import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUVoxelShapes;
 import com.fallenreaper.createutilities.core.utils.ContainerUtil;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
@@ -96,7 +96,7 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
 
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.TYPEWRITER.get(pState.getValue(HORIZONTAL_FACING));
+        return CUVoxelShapes.TYPEWRITER.get(pState.getValue(HORIZONTAL_FACING));
     }
 
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
@@ -116,7 +116,7 @@ public class TypewriterBlock extends HorizontalKineticBlock implements ITE<Typew
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return CUBlockShapes.TYPEWRITER.get(state.getValue(HORIZONTAL_FACING));
+        return CUVoxelShapes.TYPEWRITER.get(state.getValue(HORIZONTAL_FACING));
     }
 
     @Override

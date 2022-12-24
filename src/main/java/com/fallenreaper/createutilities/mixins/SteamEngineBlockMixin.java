@@ -22,7 +22,7 @@ import static com.simibubi.create.content.contraptions.components.steam.SteamEng
 public class SteamEngineBlockMixin {
 
     @Inject(method = "canAttach", at = @At(value = "RETURN"), remap = false, cancellable = true)
-    private static void onAttach(LevelReader pReader, BlockPos pPos, Direction pDirection, CallbackInfoReturnable<Boolean> cir) {
+    private static void createutilities_onAttach(LevelReader pReader, BlockPos pPos, Direction pDirection, CallbackInfoReturnable<Boolean> cir) {
         BlockPos blockpos = pPos.relative(pDirection);
         BlockEntity blockEntity = pReader.getBlockEntity(blockpos);
         if(blockEntity instanceof IBoilerProvider<?, ?>)
@@ -30,7 +30,7 @@ public class SteamEngineBlockMixin {
     }
 
     @Inject(method = "onPlace", at = @At(value = "HEAD"), remap = false)
-    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving, CallbackInfo ci) {
+    public void createutilities_onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving, CallbackInfo ci) {
         Block block = pLevel.getBlockState(pPos.relative(getFacing(pState).getOpposite())).getBlock();
         BlockEntity be = pLevel.getBlockEntity(pPos.relative(getFacing(pState).getOpposite()));
         if(be instanceof IBoilerProvider<?, ?>)
@@ -45,7 +45,7 @@ public class SteamEngineBlockMixin {
      * @reason r
      */
     @Inject(method = "onRemove", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/fluids/tank/FluidTankBlock;updateBoilerState(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V", shift = At.Shift.AFTER), remap = false)
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving, CallbackInfo ci) {
+    public void createutilities_onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving, CallbackInfo ci) {
         Block block = pLevel.getBlockState(pPos.relative(getFacing(pState).getOpposite())).getBlock();
         BlockEntity be = pLevel.getBlockEntity(pPos.relative(getFacing(pState).getOpposite()));
         if (be instanceof IBoilerProvider<?, ?>)

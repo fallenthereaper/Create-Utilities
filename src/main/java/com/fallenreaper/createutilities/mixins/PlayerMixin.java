@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class PlayerMixin {
 
     @Inject(at = @At(value = "HEAD"),  method = "sweepAttack", remap = false, cancellable = true)
-    public void onSweepAttack(CallbackInfo ci) {
+    public void createutilities_onSweepAttack(CallbackInfo ci) {
         Player player = (Player) (Object) this;
         Item pItemStack = ((Player)(Object)this).getItemInHand(InteractionHand.MAIN_HAND).getItem();
         if (pItemStack instanceof ISweepParticleProvider provider) {

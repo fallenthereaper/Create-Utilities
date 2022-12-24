@@ -393,11 +393,16 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         boolean hasPunchcard = !stack.isEmpty();
 
         if (writer != null) {
+            writer.visible = hasPunchcard;
+            writer.tick();
+            /*
             if (!hasPunchcard) {
                 writer.setDisabled();
             } else {
                 writer.setEnabled();
             }
+
+             */
         }
 
         if(autosaveSwitch != null) {
@@ -434,8 +439,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         saveButton.active = hasPunchcard;
 
         //initTooltips();
-        if (getWriter() != null)
-            getWriter().sync();
+
 
     }
 
@@ -451,12 +455,7 @@ public class PunchcardWriterScreen extends AbstractSmartContainerScreen<Punchcar
         //checks for valid saved writers
         readSavedWriter();
         this.writer = PunchcardWriter.create(this, x, y, 5, 7).write();
-
-        if (!hasPunchcard)
-            writer.setDisabled();
-        else
-            writer.setEnabled();
-
+        writer.visible = hasPunchcard;
         readButtons();
 
         initGatheringSettings();

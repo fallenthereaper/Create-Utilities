@@ -2,6 +2,8 @@ package com.fallenreaper.createutilities;
 
 import com.fallenreaper.createutilities.core.data.Interactable;
 import com.fallenreaper.createutilities.core.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.core.events.ClientEvents;
+import com.fallenreaper.createutilities.core.events.ClientHandler;
 import com.fallenreaper.createutilities.core.events.CommonEvents;
 import com.fallenreaper.createutilities.index.*;
 import com.fallenreaper.createutilities.networking.ModPackets;
@@ -10,7 +12,9 @@ import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -36,6 +40,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.simibubi.create.content.contraptions.goggles.GogglesItem.addIsWearingPredicate;
 
 @Mod(CreateUtilities.ID)
 public class CreateUtilities {
@@ -63,7 +69,7 @@ public class CreateUtilities {
     public static final Interactable.IDraggable test = (mouseX, mouseY, coords, rightClick) -> System.out.println(mouseX);
 
 
-    private static final NonNullSupplier<CreateRegistrate> registrate = () -> CreateRegistrate.create(ID);
+    private static final NonNullSupplier<CreateRegistrate> REGISTRATE =  CreateRegistrate.lazy(ID);
     public static List<Block> BLOCKLIST = new ArrayList<>();
     public static DoorLockManager DOORLOCK_MANAGER = new DoorLockManager();
 
@@ -96,21 +102,34 @@ public class CreateUtilities {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                 () -> () -> CreateUtilitiesClient.onClientStartUp(modEventBus, forgeEventBus));
 
-        registerModContents();
+        DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
+            MinecraftForge.EVENT_BUS.register(new ClientEvents());
+            FMLJavaModLoadingContext.get().getModEventBus().register(new ClientHandler());
+            return new Object();
+        });
 
+
+        registerAll();
     }
 
-    public static void registerModContents() {
+    public static void registerAll() {
         CUBlocks.register();
         CUItems.register();
         CUBlockPartials.register();
         CUBlockEntities.register();
         CUContainerTypes.register();
         CUFluids.register();
+
+
         //
-        addToBlockList(() -> Blocks.FURNACE);
+
         addToBlockList(() -> Blocks.CRAFTING_TABLE);
+        addIsWearingPredicate((player -> CUItems.ENGINEER_TOP_HAT.isIn(player.getItemBySlot(EquipmentSlot.HEAD))));
        // addToBlockList(CUBlocks.STEAM_FURNACE::get);
+    }
+
+    public static MutableComponent getTranslation(String key, Object... args) {
+        return Component.translatable(ID + "." + key, args);
     }
 
     public static void addToBlockList(Supplier<Block> sup) {
@@ -119,7 +138,7 @@ public class CreateUtilities {
     }
 
     private static void doClientStuff(final FMLClientSetupEvent event) {
-        event.enqueueWork(CUPonder::register);
+   //     event.enqueueWork(CUPonder::register);
     }
 
     private static void setup(final FMLCommonSetupEvent event) {
@@ -150,8 +169,8 @@ public class CreateUtilities {
     @SuppressWarnings("deprecation")
     public static CreateRegistrate registrate() {
 
-        LOGGER.info("Registrate created");
-        return registrate.get();
+        LOGGER.info("(Create Utilities) Registrate Created");
+        return REGISTRATE.get();
     }
 
 

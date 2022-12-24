@@ -44,6 +44,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
     private PunchcardButton[][] grid;
     private PunchcardButton button;
     private Vec2 position;
+    public boolean visible;
     private byte width, height;
 
     private PunchcardWriter(AbstractSmartContainerScreen<?> screen, int x, int y, byte width, byte height, SwitchIcon switchIcon, TextIcon icon) {
@@ -55,6 +56,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         this.screen = screen;
         this.position = new Vec2(x, y);
         this.switchIcon = switchIcon;
+        this.visible = false;
     }
 
     /**
@@ -405,6 +407,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
     /**
      * Disables interaction with all buttons.
      */
+    @Deprecated
     public PunchcardWriter setDisabled() {
         for (PunchcardButton[] punchcardButtons : grid) {
             for (int col = 0; col < grid[1].length; col++) {
@@ -418,6 +421,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
     /**
      * Enables interaction with all buttons.
      */
+    @Deprecated
     public PunchcardWriter setEnabled() {
         for (PunchcardButton[] punchcardButtons : grid) {
             for (int col = 0; col < grid[1].length; col++) {
@@ -458,8 +462,13 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         return this;
     }
 
-    public void sync() {
-
+    public void tick() {
+        for (PunchcardButton[] punchcardButtons : grid) {
+            for (int col = 0; col < grid[1].length; col++) {
+                PunchcardButton button = punchcardButtons[col];
+                button.visible = visible;
+            }
+        }
     }
 
     /**

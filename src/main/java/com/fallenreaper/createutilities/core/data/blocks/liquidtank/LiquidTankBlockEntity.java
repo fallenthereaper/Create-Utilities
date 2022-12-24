@@ -1,8 +1,8 @@
 package com.fallenreaper.createutilities.core.data.blocks.liquidtank;
 
+import com.fallenreaper.createutilities.core.data.IDevInfo;
 import com.fallenreaper.createutilities.core.data.blocks.InteractableBlockEntity;
 import com.fallenreaper.createutilities.core.utils.InteractionHandler;
-import com.fallenreaper.createutilities.core.data.IDevInfo;
 import com.simibubi.create.content.contraptions.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.contraptions.processing.EmptyingByBasin;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
@@ -30,9 +30,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -111,14 +111,14 @@ public class LiquidTankBlockEntity extends InteractableBlockEntity implements IF
     }
     @Override
     protected boolean isFluidHandlerCap(Capability<?> cap) {
-        return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY;
+        return cap == ForgeCapabilities.FLUID_HANDLER;
 
     }
 
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && side != Direction.DOWN)
+        if (cap == ForgeCapabilities.FLUID_HANDLER&& side != Direction.DOWN)
             return tank.getCapability()
                     .cast();
         return super.getCapability(cap, side);
@@ -128,7 +128,7 @@ public class LiquidTankBlockEntity extends InteractableBlockEntity implements IF
     @Override
     public InteractionResult onInteract(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult) {
         ItemStack pItemStack = pPlayer.getItemInHand(pHand);
-        boolean present = pItemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+        boolean present = pItemStack.getCapability(ForgeCapabilities.FLUID_HANDLER)
                 .isPresent();
         if (pItemStack.getItem() instanceof BlockItem
                 && !present) {
@@ -364,7 +364,7 @@ public class LiquidTankBlockEntity extends InteractableBlockEntity implements IF
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         containedFluidTooltip(tooltip, isPlayerSneaking,
-                getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY));
+                getCapability(ForgeCapabilities.FLUID_HANDLER));
         return true;
     }
 

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "createutilities:block/liquid_tank/liquid_tank"
+  }
+}

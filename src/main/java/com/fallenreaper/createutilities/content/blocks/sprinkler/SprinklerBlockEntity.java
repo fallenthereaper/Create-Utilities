@@ -52,7 +52,7 @@ import static com.fallenreaper.createutilities.content.blocks.sprinkler.Sprinkle
 import static com.fallenreaper.createutilities.core.utils.MiscUtil.isInsideCircle;
 import static com.simibubi.create.content.contraptions.base.HorizontalKineticBlock.HORIZONTAL_FACING;
 
-//todo, redo this some day
+//todo horrible code, redo this some day
 //------WIP------//
 public class SprinklerBlockEntity extends KineticTileEntity implements IHaveGoggleInformation, IDevInfo {
     public State currentState;

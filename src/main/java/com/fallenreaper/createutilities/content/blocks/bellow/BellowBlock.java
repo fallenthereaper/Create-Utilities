@@ -4,7 +4,7 @@ import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.core.data.IBoilerProvider;
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
-import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUVoxelShapes;
 import com.jozufozu.flywheel.core.PartialModel;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.content.contraptions.wrench.IWrenchable;
@@ -112,12 +112,12 @@ public class BellowBlock extends HorizontalKineticBlock implements ITE<BellowBlo
 
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.BELLOW.get(pState.getValue(HORIZONTAL_FACING));
+        return CUVoxelShapes.BELLOW.get(pState.getValue(HORIZONTAL_FACING));
     }
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.BELLOW.get(pState.getValue(HORIZONTAL_FACING));
+        return CUVoxelShapes.BELLOW.get(pState.getValue(HORIZONTAL_FACING));
     }
 
     @Override

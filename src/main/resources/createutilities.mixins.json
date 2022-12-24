@@ -5,11 +5,14 @@
   "compatibilityLevel": "JAVA_16",
   "refmap": "createutilities.refmap.json",
   "mixins": [
+    "AbstractFurnaceMixin",
+    "BlazeBurnerTileEntityMixin",
     "CampFireBlockMixin",
     "FarmBlockMixin",
     "FurnaceBlockEntityMixin",
     "HaybaleBlockMixin",
     "ItemMixin",
+    "NixieTubeMixin",
     "PlayerMixin",
     "SteamEngineBlockEntityMixin",
     "SteamEngineBlockMixin"

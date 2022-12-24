@@ -3,7 +3,7 @@ package com.fallenreaper.createutilities.content.blocks.steering_wheel;
 /*
 import com.fallenreaper.createutilities.index.CUBlockEntities;
 import com.fallenreaper.createutilities.index.CUBlockPartials;
-import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUVoxelShapes;
 import com.fallenreaper.createutilities.index.CUBlocks;
 import com.jozufozu.flywheel.core.PartialModel;
 import com.simibubi.create.content.contraptions.base.DirectionalKineticBlock;
@@ -43,7 +43,7 @@ public class SteeringWheelBlock extends DirectionalKineticBlock implements ITE<S
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.STEERING_WHEEL_1.get(pState.getValue(FACING));
+        return CUVoxelShapes.STEERING_WHEEL_1.get(pState.getValue(FACING));
     }
 
 
@@ -165,9 +165,9 @@ public class SteeringWheelBlock extends DirectionalKineticBlock implements ITE<S
 
     public boolean shapeIntersection(BlockState state, BlockHitResult ray) {
        System.out.println("Block Intersected!");
-       System.out.println( CUBlockShapes.STEERING_WHEEL_1.get(getRotationAxis(state)).bounds().contains(ray.getLocation())
+       System.out.println( CUVoxelShapes.STEERING_WHEEL_1.get(getRotationAxis(state)).bounds().contains(ray.getLocation())
               );
-           return CUBlockShapes.STEERING_WHEEL_1.get(getRotationAxis(state))
+           return CUVoxelShapes.STEERING_WHEEL_1.get(getRotationAxis(state))
                .bounds()
                .inflate(0.001)
                .contains((ray.getLocation())

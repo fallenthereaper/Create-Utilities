@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
 import com.fallenreaper.createutilities.index.CUBlockEntities;
-import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUVoxelShapes;
 import com.simibubi.create.content.contraptions.processing.EmptyingByBasin;
 import com.simibubi.create.content.contraptions.wrench.WrenchItem;
 import com.simibubi.create.foundation.block.ITE;
@@ -33,8 +33,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class SprinklerBlock extends HorizontalAxisBlock implements ITE<SprinklerBlockEntity> {
@@ -52,7 +52,7 @@ public class SprinklerBlock extends HorizontalAxisBlock implements ITE<Sprinkler
         SprinklerBlockEntity te = (SprinklerBlockEntity) tileentity;
         ItemStack heldItem = player.getMainHandItem();
         if (heldItem.getItem() instanceof BlockItem
-                && !heldItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+                && !heldItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
                 .isPresent()) {
             return InteractionResult.PASS;
         }
@@ -89,7 +89,7 @@ public class SprinklerBlock extends HorizontalAxisBlock implements ITE<Sprinkler
         te.tankBehaviour.getPrimaryHandler()
                 .fill(fluidFromItem, IFluidHandler.FluidAction.EXECUTE);
         te.notifyUpdate();
-        if (!heldItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent())
+        if (!heldItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent())
             return InteractionResult.PASS;
         if (te.isLava()) {
             player.playSound(SoundEvents.BUCKET_FILL_LAVA, 1f, 1f);
@@ -113,7 +113,7 @@ public class SprinklerBlock extends HorizontalAxisBlock implements ITE<Sprinkler
 
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return pState.getValue(CEILING) ? CUBlockShapes.SPRINKLER_CEILING.get(pState.getValue(HORIZONTAL_FACING)) : CUBlockShapes.SPRINKLER.get(pState.getValue(HORIZONTAL_FACING));
+        return pState.getValue(CEILING) ? CUVoxelShapes.SPRINKLER_CEILING.get(pState.getValue(HORIZONTAL_FACING)) : CUVoxelShapes.SPRINKLER.get(pState.getValue(HORIZONTAL_FACING));
     }
 
 

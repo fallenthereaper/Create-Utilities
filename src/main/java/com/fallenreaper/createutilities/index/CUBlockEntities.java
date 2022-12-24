@@ -5,6 +5,10 @@ import com.fallenreaper.createutilities.content.blocks.bellow.BellowBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowDisplaySource;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowInstance;
 import com.fallenreaper.createutilities.content.blocks.bellow.BellowRenderer;
+import com.fallenreaper.createutilities.content.blocks.encased_nixie_tube.EncasedNixieTubeBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.encased_nixie_tube.EncasedNixieTubeRenderer;
+import com.fallenreaper.createutilities.content.blocks.hand_display.HandDisplayBlockEntity;
+import com.fallenreaper.createutilities.content.blocks.hand_display.HandDisplayRenderer;
 import com.fallenreaper.createutilities.content.blocks.mechanical_propeller.MechanicalPropellerBlockEntity;
 import com.fallenreaper.createutilities.content.blocks.mechanical_propeller.MechanicalPropellerRenderer;
 import com.fallenreaper.createutilities.content.blocks.punchcard_writer.PunchcardWriterBlockEntity;
@@ -19,25 +23,30 @@ import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterBloc
 import com.fallenreaper.createutilities.content.blocks.typewriter.TypewriterRenderer;
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankBlockEntity;
 import com.fallenreaper.createutilities.core.data.blocks.liquidtank.LiquidTankRenderer;
-import com.simibubi.create.Create;
 import com.simibubi.create.content.curiosities.deco.SlidingDoorRenderer;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
 import static com.simibubi.create.content.logistics.block.display.AllDisplayBehaviours.assignDataBehaviourTE;
 
 public class CUBlockEntities {
+
     public static final BlockEntityEntry<SprinklerBlockEntity> SPRINKLER = CreateUtilities.registrate()
             .tileEntity("sprinkler", SprinklerBlockEntity::new)
             .instance(() -> SprinklerInstance::new)
             .validBlock(CUBlocks.SPRINKLER)
             .renderer(() -> SprinklerRenderer::new)
             .register();
+    public static final BlockEntityEntry<HandDisplayBlockEntity> HAND_DISPLAY = CreateUtilities.registrate()
+            .tileEntity("hand_display", HandDisplayBlockEntity::new)
+            .validBlock(CUBlocks.HAND_DISPLAY)
+            .renderer(() -> HandDisplayRenderer::new)
+            .register();
     public static final BlockEntityEntry<TypewriterBlockEntity> TYPEWRITER = CreateUtilities.registrate()
             .tileEntity("typewriter", TypewriterBlockEntity::new)
             .validBlock(CUBlocks.TYPEWRITER)
             .renderer(() -> TypewriterRenderer::new)
             .register();
-    public static final BlockEntityEntry<MechanicalPropellerBlockEntity> MECHANICAL_PROPELLER = Create.REGISTRATE
+    public static final BlockEntityEntry<MechanicalPropellerBlockEntity> MECHANICAL_PROPELLER = CreateUtilities.registrate()
             .tileEntity("mechanical_propeller", MechanicalPropellerBlockEntity::new)
             .validBlocks(CUBlocks.MECHANICAL_PROPELLER)
             .renderer(() -> MechanicalPropellerRenderer::new)
@@ -71,6 +80,13 @@ public class CUBlockEntities {
             .tileEntity("steam_furnace", SteamFurnaceBlockEntity::new)
             .validBlocks(CUBlocks.BOILER_FURNACE)
             .renderer(() -> SteamFurnaceRenderer::new)
+            .register();
+
+    public static final BlockEntityEntry<EncasedNixieTubeBlockEntity> ENCASED_NIXIE_TUBE = CreateUtilities.registrate()
+            .tileEntity("encased_nixie_tube", EncasedNixieTubeBlockEntity::new)
+            .validBlocks(CUBlocks.ENCASED_ORANGE_NIXIE_TUBE)
+            .validBlocks(CUBlocks.ENCASED_NIXIE_TUBES.toArray())
+            .renderer(() -> EncasedNixieTubeRenderer::new)
             .register();
 
     public static void register() {

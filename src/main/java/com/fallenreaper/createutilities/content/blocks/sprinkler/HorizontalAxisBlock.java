@@ -1,6 +1,6 @@
 package com.fallenreaper.createutilities.content.blocks.sprinkler;
 
-import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUVoxelShapes;
 import com.simibubi.create.content.contraptions.base.KineticBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,7 +43,7 @@ public class HorizontalAxisBlock extends KineticBlock {
     @Override
     public @NotNull VoxelShape getShape(BlockState state, BlockGetter blockGetter, BlockPos pBlockPos,
                                         CollisionContext ctx) {
-        return state.getValue(CEILING) ? CUBlockShapes.SPRINKLER_CEILING.get(Direction.UP) : CUBlockShapes.SPRINKLER.get(Direction.UP);
+        return state.getValue(CEILING) ? CUVoxelShapes.SPRINKLER_CEILING.get(Direction.UP) : CUVoxelShapes.SPRINKLER.get(Direction.UP);
     }
 
     @Override

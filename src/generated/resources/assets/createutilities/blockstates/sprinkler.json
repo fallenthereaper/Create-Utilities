@@ -1,72 +1,64 @@
 {
   "variants": {
+    "ceiling=false,facing=east,waterlogged=false": {
+      "model": "createutilities:block/sprinkler/block",
+      "y": 90
+    },
+    "ceiling=false,facing=east,waterlogged=true": {
+      "model": "createutilities:block/sprinkler/block",
+      "y": 90
+    },
     "ceiling=false,facing=north,waterlogged=false": {
       "model": "createutilities:block/sprinkler/block"
     },
-    "ceiling=true,facing=north,waterlogged=false": {
-      "model": "createutilities:block/sprinkler/block",
-      "x": 180
+    "ceiling=false,facing=north,waterlogged=true": {
+      "model": "createutilities:block/sprinkler/block"
     },
     "ceiling=false,facing=south,waterlogged=false": {
       "model": "createutilities:block/sprinkler/block",
       "y": 180
     },
-    "ceiling=true,facing=south,waterlogged=false": {
+    "ceiling=false,facing=south,waterlogged=true": {
       "model": "createutilities:block/sprinkler/block",
-      "x": 180,
       "y": 180
     },
     "ceiling=false,facing=west,waterlogged=false": {
       "model": "createutilities:block/sprinkler/block",
       "y": 270
     },
-    "ceiling=true,facing=west,waterlogged=false": {
-      "model": "createutilities:block/sprinkler/block",
-      "x": 180,
-      "y": 270
-    },
-    "ceiling=false,facing=east,waterlogged=false": {
-      "model": "createutilities:block/sprinkler/block",
-      "y": 90
-    },
-    "ceiling=true,facing=east,waterlogged=false": {
-      "model": "createutilities:block/sprinkler/block",
-      "x": 180,
-      "y": 90
-    },
-    "ceiling=false,facing=north,waterlogged=true": {
-      "model": "createutilities:block/sprinkler/block"
-    },
-    "ceiling=true,facing=north,waterlogged=true": {
-      "model": "createutilities:block/sprinkler/block",
-      "x": 180
-    },
-    "ceiling=false,facing=south,waterlogged=true": {
-      "model": "createutilities:block/sprinkler/block",
-      "y": 180
-    },
-    "ceiling=true,facing=south,waterlogged=true": {
-      "model": "createutilities:block/sprinkler/block",
-      "x": 180,
-      "y": 180
-    },
     "ceiling=false,facing=west,waterlogged=true": {
       "model": "createutilities:block/sprinkler/block",
       "y": 270
     },
-    "ceiling=true,facing=west,waterlogged=true": {
-      "model": "createutilities:block/sprinkler/block",
-      "x": 180,
-      "y": 270
-    },
-    "ceiling=false,facing=east,waterlogged=true": {
+    "ceiling=true,facing=east,waterlogged=false": {
       "model": "createutilities:block/sprinkler/block",
       "y": 90
     },
     "ceiling=true,facing=east,waterlogged=true": {
       "model": "createutilities:block/sprinkler/block",
-      "x": 180,
       "y": 90
+    },
+    "ceiling=true,facing=north,waterlogged=false": {
+      "model": "createutilities:block/sprinkler/block"
+    },
+    "ceiling=true,facing=north,waterlogged=true": {
+      "model": "createutilities:block/sprinkler/block"
+    },
+    "ceiling=true,facing=south,waterlogged=false": {
+      "model": "createutilities:block/sprinkler/block",
+      "y": 180
+    },
+    "ceiling=true,facing=south,waterlogged=true": {
+      "model": "createutilities:block/sprinkler/block",
+      "y": 180
+    },
+    "ceiling=true,facing=west,waterlogged=false": {
+      "model": "createutilities:block/sprinkler/block",
+      "y": 270
+    },
+    "ceiling=true,facing=west,waterlogged=true": {
+      "model": "createutilities:block/sprinkler/block",
+      "y": 270
     }
   }
 }

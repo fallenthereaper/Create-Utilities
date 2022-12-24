@@ -52,12 +52,12 @@ public abstract class SteamEngineBlockEntityMixin {
 
 
     @Inject(method = "<init>", at = @At("TAIL"), remap = false)
-    public void init(BlockEntityType<?> type, BlockPos pos, BlockState state, CallbackInfo ci) {
+    public void createutilities_init(BlockEntityType<?> type, BlockPos pos, BlockState state, CallbackInfo ci) {
         this.sourceSteam = new WeakReference<>(null);
     }
 
     @Inject(method = "spawnParticles", at = @At(value = "FIELD", target= "Lcom/simibubi/create/content/contraptions/components/steam/SteamEngineTileEntity;source:Ljava/lang/ref/WeakReference;",  shift = At.Shift.BEFORE), remap = false )
-    private void playSound(CallbackInfo ci) {
+    private void createutilities_playSound(CallbackInfo ci) {
         SteamEngineTileEntity te = (SteamEngineTileEntity) (Object) this;
         SteamFurnaceBlockEntity be = sourceSteam.get();
         if( te.getLevel() == null) return;

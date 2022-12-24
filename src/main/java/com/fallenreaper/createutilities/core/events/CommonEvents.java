@@ -12,6 +12,7 @@ import com.fallenreaper.createutilities.core.data.doorlock.DoorLockManager;
 import com.fallenreaper.createutilities.core.data.punchcard.InstructionEntry;
 import com.fallenreaper.createutilities.core.data.punchcard.PunchcardDoorInfo;
 import com.fallenreaper.createutilities.index.CUContainerTypes;
+import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangBuilder;
@@ -25,6 +26,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -108,10 +112,45 @@ public class CommonEvents {
             return;
         // if (!(event.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof BaseItem))
         //   return;
-
+         Player player = event.player;
+        removeMiningFatigue(player);
 
 
     }
+
+    public static void removeMiningFatigue(Player player) {
+        if(!affects(player))
+            return;
+        if(player.getEffect(MobEffects.DIG_SLOWDOWN) == null)
+            return;
+
+        if(player.hasEffect(MobEffects.DIG_SLOWDOWN))
+            player.removeEffect(MobEffects.DIG_SLOWDOWN);
+    }
+
+
+    public static boolean affects(LivingEntity entity) {
+        if (!AllItems.DIVING_BOOTS.get()
+                .isWornBy(entity)) {
+            entity.getPersistentData()
+                    .remove("HeavyBoots");
+            return false;
+        }
+
+        NBTHelper.putMarker(entity.getPersistentData(), "HeavyBoots");
+        if (!entity.isInWater())
+            return false;
+        if (entity.getPose() == Pose.SWIMMING)
+            return false;
+        if (entity instanceof Player) {
+            Player playerEntity = (Player) entity;
+            if (playerEntity.getAbilities().flying)
+                return false;
+        }
+        return true;
+    }
+
+
 
     //todo, redo this so it doesn't use block pos but uuid, there's a better way to do it by checking rope spool in aeronautics
     //TODO, move this to punchcard item class

@@ -7,9 +7,12 @@ import com.simibubi.create.foundation.render.SuperByteBuffer;
 import com.simibubi.create.foundation.utility.Couple;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -25,6 +28,8 @@ import net.minecraftforge.common.PlantType;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.fallenreaper.createutilities.CreateUtilities.ID;
 
 @SuppressWarnings("ALL")
 public class MiscUtil {
@@ -116,7 +121,7 @@ public class MiscUtil {
         }
     }
 
-    public static Set<BlockPos> getAllWithinRadius(Level pLevel, Player player, int radius, BlockPos pBlockPos) {
+    public static Set<BlockPos> getAllWithinRadius(Level pLevel, Player plassyer, int radius, BlockPos pBlockPos) {
         Set<BlockPos> allBlocks = new HashSet<>();
 
         for (BlockPos blockPositions : pBlockPos.betweenClosed(pBlockPos.getX() - radius, pBlockPos.getY(), pBlockPos.getZ() - radius, pBlockPos.getX() + radius, pBlockPos.getY() + 1, pBlockPos.getZ() + radius)) {
@@ -125,7 +130,7 @@ public class MiscUtil {
                 continue;
             if (blockState.is(BlockTags.WITHER_IMMUNE))
                 continue;
-            if(allBlocks.contains(blockPositions))
+            if (allBlocks.contains(blockPositions))
                 continue;
 
             // if(!blockState.canHarvestBlock(level, blockPositions, player))
@@ -134,11 +139,11 @@ public class MiscUtil {
             p = new BlockPos(blockPositions);
 
 
-                if (isInsideCircle(radius, pBlockPos, blockPositions)) {
-                    Block block = blockState.getBlock();
-                    if (block instanceof CropBlock cropBlock && cropBlock.isMaxAge(blockState)) {
-                        allBlocks.add(blockPositions);
-                    }
+            if (isInsideCircle(radius, pBlockPos, blockPositions)) {
+                Block block = blockState.getBlock();
+                if (block instanceof CropBlock cropBlock && cropBlock.isMaxAge(blockState)) {
+                    allBlocks.add(blockPositions);
+                }
             }
         }
         return allBlocks;
@@ -211,6 +216,10 @@ public class MiscUtil {
             }
         }
         return FarmlandWaterManager.hasBlockWaterTicket(pLevel, pPos);
+    }
+
+    public static MutableComponent asItemDescription(Item pItem) {
+        return Component.translatable(ID + "." + pItem.getDescriptionId().substring(21) + "." + "description");
     }
 
     public Vec3 getPositions(double t) {

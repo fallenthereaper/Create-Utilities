@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.mechanical_propeller;
 
 import com.fallenreaper.createutilities.index.CUBlockEntities;
-import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUVoxelShapes;
 import com.simibubi.create.content.contraptions.base.DirectionalKineticBlock;
 import com.simibubi.create.content.contraptions.wrench.IWrenchable;
 import com.simibubi.create.content.logistics.block.chute.AbstractChuteBlock;
@@ -97,17 +97,17 @@ public class MechanicalPropellerBlock extends DirectionalKineticBlock implements
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.MECHANICAL_PROPELLER.get(pState.getValue(FACING));
+        return CUVoxelShapes.MECHANICAL_PROPELLER.get(pState.getValue(FACING));
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.MECHANICAL_PROPELLER.get(pState.getValue(FACING));
+        return CUVoxelShapes.MECHANICAL_PROPELLER.get(pState.getValue(FACING));
     }
 
     @Override
     public VoxelShape getVisualShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.MECHANICAL_PROPELLER.get(pState.getValue(FACING));
+        return CUVoxelShapes.MECHANICAL_PROPELLER.get(pState.getValue(FACING));
     }
 
     @Override

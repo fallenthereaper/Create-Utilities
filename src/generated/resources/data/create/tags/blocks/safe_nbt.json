@@ -1,10 +1,10 @@
 {
-  "replace": false,
   "values": [
-    "createutilities:sprinkler",
     "createutilities:typewriter",
     "createutilities:bellow",
     "createutilities:punchcard_writer",
-    "createutilities:steam_furnace"
+    "createutilities:steam_furnace",
+    "createutilities:sprinkler",
+    "createutilities:hand_display"
   ]
 }

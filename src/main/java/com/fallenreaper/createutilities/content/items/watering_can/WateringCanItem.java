@@ -2,6 +2,7 @@ package com.fallenreaper.createutilities.content.items.watering_can;
 
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerInteractionHandler;
 import com.fallenreaper.createutilities.core.data.items.BaseItem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.fluids.tank.FluidTankTileEntity;
 import com.simibubi.create.content.contraptions.particle.CubeParticleData;
 import com.simibubi.create.foundation.utility.Color;
@@ -51,9 +52,14 @@ public class WateringCanItem extends BaseItem {
         return super.getTooltipImage(pStack);
     }
 
+
     @Override
     public void verifyTagAfterLoad(CompoundTag pCompoundTag) {
         super.verifyTagAfterLoad(pCompoundTag);
+    }
+
+    public int getTankCapacity() {
+        return 128;
     }
 
     @Nullable
@@ -71,6 +77,11 @@ public class WateringCanItem extends BaseItem {
         return InteractionResultHolder.consume(pPlayer.getItemInHand(pUsedHand));
      }
         return super.use(pLevel, pPlayer, pUsedHand);
+    }
+
+    @Override
+    public void animateItem(LivingEntity entity, ItemStack stack, InteractionHand hand, PoseStack matrixStack, float partialTicks, float pitch, float attackAnim, float handHeight) {
+
     }
 
     @Override

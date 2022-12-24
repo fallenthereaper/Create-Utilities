@@ -153,7 +153,7 @@ public class PunchcardItem extends BaseItem  {
         BlockPos pos = event.getPos();
 
         Player entity = event.getEntity();
-        if (!(entity == null))
+        if ((entity == null))
             return;
         if (!(itemStack.getItem() instanceof PunchcardItem))
             return;

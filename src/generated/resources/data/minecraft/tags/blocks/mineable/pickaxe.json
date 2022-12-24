@@ -1,10 +1,26 @@
 {
-  "replace": false,
   "values": [
-    "createutilities:sprinkler",
     "createutilities:brass_door",
     "createutilities:mechanical_propeller",
     "createutilities:punchcard_writer",
-    "createutilities:steam_furnace"
+    "createutilities:steam_furnace",
+    "createutilities:sprinkler",
+    "createutilities:hand_display",
+    "createutilities:encased_nixie_tube",
+    "createutilities:white_encased_nixie_tube",
+    "createutilities:magenta_encased_nixie_tube",
+    "createutilities:light_blue_encased_nixie_tube",
+    "createutilities:yellow_encased_nixie_tube",
+    "createutilities:lime_encased_nixie_tube",
+    "createutilities:pink_encased_nixie_tube",
+    "createutilities:gray_encased_nixie_tube",
+    "createutilities:light_gray_encased_nixie_tube",
+    "createutilities:cyan_encased_nixie_tube",
+    "createutilities:purple_encased_nixie_tube",
+    "createutilities:blue_encased_nixie_tube",
+    "createutilities:brown_encased_nixie_tube",
+    "createutilities:green_encased_nixie_tube",
+    "createutilities:red_encased_nixie_tube",
+    "createutilities:black_encased_nixie_tube"
   ]
 }

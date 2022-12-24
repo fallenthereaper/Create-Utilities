@@ -17,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -57,10 +56,10 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
 
         BlockState state = event.getLevel().getBlockState(event.getPos());
 
-        for (Block blocks : BLOCK_LIST) {
-            if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock().equals(blocks) || state.getBlock() instanceof IBoilerProvider<?, ?>)
+
+            if (state.getBlock() instanceof AbstractFurnaceBlock || BLOCK_LIST.contains(state.getBlock()) || state.getBlock() instanceof IBoilerProvider<?, ?>)
                 event.setUseBlock(Event.Result.DENY);
-        }
+
     }
 
     public ItemStack getItemIn() {
@@ -90,7 +89,9 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
                     // System.out.println(getFuelItemStack(be).getItem().getDescriptionId());
                     if (!getFuelItemStack(be).isEmpty()) {
                         this.remainingTime = be.serializeNBT().getInt("BurnTime");
+
                     }
+
                     IFurnaceBurnTimeAccessor accessor = (IFurnaceBurnTimeAccessor) be;
                     accessor.getBurnTime();
                     //   SprinklerBlock a = new SprinklerBlock(BlockBehaviour.Properties.copy(getBlockState().getBlock()));
@@ -163,7 +164,8 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         isValid = compound.getBoolean("IsValid");
         maxTime = compound.getInt("TotalTime");
         remainingTime = compound.getInt("RemainingTime");
-
+        System.out.println("WS");
+        System.exit(0);
         this.itemIn = ItemStack.of(compound.getCompound("ItemIn"));
 
     }
@@ -173,20 +175,25 @@ public class BellowBlockEntity extends KineticTileEntity implements IHaveGoggleI
         LangBuilder lang = Lang.builder(CreateUtilities.ID);
 
         Component indent = Component.literal(" ");
+        String name = "Bellow";
+        if(getBlockEntity(getBlockPos().below()) instanceof AbstractFurnaceBlockEntity te)
+            name = te.getDisplayName().getString();
+
+
+
         Component indent1 = Component.literal(spacing + " ");
         Component arrow = Component.literal("->").withStyle(ChatFormatting.DARK_GRAY);
         Component time = Component.literal(getTotalTime(getMaxBurnTime(itemIn))).withStyle(ChatFormatting.GOLD);
         String item = itemIn.isEmpty() ? Component.translatable("createutilities.bellow.content.inventory_empty").getString() : itemIn.getItem().getName(itemIn).getString();
-        Component in = Component.literal(item + " " + (itemIn.isEmpty() ? "" : "x") + (itemIn.getCount() <= 0 ? "" : itemIn.getCount())).withStyle(itemIn.isEmpty() ? ChatFormatting.RED : ChatFormatting.GREEN).withStyle(ChatFormatting.UNDERLINE);
-        Component status = Component.literal(isValid ? Component.translatable("createutilities.bellow.content.status.active").toString() :  lang.translate("bellow.content.status.paused").string()).withStyle(ChatFormatting.AQUA);
+        Component in = Component.literal(item + " " + (itemIn.isEmpty() ? "" : "x") + (itemIn.getCount() <= 0 ? "" : itemIn.getCount())).withStyle(itemIn.isEmpty() ? ChatFormatting.RED : ChatFormatting.GREEN);
         tooltip.add(indent1.plainCopy()
-                .append("Bellow Info:"));
+                .append(name + " Info:"));
         tooltip.add(arrow.plainCopy()
                 .append(indent)
-                .append(lang.translate("bellow.content.fuel").string() + ":").withStyle(ChatFormatting.GRAY).append(indent).append(time));
+                .append("Burn Time:").withStyle(ChatFormatting.GRAY).append(indent).append(time));
 
-        tooltip.add(arrow.plainCopy().append(indent).append(lang.translate("bellow.content.fuel").string() + ":").withStyle(ChatFormatting.GRAY).append(indent).append(in));
-        tooltip.add(arrow.plainCopy().append(indent).append(lang.translate("bellow.content.status").string() + ":").withStyle(ChatFormatting.GRAY).append(indent).append(status));
+        tooltip.add(arrow.plainCopy().append(indent).append("Fuel:").withStyle(ChatFormatting.GRAY).append(indent).append(in));
+
 
 
         return true;

@@ -1,6 +1,7 @@
 package com.fallenreaper.createutilities.core.data;
 
 import com.fallenreaper.createutilities.content.blocks.steam_furnace.SteamFurnaceBlockEntity;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,13 @@ public class FuelItemHandler extends ItemStackHandler {
     public FuelItemHandler(SteamFurnaceBlockEntity te, int size) {
         super(size);
         this.te = te;
+    }
+
+    public void setNewSlot(NonNullList<ItemStack> copy) {
+        this.stacks = copy;
+    }
+    public NonNullList<ItemStack> getAllSlots() {
+        return this.stacks;
     }
 
 

@@ -1,9 +1,9 @@
 package com.fallenreaper.createutilities.core.data.items;
 
-import com.fallenreaper.createutilities.CreateUtilities;
 import com.fallenreaper.createutilities.core.data.IFirstPersonAnimation;
 import com.fallenreaper.createutilities.core.data.ISweepParticleProvider;
 import com.fallenreaper.createutilities.core.data.IThirdPersonAnimation;
+import com.fallenreaper.createutilities.core.utils.MiscUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class BaseItem extends Item implements IThirdPersonAnimation, ISweepParticleProvider, IFirstPersonAnimation {
-   // protected TranslatableComponent pTextComponent;
     private boolean hasDescription;
     private ChatFormatting[] chatFormatting;
 
@@ -34,16 +33,15 @@ public class BaseItem extends Item implements IThirdPersonAnimation, ISweepParti
     public BaseItem addDescription(ChatFormatting... formatting) {
         this.hasDescription = true;
         this.chatFormatting = formatting;
-    //    this.pTextComponent = pTextComponent;
+        //    this.pTextComponent = pTextComponent;
         return this;
     }
 
 
     @Override
     public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        if(hasDescription) {
-
-           pTooltipComponents.add(Component.translatable(CreateUtilities.ID + "." +this.getDescriptionId().substring(21)+"."+"description").withStyle((chatFormatting)));
+        if (hasDescription) {
+            pTooltipComponents.add(MiscUtil.asItemDescription(this).withStyle((chatFormatting)));
         }
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
     }

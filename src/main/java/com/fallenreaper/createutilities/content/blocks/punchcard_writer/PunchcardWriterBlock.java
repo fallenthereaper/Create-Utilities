@@ -1,7 +1,7 @@
 package com.fallenreaper.createutilities.content.blocks.punchcard_writer;
 
 import com.fallenreaper.createutilities.index.CUBlockEntities;
-import com.fallenreaper.createutilities.index.CUBlockShapes;
+import com.fallenreaper.createutilities.index.CUVoxelShapes;
 import com.fallenreaper.createutilities.core.utils.ContainerUtil;
 import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.ITE;
@@ -78,13 +78,13 @@ public class PunchcardWriterBlock extends HorizontalKineticBlock implements ITE<
 
     @Override
     public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return CUBlockShapes.PUNCHCARD_WRITER.get(pState.getValue(HORIZONTAL_FACING));
+        return CUVoxelShapes.PUNCHCARD_WRITER.get(pState.getValue(HORIZONTAL_FACING));
     }
 
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return CUBlockShapes.PUNCHCARD_WRITER.get(state.getValue(HORIZONTAL_FACING));
+        return CUVoxelShapes.PUNCHCARD_WRITER.get(state.getValue(HORIZONTAL_FACING));
     }
 
     @Override

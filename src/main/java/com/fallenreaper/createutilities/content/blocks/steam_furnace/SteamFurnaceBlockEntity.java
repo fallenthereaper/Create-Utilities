@@ -25,6 +25,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -55,12 +56,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
@@ -81,6 +84,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import static net.minecraftforge.items.ItemHandlerHelper.canItemStacksStack;
 
 //------WIP------//
+//TODO, FIGURE OUT WHY IS THIS SO LAGGY ON 1.19.2, fixed 12/23/2022 apparently JADE  was causing lag by calling getCapability();
 public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements IHaveGoggleInformation, IBoilerProvider<SteamFurnaceBlockEntity, SteamFurnaceBoilerData>, IDevInfo{
 
     public static int MAX_SLOT_SIZE = 4;
@@ -92,45 +96,45 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     public SteamFurnaceBoilerData boiler;
     public float indicatorProgress;
     public FurnaceState furnaceState;
+    public boolean hasInputFluidIn;
+    public float usageRate;
+    public float producedSteam;
+    public Vec2[] offset;
+    int availableSlot;
+    private int nextFreeSlot;
+    public boolean isUnlimited;
     //ITEM INVENTORY
     public RecipeType<?> recipeType;
     public float[] offsetRotation;
     public FuelItemHandler inventory;
     public boolean hasFuel;
     public int litTime;
-    public boolean isUnlimited;
     public ItemStackHandler foodInventory;
     public int itemSearchCooldown;
-    public List<ItemStackHandler> itemStackHandlers;
+    public Set<ItemStackHandler> itemStackHandlers;
     public LazyOptional<IFluidHandler> fluidCapability;
     public SmartFluidTankBehaviour inputTank;
     public SmartFluidTankBehaviour outputTank;
-    public boolean hasInputFluidIn;
-    public float usageRate;
-    public float producedSteam;
     public boolean hasOutputFluidIn;
     public int[] slots;
-    public LazyOptional<? extends IItemHandler>[] invHandler;
-    public Vec2[] offset;
-    int availableSlot;
-    private int nextFreeSlot;
+    public LazyOptional< IItemHandler> invHandler;
 
 
     public SteamFurnaceBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         this.inventory = createFuelItemHandler();
         this.foodInventory = createFoodItemHandler();
-        this.invHandler = new LazyOptional[2];
-        this.offset = new Vec2[4];
+     //   this.invHandler = new LazyOptional[2];
+        this.offset = new Vec2[MAX_SLOT_SIZE];
         //   this.itemCapability = LazyOptional.of(() -> new CombinedInvWrapper(inventory, foodInventory));
-        this.invHandler[0] = LazyOptional.of(() -> inventory);
-        this.invHandler[1] = LazyOptional.of(() -> foodInventory);
+        this.invHandler = LazyOptional.of(() -> inventory);
+     //  this.invHandler[1] = LazyOptional.of(() -> foodInventory);
         this.furnaceState = FurnaceState.NONE;
         this.tanks = Couple.create(inputTank, outputTank);
         this.cookingProgress = new int[MAX_SLOT_SIZE];
         this.cookingTime = new int[MAX_SLOT_SIZE];
         this.offsetRotation = new float[MAX_SLOT_SIZE];
-        this.itemStackHandlers = new ArrayList<>();
+        this.itemStackHandlers = new HashSet<>();
         this.slots = new int[4];
         this.itemStackHandlers.add(getFoodInventory());
         this.itemStackHandlers.add(getFuelInventory());
@@ -154,7 +158,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
         return ForgeHooks.getBurnTime(pFuel, null);
     }
-
+    @Deprecated
     public static int getFreeSlot(IItemHandler itemHandler) {
         for (int i = 0; i < itemHandler.getSlots(); ++i) {
             ItemStack slotStack = itemHandler.getStackInSlot(i);
@@ -273,16 +277,18 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             //FLUIDS
 
             SoundEvent soundevent;
-            BlockState fluidState = null;
+            FluidState fluidState = null;
 
-            boolean present = itemStack.getCapability( ForgeCapabilities.FLUID_HANDLER)
-                    .isPresent();
+            LazyOptional<IFluidHandlerItem> capability =
+                    itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY);
+            IFluidHandlerItem present = capability.orElse(null);
             if (pPlayer.getItemInHand(pHand).is(Items.BUCKET) && !isFuel(itemStack)) {
                 if (hasWater()) {
                     Fluid fluid = getTank().getFluid().getFluid();
+                    fluidState = fluid.defaultFluidState();
 
 
-                    soundevent = FluidHelper.getFillSound(new FluidStack(fluid, fluid.getAmount(fluidState.getFluidState())));
+                    soundevent = FluidHelper.getFillSound(new FluidStack(fluid, fluid.getAmount(fluidState)));
                     if (soundevent == null)
                         soundevent =
                                 FluidHelper.isTag(fluid, FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
@@ -295,15 +301,14 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 return InteractionResult.SUCCESS;
             }
 
-            if (present && !isFuel(itemStack)) {
+            if ((present != null) && !isFuel(itemStack)) {
 
                 if (getTank() != null) {
                     if (!pPlayer.getItemInHand(pHand).is(Items.BUCKET)) {
                         Pair<FluidStack, ItemStack> emptyItem = EmptyingByBasin.emptyItem(pLevel, itemStack, true);
                         Fluid fluid = getTank().getFluid().getFluid();
-                        fluidState = fluid.defaultFluidState()
-                                .createLegacyBlock();;
-                        soundevent = FluidHelper.getEmptySound(new FluidStack(fluid, fluid.getAmount(fluidState.getFluidState())));
+                        fluidState = fluid.defaultFluidState();
+                        soundevent = FluidHelper.getEmptySound(new FluidStack(fluid, fluid.getAmount(fluidState)));
                         if (soundevent == null)
                             soundevent =
                                     FluidHelper.isTag(fluid, FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
@@ -429,6 +434,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         if (hasFreeSlot() && hasRecipe(pItemStack) && !pItemStack.isEmpty()) {
 
             if (addFood(pItemStack, pPlayer.getYHeadRot(), getSlotFromHit(slot, direction), false)) {
+                //Register the offset position
                 this.offset[getSlotFromHit(slot, direction)] = slot;
                 if (!simulate) {
                     pItemStack.shrink(1);
@@ -457,6 +463,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     }
 
     public void onFuelConsume() {
+        setBurnTime(getFuelBurnTime(getFuelStack()));
         if (!isUnlimitedFuel())
             getFuelStack().shrink(1);
     }
@@ -489,18 +496,19 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         this.hasInputFluidIn = !getTank().getFluid().isEmpty();
         this.hasOutputFluidIn = !getOutputTank().getFluid().isEmpty() || producedSteam > 0;
         this.hasFuel = !getFuelStack().isEmpty() && !getFuelStack().is(Items.AIR);
-        this.isUnlimited = getFuelBurnTime(getFuelStack()) >= 220000;
+        this.isUnlimited = getFuelBurnTime(getFuelStack()) >= 35000; //todo: decrease thisto 25000
+        Direction direction = level.getBlockState(getBlockPos()).getValue(BlockStateProperties.HORIZONTAL_FACING);
 
         if (litTime > 0 && !isUnlimitedFuel())
             litTime--;
 
         if (litTime <= 0 && hasFuel()) {
-            setBurnTime(getFuelBurnTime(getFuelStack()));
             onFuelConsume();
         }
         tickItemSearch();
         syncBlockState();
         syncFurnaceState();
+        refreshSlot(direction);
         if (producedSteam >= getTankCapacity()) {
             producedSteam = getTankCapacity();
         }
@@ -522,7 +530,6 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 }
             }
         }
-        float coolDown = 0;
 
         if (getState().isProducing()) {
             updateBoilerTemperature();
@@ -552,6 +559,30 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             }
         }
         boiler.tick();
+
+    }
+
+    public void refreshSlot(Direction direction) {
+      NonNullList<ItemStack> prevSlot = inventory.getAllSlots();
+
+
+      switch (direction) {
+          case WEST -> {
+              if(!getFoodInventory().getStackInSlot(1).isEmpty()) {
+                  this.getFoodInventory().setStackInSlot(0, getFoodInventory().getStackInSlot(1));
+              }
+
+
+          }
+          case EAST -> {}
+          case SOUTH -> {
+              if(!getFoodInventory().getStackInSlot(1).isEmpty()) {
+                  this.getFoodInventory().setStackInSlot(0, getFoodInventory().getStackInSlot(1));
+              }
+          }
+
+
+      }
 
     }
 
@@ -954,7 +985,8 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     @Override
     public void invalidate() {
         super.invalidate();
-        Arrays.stream(invHandler).toList().forEach(LazyOptional::invalidate);
+      //  Arrays.stream(invHandler).toList().forEach(LazyOptional::invalidate);
+        invHandler.invalidate();
         fluidCapability.invalidate();
         boiler.clear();
     }
@@ -962,21 +994,11 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-
-        if (isItemHandlerCap(cap)) {
-            if (side != Direction.UP) {
-                return invHandler[0].cast();
-            }
-        }
-        if (isFluidHandlerCap(cap))
+        if (this.isItemHandlerCap(cap))
+            return invHandler.cast();
+        if (cap == ForgeCapabilities.FLUID_HANDLER)
             return fluidCapability.cast();
-        return super.getCapability(cap);
-    }
-
-    @Override
-    protected boolean isFluidHandlerCap(Capability<?> cap) {
-        return cap == ForgeCapabilities.FLUID_HANDLER;
-
+        return super.getCapability(cap, side);
     }
 
     private IFluidHandler handlerForCapability() {
@@ -991,7 +1013,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
     @Override
     protected boolean isItemHandlerCap(Capability<?> cap) {
-        return super.isItemHandlerCap(cap);
+        return cap == ForgeCapabilities.ITEM_HANDLER;
     }
 
     protected int getCalculatedBurnTime(ItemStack itemStack) {
@@ -1025,7 +1047,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     public int getOutputSignal() {
         float fluidAmountRatio = (float) getTank().getFluidAmount() / getTankCapacity();
         float itemAmountRatio = (float) getFuelStack().getCount() / getFuelStack().getMaxStackSize();
-        float signal = itemAmountRatio;
+        float signal =  itemAmountRatio;
         if (hasWater()) {
             signal = signal + fluidAmountRatio;
             signal = signal / 2;
@@ -1073,7 +1095,6 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 if (canAcceptItem(slot)) {
                     this.offset[getSlotFromHit(itemPos, direction)] = itemPos;
                     if (addFood(itemStack.copy(), level.getRandom().nextFloat() * 360f, slot, false)) {
-
                         itemEntity.discard();
                         break;
                     }
@@ -1130,7 +1151,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
         return false;
     }
-
+    @Deprecated(forRemoval = true)
     public ItemStack getEmptySlot() {
         ItemStack itemStack = null;
         for (int i = 0; i < getFoodInventory().getSlots(); ++i) {
@@ -1250,7 +1271,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
     public int getCookingProgress(int slot) {
         return cookingProgress[slot];
     }
-
+    @Deprecated(forRemoval = true)
     public RecipeType<?> getRecipeType() {
         return recipeType;
     }
@@ -1312,8 +1333,8 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         return null;
     }
 
-    public List<SteamEngineTileEntity> getAllEnginesAttached() {
-        List<SteamEngineTileEntity> attached = new ArrayList<>(6);
+    public Set<SteamEngineTileEntity> getAllEnginesAttached() {
+       Set<SteamEngineTileEntity> attached = new HashSet<>();
         boolean prev;
         for (Direction direction : Iterate.directions) {
             if (!attached.isEmpty())
@@ -1344,6 +1365,9 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         public InternalItemStackHandler(int size, SteamFurnaceBlockEntity te) {
             super(size);
             this.te = te;
+        }
+        public void setNewSlots(NonNullList<ItemStack> slots) {
+            this.stacks = slots;
         }
 
         @Override

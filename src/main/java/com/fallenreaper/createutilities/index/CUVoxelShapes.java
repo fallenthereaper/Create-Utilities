@@ -9,7 +9,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.BiFunction;
 
-public class CUBlockShapes {
+import static net.minecraft.core.Direction.SOUTH;
+
+public class CUVoxelShapes {
     public static final VoxelShaper
 
             SPRINKLER = shape(2, 0, 2, 14, 3, 14)
@@ -37,14 +39,25 @@ public class CUBlockShapes {
            STEAM_FURNACE = shape(0, 0, 0, 16, 6, 16)
                     .add(1, 6, 1, 15, 11, 15)
                    .add(0, 11, 0, 16, 16, 16)
-                    .forDirectional(Direction.NORTH);
+                    .forDirectional(Direction.NORTH),
+           HAND_DISPLAY = shape(4, 0, 4, 12, 2, 12)
+                    .add(6, 2, 6, 10, 5, 10)
+                   .add(5, 5, 5, 11, 12, 11)
+                    .forDirectional(Direction.NORTH),
+            ENCASED_NIXIE_TUBE = shape(0, 0, 0, 16, 4, 16).add(9, 0, 5, 15, 15, 11).add(1, 0, 5, 7, 15, 11)
+			.forHorizontalAxis(),
+            ENCASED_NIXIE_CEILING = shape(0, 12, 0, 16, 16, 16).add(1, 1, 5, 7, 12, 11).add(9, 1, 5, 15, 12, 11)
+			.forHorizontalAxis(),
+            ENCASED_NIXIE_WALL = shape(0, 0, 12, 16, 16, 16).add(5, 9, 0, 11, 15, 15).add(5, 1, 0, 11, 7, 15)
+			.forHorizontal(SOUTH);
 
 
-    private static CUBlockShapes.Builder shape(VoxelShape shape) {
-        return new CUBlockShapes.Builder(shape);
+
+    private static CUVoxelShapes.Builder shape(VoxelShape shape) {
+        return new CUVoxelShapes.Builder(shape);
     }
 
-    private static CUBlockShapes.Builder shape(double x1, double y1, double z1, double x2, double y2, double z2) {
+    private static CUVoxelShapes.Builder shape(double x1, double y1, double z1, double x2, double y2, double z2) {
         return shape(cuboid(x1, y1, z1, x2, y2, z2));
     }
 
@@ -60,16 +73,16 @@ public class CUBlockShapes {
             this.shape = shape;
         }
 
-        public CUBlockShapes.Builder add(VoxelShape shape) {
+        public CUVoxelShapes.Builder add(VoxelShape shape) {
             this.shape = Shapes.or(this.shape, shape);
             return this;
         }
 
-        public CUBlockShapes.Builder add(double x1, double y1, double z1, double x2, double y2, double z2) {
+        public CUVoxelShapes.Builder add(double x1, double y1, double z1, double x2, double y2, double z2) {
             return add(cuboid(x1, y1, z1, x2, y2, z2));
         }
 
-        public CUBlockShapes.Builder erase(double x1, double y1, double z1, double x2, double y2, double z2) {
+        public CUVoxelShapes.Builder erase(double x1, double y1, double z1, double x2, double y2, double z2) {
             this.shape =
                     Shapes.join(shape, cuboid(x1, y1, z1, x2, y2, z2), BooleanOp.ONLY_FIRST);
             return this;

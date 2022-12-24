@@ -1,0 +1,32 @@
+{
+  "mappings": {
+    "fallenreaper/createutilities/mixins/AbstractContainerScreenMixin": {
+      "mouseDragged": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;mouseDragged(DDIDD)Z"
+    },
+    "fallenreaper/createutilities/mixins/CampFireBlockMixin": {
+      "isSmokeSource": "Lnet/minecraft/world/level/block/CampfireBlock;isSmokeSource(Lnet/minecraft/world/level/block/state/BlockState;)Z"
+    },
+    "fallenreaper/createutilities/mixins/HumanoidModelMixin": {
+      "poseRightArm": "Lnet/minecraft/client/model/HumanoidModel;poseRightArm(Lnet/minecraft/world/entity/LivingEntity;)V"
+    },
+    "fallenreaper/createutilities/mixins/PlayerMixin": {
+      "sweepAttack": "Lnet/minecraft/world/entity/player/Player;sweepAttack()V"
+    }
+  },
+  "data": {
+    "searge": {
+      "com/fallenreaper/createutilities/mixins/AbstractContainerScreenMixin": {
+        "mouseDragged": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;mouseDragged(DDIDD)Z"
+      },
+      "fallenreaper/createutilities/mixins/CampFireBlockMixin": {
+        "isSmokeSource": "Lnet/minecraft/world/level/block/CampfireBlock;isSmokeSource(Lnet/minecraft/world/level/block/state/BlockState;)Z"
+      },
+      "fallenreaper/createutilities/mixins/HumanoidModelMixin": {
+        "poseRightArm": "Lnet/minecraft/client/model/HumanoidModel;poseRightArm(Lnet/minecraft/world/entity/LivingEntity;)V"
+      },
+      "fallenreaper/createutilities/mixins/PlayerMixin": {
+        "sweepAttack": "Lnet/minecraft/world/entity/player/Player;sweepAttack()V"
+      }
+    }
+  }
+}

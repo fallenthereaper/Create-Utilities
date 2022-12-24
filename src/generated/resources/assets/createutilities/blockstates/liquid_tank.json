@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "createutilities:block/liquid_tank/liquid_tank"
+      "model": "createutilities:block/liquid_tank"
     }
   }
 }

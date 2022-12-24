@@ -18,7 +18,7 @@ public class AbstractContainerScreenMixin extends Screen {
 
 
     @Inject(method = "mouseDragged", at = @At(value = "HEAD"), require = 0)
-    public void mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY, CallbackInfoReturnable<Boolean> cir) {
+    public void createutilities_mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY, CallbackInfoReturnable<Boolean> cir) {
         for (Widget widget : renderables) {
             if(widget instanceof SwitchButton switchButton) {
                 if (switchButton.isMouseOver(pMouseX, pMouseY)) {
