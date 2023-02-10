@@ -7,7 +7,6 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -136,7 +135,7 @@ public class EngineerGearModel extends BaseArmorModel {
             f = 1.0F;
         }
         if (getEquipmentSlot() == EquipmentSlot.CHEST) {
-            body.getChild("cape").getChild("cape_cloak").xRot = 3F / 16f + Mth.abs(Mth.cos(limbSwing * 4 / 16F) * 8 / 16F * limbSwingAmount / f);
+       //     body.getChild("cape").getChild("cape_cloak").xRot = 3F / 16f + Mth.abs(Mth.cos(limbSwing * 4 / 16F) * 8 / 16F * limbSwingAmount / f);
         }
         if (getEquipmentSlot() == EquipmentSlot.HEAD ) {
             ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);

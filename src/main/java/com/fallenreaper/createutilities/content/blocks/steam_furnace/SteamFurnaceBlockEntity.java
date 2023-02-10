@@ -277,7 +277,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
             //FLUIDS
 
             SoundEvent soundevent;
-            FluidState fluidState = null;
+            FluidState fluidState;
 
             LazyOptional<IFluidHandlerItem> capability =
                     itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY);
@@ -325,7 +325,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 return InteractionResult.SUCCESS;
             }
 
-            //ITEMS
+            //ITEM INVENTORY
             if (pHitResult.getDirection() != Direction.UP) {
                 if (insertFuel(itemStack.copy(), pPlayer, pHand, getLevel(), false)) {
                     notifyUpdate();
@@ -345,9 +345,9 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
 
 
                     if (getLevel().getBlockState(getBlockPos().relative(Direction.UP)).isAir()) {
-                        System.out.println(pHitResult.getType());
+                        // System.out.println(pHitResult.getType());
                         Vec2 vector2d = new Vec2((float) definedPosition.x, (float) definedPosition.z);
-                        System.out.println("x: " + (float) ((vector2d.x)) + " z: " + (float) ((vector2d.y)));
+                      //  System.out.println("x: " + (float) ((vector2d.x)) + " z: " + (float) ((vector2d.y)));
                         if (insertFood(itemStack, pPlayer, pLevel, pHand, vector2d, false)) {
                             pPlayer.awardStat(Stats.INTERACT_WITH_BLAST_FURNACE);
                             notifyUpdate();
@@ -441,7 +441,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                     pPlayer.setItemInHand(pHand, pItemStack);
                     notifyUpdate();
                     if (pLevel.isClientSide())
-                        pLevel.playSound(pPlayer, getBlockPos(), SoundEvents.ITEM_FRAME_PLACE, SoundSource.BLOCKS, 1.0F - pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
+                        pLevel.playSound(pPlayer, getBlockPos(), SoundEvents.ITEM_FRAME_PLACE, SoundSource.BLOCKS, 1.0F -  pLevel.getRandom().nextFloat() * 0.28f, 1.0F - pLevel.getRandom().nextFloat() * 0.23f);
 
                     return true;
                 }
@@ -496,7 +496,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
         this.hasInputFluidIn = !getTank().getFluid().isEmpty();
         this.hasOutputFluidIn = !getOutputTank().getFluid().isEmpty() || producedSteam > 0;
         this.hasFuel = !getFuelStack().isEmpty() && !getFuelStack().is(Items.AIR);
-        this.isUnlimited = getFuelBurnTime(getFuelStack()) >= 35000; //todo: decrease thisto 25000
+        this.isUnlimited = getFuelBurnTime(getFuelStack()) >= 25000; //todo: decrease thisto 25000
         Direction direction = level.getBlockState(getBlockPos()).getValue(BlockStateProperties.HORIZONTAL_FACING);
 
         if (litTime > 0 && !isUnlimitedFuel())
@@ -1094,7 +1094,7 @@ public class SteamFurnaceBlockEntity extends InteractableBlockEntity implements 
                 int slot = getSlotFromHit(itemPos, direction);
                 if (canAcceptItem(slot)) {
                     this.offset[getSlotFromHit(itemPos, direction)] = itemPos;
-                    if (addFood(itemStack.copy(), level.getRandom().nextFloat() * 360f, slot, false)) {
+                    if (addFood(itemStack.copy(), level.getRandom().nextFloat() * 360F, slot, false)) {
                         itemEntity.discard();
                         break;
                     }

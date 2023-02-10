@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class CampFireBlockMixin {
 
         @Inject(at = @At("RETURN"), method = "isSmokeSource(Lnet/minecraft/world/level/block/state/BlockState;)Z", cancellable = true)
-        public void createutilities_addSmokeSource(BlockState state, CallbackInfoReturnable<Boolean> cir) {
+        public void createutilities_isSmokeSource(BlockState state, CallbackInfoReturnable<Boolean> cir) {
             if (state.getBlock() instanceof ISmokeSource) {
                 cir.setReturnValue(true);
             }

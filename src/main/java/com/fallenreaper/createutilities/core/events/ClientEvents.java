@@ -1,21 +1,27 @@
 package com.fallenreaper.createutilities.core.events;
 
 import com.fallenreaper.createutilities.CreateUtilities;
-import com.fallenreaper.createutilities.core.client.BrassJetPackModel;
 import com.fallenreaper.createutilities.content.items.PunchcardItem;
+import com.fallenreaper.createutilities.core.client.BrassJetPackModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -80,6 +86,30 @@ public class ClientEvents {
     }
 
  */
+@SubscribeEvent
+public void onRenderWorldLast( RenderLevelStageEvent event) {
+    PoseStack matrixStack = event.getPoseStack();
+    GameRenderer rendererManager = Minecraft.getInstance().gameRenderer;
+
+    HitResult hitResult = Minecraft.getInstance().hitResult;
+    if (hitResult instanceof EntityHitResult hitResult1) {
+        Entity viewEntity = ((EntityHitResult) hitResult).getEntity();
+        double x = viewEntity.xOld + (viewEntity.getX() - viewEntity.xOld) * event.getPartialTick();
+        double y = viewEntity.yOld + (viewEntity.getY() - viewEntity.yOld) * event.getPartialTick();
+        double z = viewEntity.zOld + (viewEntity.getZ() - viewEntity.zOld) * event.getPartialTick();
+
+
+            if (viewEntity instanceof LivingEntity mob) {
+
+                AABB headBB = mob.getBoundingBox();
+
+          //      CreateClient.OUTLINER.showAABB("entity_hitbox" + mob.yBodyRotO, headBB );
+
+    }
+    }
+}
+
+
 
     @SubscribeEvent
     public static void addToItemTooltip(ItemTooltipEvent event) {

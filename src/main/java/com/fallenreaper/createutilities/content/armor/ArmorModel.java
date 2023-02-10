@@ -29,7 +29,6 @@ public abstract class ArmorModel extends HumanoidModel {
         this.leftFoot = root.getChild("left_foot");
         this.rightFoot = root.getChild("right_foot");
     }
-
     public static PartDefinition createHumanoidAlias(MeshDefinition mesh) {
         PartDefinition root = mesh.getRoot();
         root.addOrReplaceChild("body", new CubeListBuilder(), PartPose.ZERO);

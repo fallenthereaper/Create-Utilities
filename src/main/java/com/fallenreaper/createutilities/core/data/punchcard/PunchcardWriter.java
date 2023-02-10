@@ -35,16 +35,16 @@ import static com.google.common.base.Strings.repeat;
 
 @SuppressWarnings("all")
 public class PunchcardWriter implements Interactable.IClickable, Interactable.IDraggable {
-    private AbstractSmartContainerScreen<?> screen;
     private final SwitchIcon switchIcon;
     public Map<Point, PunchcardButton> allButtons;
+    public boolean visible;
     protected Map<Integer, Integer> yCoords, xCoords;
+    private AbstractSmartContainerScreen<?> screen;
     private String defaultEmpty, defaultFull;
     private PunchcardTextWriter textWriter;
     private PunchcardButton[][] grid;
     private PunchcardButton button;
     private Vec2 position;
-    public boolean visible;
     private byte width, height;
 
     private PunchcardWriter(AbstractSmartContainerScreen<?> screen, int x, int y, byte width, byte height, SwitchIcon switchIcon, TextIcon icon) {
@@ -70,14 +70,14 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
      * Make sure to call {@link #write()} right after.
      */
     public static PunchcardWriter create(AbstractSmartContainerScreen<?> screen, int x, int y, int width, int height) {
-        return new PunchcardWriter(screen, x, y, (byte) width, (byte) height, SwitchIcons.PUNCHCARD_SWITCHBUTTON, TextIcon.of("█", "▒" ));
+        return new PunchcardWriter(screen, x, y, (byte) width, (byte) height, SwitchIcons.PUNCHCARD_SWITCHBUTTON, TextIcon.of("█", "▒"));
     }
 
     /**
      * Returns a copy of the specified {@link PunchcardWriter}
      */
     public static PunchcardWriter copy(PunchcardWriter copied$writer) {
-        PunchcardWriter copy = new PunchcardWriter(copied$writer.screen,(int) copied$writer.position.x,(int) copied$writer.position.y, copied$writer.width, copied$writer.height, copied$writer.switchIcon, TextIcon.of(copied$writer.defaultEmpty, copied$writer.defaultFull));
+        PunchcardWriter copy = new PunchcardWriter(copied$writer.screen, (int) copied$writer.position.x, (int) copied$writer.position.y, copied$writer.width, copied$writer.height, copied$writer.switchIcon, TextIcon.of(copied$writer.defaultEmpty, copied$writer.defaultFull));
         copy.textWriter = copied$writer.getTextWriter();
         copy.width = copied$writer.width;
         copy.height = copied$writer.height;
@@ -96,12 +96,6 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
 
     public static void write(CompoundTag compoundTag) {
 
-    }
-    public void setScreen(AbstractSmartContainerScreen<?> screen) {
-        this.screen = screen;
-    }
-    public AbstractSmartContainerScreen<?> getScreen() {
-        return screen;
     }
 
     public static void writeFile(String fileName, PunchcardWriter writer) {
@@ -151,6 +145,34 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         }
     }
 
+    public static int[] removeTheElement(int[] arr, int index) {
+
+        // If the array is empty
+        // or the index is not in array range
+        // return the original array
+        if (arr == null || index < 0 || index >= arr.length) {
+
+            return arr;
+        }
+
+        // Create ArrayList from the array
+        List<Integer> arrayList = IntStream.of(arr).boxed().collect(Collectors.toList());
+
+        // Remove the specified element
+        arrayList.remove(index);
+
+        // return the resultant array
+        return arrayList.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    public AbstractSmartContainerScreen<?> getScreen() {
+        return screen;
+    }
+
+    public void setScreen(AbstractSmartContainerScreen<?> screen) {
+        this.screen = screen;
+    }
+
     public byte getWidth() {
         return this.textWriter.getXsize();
     }
@@ -181,11 +203,8 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
     public void updateButtonState(PunchcardWriter target$writer) {
         for (int height = 1; height < this.getHeight() + 1; height++) {
             for (int width = 1; width < this.getWidth() + 1; width++) {
-                var saved = target$writer.getButton(new Point(width - 1, height - 1), null);
-                this.getButton(new Point(width - 1, height - 1),
-                        button ->
-                                button.setState(saved.getState())
-                );
+                PunchcardButton writerButton = target$writer.getButton(new Point(width - 1, height - 1), null);
+                this.getButton(new Point(width - 1, height - 1), button -> button.setState(writerButton.getState()));
             }
         }
     }
@@ -194,6 +213,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         this.getTextWriter().write(compoundTag, client);
 
     }
+
     public void read(CompoundTag compoundTag, boolean client) {
         this.getTextWriter().read(compoundTag, client);
     }
@@ -206,7 +226,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         return Math.min((float) this.textWriter.getCount() / total, 1);
     }
 
-    protected Component getProgressBar() {
+    public Component getProgressBar() {
         int maxSize = this.textWriter.getXsize() * this.textWriter.getYsize();
         var base = "";
         float modifier = getProgress() * maxSize;
@@ -215,8 +235,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
 
         base += ChatFormatting.GRAY + repeat("|", Math.round(fullValue));
 
-        if (getProgress() < 1)
-            base += ChatFormatting.DARK_GRAY + repeat("|", Math.round(remaining));
+        if (getProgress() < 1) base += ChatFormatting.DARK_GRAY + repeat("|", Math.round(remaining));
 
         return Component.literal(base);
     }
@@ -256,41 +275,13 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         allButtons.remove(position);
         this.allButtons.remove(position, button);
     }
-    public static int[] removeTheElement(int[] arr, int index)
-    {
-
-        // If the array is empty
-        // or the index is not in array range
-        // return the original array
-        if (arr == null
-                || index < 0
-                || index >= arr.length) {
-
-            return arr;
-        }
-
-        // Create ArrayList from the array
-        List<Integer> arrayList = IntStream.of(arr)
-                .boxed()
-                .collect(Collectors.toList());
-
-        // Remove the specified element
-        arrayList.remove(index);
-
-        // return the resultant array
-        return arrayList.stream()
-                .mapToInt(Integer::intValue)
-                .toArray();
-    }
 
     /**
      * Sets a box and a button at the specified position.
      */
     public void setBox(Point position, boolean rightClick) {
-        if(rightClick)
-            this.textWriter.fillPixel(position);
-        else
-            this.textWriter.setPixel(position);
+        if (rightClick) this.textWriter.fillPixel(position);
+        else this.textWriter.setPixel(position);
 
     }
 
@@ -370,12 +361,11 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
         poseStack.scale(scaleFactor, scaleFactor, 0);
         poseStack.translate(x, y, 0);
 
-        if (getTextWriter() != null)
-            for (int i = 1; i < this.textWriter.getYsize() + 1; i++) {
-                int max = i * this.textWriter.getXsize();
-                int min = Math.max(max - textWriter.getXsize(), 0);
-                font.drawShadow(poseStack, this.textWriter.getRawText().substring(min, max), x, ((9 * i) + y), rgb);
-            }
+        if (getTextWriter() != null) for (int i = 1; i < this.textWriter.getYsize() + 1; i++) {
+            int max = i * this.textWriter.getXsize();
+            int min = Math.max(max - textWriter.getXsize(), 0);
+            font.drawShadow(poseStack, this.textWriter.getRawText().substring(min, max), x, ((9 * i) + y), rgb);
+        }
 
         return this;
     }
@@ -384,8 +374,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
      * Renders a progress bar.
      */
     public void renderProgressBar(float x, float y, PoseStack poseStack) {
-        if (screen == null)
-            return;
+        if (screen == null) return;
         final List<Component> progressBar = new ArrayList<>(1);
         progressBar.add(getProgressBar());
         this.screen.renderComponentTooltip(poseStack, progressBar, Math.round(x), Math.round(y));
@@ -497,7 +486,7 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
 
     @Override
     public void onClick(int mouseX, int mouseY, Point coords, boolean rightClick) {
-            this.setBox(new Point(this.xCoords.get(coords.x), this.yCoords.get(coords.y)), rightClick);
+        this.setBox(new Point(this.xCoords.get(coords.x), this.yCoords.get(coords.y)), rightClick);
     }
 
     /**
@@ -526,18 +515,21 @@ public class PunchcardWriter implements Interactable.IClickable, Interactable.ID
             var min = Math.max(max - this.textWriter.getXsize(), 0);
             toolTip.add(Component.literal(space + this.textWriter.getRawText().substring(min, max)).withStyle(format));
         }
-        if (showProgress)
-            toolTip.add(getProgressBar());
+        if (showProgress) toolTip.add(getProgressBar());
+
+        Gson gson = new Gson();
+        String json = gson.toJson(toolTip);
+
+        try (FileWriter writer = new FileWriter("C:/Users/salva/OneDrive/Documentos/GitHub/Create-Utilities/src/tooltip_data.json")) {
+            writer.write(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public String toString() {
-        return "PunchcardWriter[" +
-                "textData = " + this.getTextWriter().getRawText() +
-                " x = " + position +
-                " y = " + position +
-                " fillPercentage = " + (int) getPercentage() +
-                " boxAmount = " + getWidth() * getHeight() +
-                "]";
+        return "PunchcardWriter[" + "textData = " + this.getTextWriter().getRawText() + " x = " + position + " y = " + position + " fillPercentage = " + (int) getPercentage() + " boxAmount = " + getWidth() * getHeight() + "]";
     }
 }

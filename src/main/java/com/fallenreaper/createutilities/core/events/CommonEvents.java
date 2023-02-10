@@ -26,7 +26,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
@@ -35,6 +37,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
@@ -71,6 +76,13 @@ public class CommonEvents {
 
     public static void itemExpire(ItemExpireEvent itemExpireEvent) {
         PunchcardItem.removeAfterDespawn(itemExpireEvent);
+
+    }
+    @SubscribeEvent
+    public void onLivingAttack(LivingAttackEvent event) {
+
+
+
 
     }
 
@@ -283,5 +295,23 @@ public class CommonEvents {
     @SubscribeEvent
     public void rightClick(PlayerInteractEvent.RightClickBlock event) {
         PunchcardItem.rightClick(event);
+    }
+    @SubscribeEvent
+    public void rightClick(PlayerInteractEvent.EntityInteract event) {
+        Player player = event.getEntity();
+        Entity entity = event.getEntity();
+        InteractionHand hand = event.getHand();
+       HitResult result = Minecraft.getInstance().hitResult;
+if(result instanceof EntityHitResult entityHitResult) {
+    if(entityHitResult.getEntity() instanceof LivingEntity mob) {
+
+
+
+        Vec3 lookVec = player.getPosition(1).subtract(mob.getPosition(1));
+        mob.setXRot((float) Math.toDegrees(Math.atan2(lookVec.x, lookVec.z)));
+        mob.setYRot((float) Math.toDegrees(Math.asin(lookVec.y / lookVec.length())));
+
+    }
+}
     }
 }

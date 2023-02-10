@@ -75,11 +75,11 @@ public class SteamFurnaceRenderer extends SmartTileEntityRenderer<SteamFurnaceBl
 
       //  LevelRenderer.renderVoxelShape(ms, vertexconsumer, shape, instance.cameraEntity.getX(), instance.cameraEntity.getY(), instance.cameraEntity.getZ(), 1.0F, 1.0F, 1.0F, 1.0F);
        // instance.getBlockRenderer().renderBreakingTexture(blockState, te.getBlockPos(), te.getLevel(), ms, vertexconsumer1);
-        renderFoodItems(te, partialTicks, ms, buffer, light, overlay);
+        renderFoodItems(te, ms, buffer, light);
 
     }
 
-    public void renderFoodItems(SteamFurnaceBlockEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
+    public void renderFoodItems(SteamFurnaceBlockEntity te, PoseStack ms, MultiBufferSource buffer, int light) {
         Direction direction = te.getBlockState().getValue(HORIZONTAL_FACING).getOpposite();
 
         ItemStackHandler inventory = te.getFoodInventory();
@@ -90,10 +90,10 @@ public class SteamFurnaceRenderer extends SmartTileEntityRenderer<SteamFurnaceBl
             if (!itemStack.isEmpty()) {
                 ms.pushPose();
 
-                // Center item above the stove
+
                 ms.translate(8/16.0D, 16.2F/16F, 8/16.0D);
 
-                // Rotate item to face the stove's front side
+
                 float f = -direction.toYRot();
                 ms.mulPose(Vector3f.YP.rotationDegrees(f));
 

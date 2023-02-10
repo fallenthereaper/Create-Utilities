@@ -71,7 +71,7 @@ public abstract class SteamEngineBlockEntityMixin {
         }
     }
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/components/steam/SteamEngineTileEntity;getTank()Lcom/simibubi/create/content/contraptions/fluids/tank/FluidTankTileEntity;", shift = At.Shift.BEFORE), remap = false, cancellable = true, require = 0)
-    public void onTick(CallbackInfo ci) {
+    public void createutilities_onTick(CallbackInfo ci) {
         SteamEngineTileEntity te = (SteamEngineTileEntity) (Object) this;
         Direction facing = SteamEngineBlock.getFacing(te.getBlockState());
         BlockEntity be = te.getLevel().getBlockEntity(te.getBlockPos().relative(facing.getOpposite()));
