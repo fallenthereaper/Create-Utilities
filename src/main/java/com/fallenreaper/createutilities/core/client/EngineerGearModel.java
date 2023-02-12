@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 
-public class EngineerGearModel extends BaseArmorModel {
+public class        EngineerGearModel extends BaseArmorModel {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 
     public EngineerGearModel(ModelPart root) {

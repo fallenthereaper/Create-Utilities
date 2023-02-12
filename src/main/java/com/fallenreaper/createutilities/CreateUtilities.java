@@ -2,6 +2,7 @@ package com.fallenreaper.createutilities;
 
 import com.fallenreaper.createutilities.core.data.Interactable;
 import com.fallenreaper.createutilities.core.data.doorlock.DoorLockManager;
+import com.fallenreaper.createutilities.core.data.gui.BookChapter;
 import com.fallenreaper.createutilities.core.events.ClientEvents;
 import com.fallenreaper.createutilities.core.events.ClientHandler;
 import com.fallenreaper.createutilities.core.events.CommonEvents;
@@ -121,6 +122,7 @@ public class CreateUtilities {
         CUFluids.register();
 
 
+
         //
 
         addToBlockList(() -> Blocks.CRAFTING_TABLE);
@@ -142,7 +144,13 @@ public class CreateUtilities {
     }
 
     private static void setup(final FMLCommonSetupEvent event) {
-        // some preinit code
+        // some preinit cod
+        String location = "C:/Users/salva/OneDrive/Documentos/GitHub/Create-Utilities/src/main/resources/assets/createutilities/data/book/book_base/book_base.json";
+        event.enqueueWork(CUBookChapters::register);
+        event.enqueueWork(()-> {
+            BookChapter.writeChapterToJson(location, CUBookChapters.FIRST_CHAPTER);
+
+        });
         LOGGER.info("HELLO FROM PREINIT");
         LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getName());
     }

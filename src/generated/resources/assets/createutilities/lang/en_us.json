@@ -65,6 +65,7 @@
   "fluid.createutilities.steam": "Steam",
   "item.createutilities.brass_jetpack": "Brass Jetpack",
   "item.createutilities.dev_item": "Dev Tool",
+  "item.createutilities.parchment": "Parchment",
   "item.createutilities.iron_scythe": "Iron Scythe",
   "item.createutilities.note_item": "Notes",
   "item.createutilities.punchcard": "Punchcard",
@@ -72,5 +73,6 @@
   "item.createutilities.watering_can": "Watering Can",
   "item.createutilities.engineer_top_hat": "Engineer's Top Hat",
   "item.createutilities.engineer_boots": "Engineer's Boots",
-  "item.createutilities.engineer_tunic": "Engineer's Tunic"
+  "item.createutilities.engineer_tunic": "Engineer's Tunic",
+  "gui.createutilities.parchment.title": "Parchment"
 }

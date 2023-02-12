@@ -6,7 +6,6 @@ import com.fallenreaper.createutilities.content.items.*;
 import com.fallenreaper.createutilities.content.items.brass_jetpack.BrassSuitArmorItem;
 import com.fallenreaper.createutilities.content.items.engineer_gear.EngineerGearItem;
 import com.fallenreaper.createutilities.content.items.watering_can.WateringCanItem;
-import com.fallenreaper.createutilities.core.data.items.BaseItem;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullFunction;
@@ -32,6 +31,10 @@ public class CUItems {
     public static final ItemEntry<? extends Item> WAX =
             registerItem("red_wax", "Wax", (p) -> new BaseItem(p.tab(CreateUtilities.TAB))
                     , (p) -> p.stacksTo(64));
+
+    public static final ItemEntry<? extends Item> PARCHMENT =
+            registerItem("parchment", "Parchment", (p) -> new ParchmentItem(p.tab(CreateUtilities.TAB))
+                    , (p) -> p.stacksTo(1));
 
     public static final ItemEntry<? extends Item> NOTE_ITEM =
             registerItem("note_item", "Notes", NotesItem::new,

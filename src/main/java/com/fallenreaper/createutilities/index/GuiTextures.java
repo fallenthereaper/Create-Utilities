@@ -18,17 +18,33 @@ public enum GuiTextures implements ScreenElement {
     PROGRESS_BAR("typewriter_screen", 47, 162, 46, 12),
     HIGHLIGHT("typewriter_screen", 139, 196, 26, 26),
     PUNCHCARD_WRITER_SCREEN("punchcard_writer_screen", 201, 174),
+    PARCHMENT_BACKGROUND("parchment_bg",  156, 192),
+    SCROLL_WHEEL("parchment_bg", 240, 144, 8, 16),
+    SCROLL_WHEEL_HOVER("parchment_bg", 240, 160, 8, 16),
     BUTTON_FILLED("punchcard_writer_screen", 240, 48, 16, 16),
     BUTTON_EMPTY("punchcard_writer_screen", 208, 48, 16, 16),
     BUTTON_HOVER("punchcard_writer_screen", 240, 64, 16, 16),
     BUTTON_HOVER_EMPTY("punchcard_writer_screen", 208, 64, 16, 16),
     SINGLE_INVENTORY("inventory_gui", 68, 179, 178, 72),
 
+
+    //API - Punchcard
     DEFAULT_BUTTON_FILLED("typewriter_screen", 207, 144, 18, 18),
     DEFAULT_BUTTON_EMPTY("typewriter_screen", 225, 144, 18, 18),
     DEFAULT_BUTTON_HOVER("typewriter_screen", 207, 162, 18, 18),
     DEFAULT_BUTTON_HOVER_EMPTY("typewriter_screen", 225, 162, 18, 18),
-    SCROLL_ICON("punchcard_writer_screen", 224, 185, 8, 7);
+    SCROLL_ICON("punchcard_writer_screen", 224, 185, 8, 7),
+
+    //Book Widgets
+    BACK_BUTTON("parchment/book_widgets", 32, 1, 20, 15),
+    NEXT_BUTTON("parchment/book_widgets", 64, 1, 20, 15),
+
+    //Book Pages
+    DISPLAY_PAGE("parchment/diplay_page", 0, 0, 114, 120),
+    CLIPBOARD_PAGE("parchment/task_management_page", 0, 0, 114, 120),
+    TITLE_PAGE("parchment/title_page", 0, 0, 114, 120),
+    BLANK_PAGE("parchment/blank_page", 0, 0, 114, 120);
+
     public final ResourceLocation location;
     public int width, height;
     public int startX, startY;
@@ -72,4 +88,5 @@ public enum GuiTextures implements ScreenElement {
         bind();
         GuiComponent.blit(ms, x, y, 0, startX, startY, width, height, 256, 256);
     }
+
 }

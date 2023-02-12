@@ -3,14 +3,17 @@ package com.fallenreaper.createutilities.core.utils;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlock;
 import com.fallenreaper.createutilities.content.blocks.sprinkler.SprinklerBlockEntity;
 import com.google.common.primitives.Ints;
+import com.google.gson.Gson;
 import com.simibubi.create.foundation.render.SuperByteBuffer;
 import com.simibubi.create.foundation.utility.Couple;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +28,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.FarmlandWaterManager;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.io.FileWriter;
+import java.io.Reader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -225,5 +231,17 @@ public class MiscUtil {
     public Vec3 getPositions(double t) {
 
         return lerpVector(starts.getFirst(), starts.getSecond(), (float) t);
+    }
+
+    public static <T> T deserializeJson(Class<T> tClass, Reader fileReader, Gson gson) {
+        return GsonHelper.fromJson(gson, fileReader, tClass);
+    }
+    public static void serializeJson(Object toWrite, FileWriter fileLoc, Gson gson) {
+        gson.toJson(toWrite, fileLoc);
+
+    }
+
+    public static Item getItemByRegistryName(String registryName) {
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(registryName));
     }
 }
